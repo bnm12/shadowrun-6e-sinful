@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from "./components/HelloWorld.vue";
+import IdCard from "./components/IdCard.vue";
 </script>
 
 <template>
@@ -12,6 +13,20 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  <IdCard
+    :profileData="{
+      name: 'Jane Smith',
+      nationality: 'German',
+      gender: 'Female',
+      metatype: 'Elf',
+      photo: '/vite.svg',
+      systemId: '#Active#',
+      idc: 'R-123456789 - 987654321 - 456789123 - 01',
+      additionalCode: '<<< 12345678/DEU/33456 >>> SIN ID',
+      flagColors:
+        'linear-gradient(to right, #000 33%, #ff0000 33%, #ff0000 66%, #ffff00 66%)',
+    }"
+  />
 </template>
 
 <style scoped>
