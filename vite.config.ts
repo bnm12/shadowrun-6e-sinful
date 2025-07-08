@@ -3,6 +3,5 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/shadowrun-6e-sinful/', // Replace with your repository name
   plugins: [vue()],
 })
