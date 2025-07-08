@@ -91,6 +91,11 @@ const readTag = async () => {
       }
       if (!sinDataFound) {
         message.value += "No Shadowrun SIN data found on this tag.";
+      } else {
+        // Clear the message after a delay if SIN data was found
+        setTimeout(() => {
+          message.value = "";
+        }, 5000); // Clear after 5 seconds
       }
     };
 
