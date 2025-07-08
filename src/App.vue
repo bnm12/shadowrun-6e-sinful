@@ -18,14 +18,14 @@ interface SinData {
 }
 
 const message = ref("");
-const showSinForm = ref(true); // Control visibility of SIN Form
+const showSinForm = ref(false); // Control visibility of SIN Form
 const currentProfileData = ref<any>({
   // To hold data for IdCard
   name: "Jane Smith", // Default
-  nationality: ShadowrunNationality.UCAS,
+  nationality: ShadowrunNationality.UNKNOWN,
   gender: "Female",
   metatype: "Elf",
-  photo: "https://via.placeholder.com/120x150/333/fff?text=Photo",
+  photo: "/blank-profile-picture.svg",
   systemId: "#STANDBY#",
   idc: "R-000000000 - 000000000 - 000000000 - 00",
   additionalCode: "<<< WAITING FOR SCAN >>>",
@@ -66,9 +66,7 @@ const readTag = async () => {
               nationality: parsedSinData.nationality,
               gender: parsedSinData.gender,
               metatype: parsedSinData.metatype,
-              photo:
-                parsedSinData.imageUrl ||
-                "https://via.placeholder.com/120x150/333/fff?text=No+Photo",
+              photo: parsedSinData.imageUrl || "/blank-profile-picture.svg",
               systemId: "#ACTIVE#", // Indicate active scan
               idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
                 .toString()
@@ -103,25 +101,6 @@ const readTag = async () => {
   } catch (error) {
     message.value = `Error starting scan: ${error}`;
     console.error("Error starting NDEFReader scan:", error);
-  }
-};
-
-async () => {
-  if (!("NDEFReader" in window)) {
-    message.value =
-      "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
-    return;
-  }
-  try {
-    // TODO: Fix: Property 'NDEFReader' does not exist on type 'Window & typeof globalThis'.
-    // @ts-ignore
-    const ndef = new NDEFReader();
-    await ndef.write({
-      records: [{ recordType: "text", data: "hello world" }],
-    });
-    message.value = 'Wrote "hello world" to tag.';
-  } catch (error) {
-    message.value = `Error writing to tag: ${error}`;
   }
 };
 
@@ -170,7 +149,7 @@ const handleSinFormSubmit = async (sinData: SinData) => {
         <button type="button" @click="readTag">Read Tag</button>
         <!-- Toggle button for showing SIN Form -->
         <button type="button" @click="showSinForm = !showSinForm">
-          {{ showSinForm ? "Hide SIN Form" : "Show SIN Form" }}
+          {{ showSinForm ? "Hide SIN Form" : "Create new SIN" }}
         </button>
         <!-- Original writeTag button can be removed or repurposed later -->
         <!-- <button type="button" @click="writeTag">Write Generic Tag</button> -->

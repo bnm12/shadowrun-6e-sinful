@@ -101,10 +101,10 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   profileData: () => ({
     name: "John Doe",
-    nationality: ShadowrunNationality.UCAS,
+    nationality: ShadowrunNationality.UNKNOWN,
     gender: "Male",
     metatype: "Human",
-    photo: "https://via.placeholder.com/120x150/333/fff?text=Photo",
+    photo: "./blank-profile-picture.svg",
     systemId: "#Error1#",
     idc: "R-025648545482 - 5254267869 - 551247895512 - 02",
     additionalCode: "<<< 85478516/GTR/22145 >>> SIN ID",
