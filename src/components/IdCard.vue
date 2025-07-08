@@ -125,36 +125,45 @@ const getFlagColors = (): string => {
 
 <style scoped>
 .id-card {
-  width: 500px;
-  height: 300px;
   background: linear-gradient(135deg, #1a2332 0%, #2a3847 100%);
   border: 2px solid #4a9eff;
   border-radius: 8px;
   font-family: "Courier New", monospace;
   color: #00ffff;
-  position: relative;
-  overflow: hidden;
+  position: relative; /* Keep relative for pseudo-elements */
   box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
   display: flex;
   flex-direction: column;
+  /*transform: rotate(90deg);
+  transform-origin: center center;*/
+  aspect-ratio: 4 / 2.5;
+}
+
+/* Ensure pseudo-elements rotate with the card if they are positioned relative to it */
+.id-card::before,
+.id-card::after {
+  /* transform-origin might need to be adjusted if they look off */
 }
 
 .card-header {
-  height: 20px;
+  height: 6%; /* Relative height */
   background: linear-gradient(to right, #4a9eff, #6ab7ff);
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 2%; /* Relative padding */
 }
 
 .header-tabs {
   display: flex;
-  gap: 5px;
+  gap: 1%; /* Relative gap */
+  height: 100%;
+  width: 100%;
+  align-items: center;
 }
 
 .tab {
-  width: 30px;
-  height: 12px;
+  width: 6%; /* Relative width */
+  height: 60%; /* Relative to header height */
   background: rgba(255, 255, 255, 0.3);
   border-radius: 2px;
 }
@@ -165,22 +174,24 @@ const getFlagColors = (): string => {
 
 .card-content {
   display: flex;
-  padding: 15px;
-  gap: 20px;
+  padding: 3%; /* Relative padding */
+  gap: 4%; /* Relative gap */
   flex-grow: 1;
 }
 
 .left-section {
   display: flex;
   flex-direction: column;
+  width: 30%; /* Proportion of card content */
 }
 
 .photo-section {
+  width: 100%;
 }
 
 .photo-container {
-  width: 150px;
-  height: 170px;
+  width: 100%;
+  aspect-ratio: 150 / 170; /* Maintain original aspect ratio */
   border: 2px solid #00ffff;
   border-radius: 4px;
   overflow: hidden;
@@ -196,24 +207,25 @@ const getFlagColors = (): string => {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 15px;
+  gap: 5%; /* Relative gap */
+  width: 66%; /* Proportion of card content */
 }
 
 .top-right-section {
   display: flex;
   flex-direction: row;
-  gap: 10px;
-  height: 30px;
+  gap: 2%; /* Relative gap */
+  height: 15%; /* Relative to right-section height */
   justify-content: space-between;
 }
 
 .barcode {
-  width: 100%;
+  width: 70%; /* Proportion of top-right-section */
 }
 
 .barcode-lines {
   display: flex;
-  gap: 2px;
+  gap: 1px; /* Minimal gap for lines */
   align-items: end;
   height: 100%;
 }
@@ -234,7 +246,7 @@ const getFlagColors = (): string => {
 }
 
 .flag-container {
-  width: 60px;
+  width: 25%; /* Proportion of top-right-section */
   border: 1px solid #00ffff;
   box-sizing: border-box;
 }
@@ -247,35 +259,39 @@ const getFlagColors = (): string => {
 .info-section {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5%; /* Relative gap */
+  flex-grow: 1;
 }
 
 .name {
-  font-size: 24px;
+  font-size: clamp(1em, 4vh, 2em); /* Responsive font size */
   font-weight: bold;
   color: #00ffff;
   text-align: left;
+  line-height: 1.1;
 }
 
 .details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5vh; /* Relative gap */
 }
 
 .detail-row {
   display: flex;
   flex-direction: row;
   justify-content: start;
-  font-size: 14px;
-  gap: 5px;
+  font-size: clamp(0.6em, 2vh, 1em); /* Responsive font size */
+  gap: 1%;
 }
 
 .label {
   color: #4a9eff;
-  width: 100px;
+  min-width: 100px;
+  width: 35%; /* Adjust based on content */
   text-align: left;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .label-colon {
@@ -284,30 +300,31 @@ const getFlagColors = (): string => {
 
 .value {
   color: #00ffff;
+  white-space: nowrap;
 }
 
 .system-info {
   background: rgba(0, 255, 255, 0.1);
-  padding: 10px 15px;
+  padding: 2% 3%; /* Relative padding */
   border-top: 1px solid #4a9eff;
-  font-size: 11px;
+  font-size: clamp(0.5em, 1.8vh, 0.8em); /* Responsive font size */
 }
 
 .system-title {
   color: #00ffff;
-  margin-bottom: 5px;
+  margin-bottom: 1%;
   font-weight: bold;
 }
 
 .system-codes {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.3vh;
 }
 
 .code-line {
   color: #4a9eff;
-  font-size: 10px;
+  font-size: clamp(0.4em, 1.5vh, 0.7em); /* Responsive font size */
   font-family: "Courier New", monospace;
 }
 
@@ -321,16 +338,16 @@ const getFlagColors = (): string => {
   bottom: -2px;
   background: linear-gradient(45deg, #4a9eff, #00ffff, #4a9eff);
   border-radius: 8px;
-  z-index: -1;
+  z-index: 1;
   animation: glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
   from {
-    opacity: 0.5;
+    opacity: 0.01;
   }
   to {
-    opacity: 1;
+    opacity: 0.1;
   }
 }
 
@@ -341,17 +358,28 @@ const getFlagColors = (): string => {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 2px; /* Thickness of the scan line */
   background: linear-gradient(90deg, transparent, #00ffff, transparent);
   animation: scan 3s linear infinite;
+  z-index: 1; /* Ensure it's above other content if necessary */
 }
 
 @keyframes scan {
   0% {
-    transform: translateY(-2px);
+    top: 0;
   }
   100% {
-    transform: translateY(250px);
+    /*
+      The id-card's new height (visual height on screen after rotation) is its CSS width (85vh).
+      We want the 2px line to travel from top to bottom of this.
+      If translateY(100%) refers to the element's own height (2px), this is not what we want.
+      We need to translate it by the height of the container.
+      A common trick for this is to make the pseudo-element itself have 0 height and use a border or box-shadow for visuals,
+      or to translate it by a large fixed/viewport unit that matches the container.
+      Let's try translating it by the visual height of the card.
+      The card's effective height after rotation is its `width` property: 85vh.
+    */
+    top: 100%; /* Travel full visual height minus its own height */
   }
 }
 </style>

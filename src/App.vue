@@ -149,7 +149,9 @@ const handleSinFormSubmit = async (sinData: SinData) => {
 <template>
   <div class="app-container">
     <div class="main-content">
-      <IdCard :profileData="currentProfileData" />
+      <div class="id-card-container">
+        <IdCard :profileData="currentProfileData" />
+      </div>
       <div class="nfc-controls">
         <button type="button" @click="readTag">Read Tag</button>
         <!-- Toggle button for showing SIN Form -->
@@ -171,28 +173,67 @@ const handleSinFormSubmit = async (sinData: SinData) => {
 <style scoped>
 .app-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stack card area and controls vertically */
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Center IdCard horizontally */
+  align-items: center; /* Center IdCard vertically */
+  width: 100%;
+  position: relative; /* For potential absolute positioning of children if needed */
+}
+
+/* IdCard itself will be handled by its own styles for rotation and sizing */
+.id-card-container {
+  height: 85vh;
+  max-height: 95vh;
+  width: 100%;
+  display: flex;
   align-items: center;
-  gap: 20px;
+  overflow: hidden;
 }
 
 .sin-form-section {
   width: 100%;
-  max-width: 500px; /* Match ID card width or adjust as needed */
+  max-width: 90vw; /* Make form responsive */
+  margin-top: 20px; /* Space above the form if it's visible */
 }
 
 .nfc-controls {
-  margin-top: 20px;
+  margin-top: 20px; /* Space between card area and controls */
   display: flex;
-  flex-direction: column;
+  flex-direction: row; /* Lay out buttons side-by-side */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  justify-content: center; /* Center buttons */
   align-items: center;
   gap: 10px;
+  padding: 10px;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.3
+  ); /* Optional: slight background for controls */
+  border-radius: 8px;
+  width: auto; /* Fit content */
+  max-width: 90vw; /* Ensure controls don't get too wide */
+}
+
+.nfc-controls button {
+  flex-grow: 1; /* Allow buttons to share space */
+  min-width: 120px; /* Minimum width for readability */
+}
+
+.nfc-controls p {
+  width: 100%; /* Message takes full width of controls area */
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9em;
+  word-break: break-word;
 }
 </style>
