@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import HelloWorld from "./components/HelloWorld.vue";
 import IdCard from "./components/IdCard.vue";
+import { ShadowrunNationality } from "./components/shadowrun-flags";
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import IdCard from "./components/IdCard.vue";
   <IdCard
     :profileData="{
       name: 'Jane Smith',
-      nationality: 'German Alliance',
+      nationality: ShadowrunNationality.AUSTRIA,
       gender: 'Female',
       metatype: 'Elf',
       photo: '/vite.svg',

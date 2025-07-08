@@ -1,49 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-defineProps<{ msg: string }>()
+defineProps<{ msg: string }>();
 
-const count = ref(0)
-const message = ref('')
+const count = ref(0);
+const message = ref("");
 
 const readTag = async () => {
-  if ('NDEFReader' in window) {
-    try {
-      const ndef = new NDEFReader()
-      await ndef.scan()
-      message.value = 'Bring a tag closer to read.'
+  try {
+    const ndef = new NDEFReader();
+    await ndef.scan();
+    message.value = "Bring a tag closer to read.";
 
-      ndef.onreading = event => {
-        const decoder = new TextDecoder()
-        for (const record of event.message.records) {
-          message.value = `Record type: ${record.recordType}\n`
-          message.value += `MIME type: ${record.mediaType}\n`
-          message.value += `Data: ${decoder.decode(record.data)}\n`
-        }
+    ndef.onreading = (event) => {
+      const decoder = new TextDecoder();
+      for (const record of event.message.records) {
+        message.value = `Record type: ${record.recordType}\n`;
+        message.value += `MIME type: ${record.mediaType}\n`;
+        message.value += `Data: ${decoder.decode(record.data)}\n`;
       }
-    } catch (error) {
-      message.value = `Error: ${error}`
-    }
-  } else {
-    message.value = 'Web NFC is not supported on this browser.'
+    };
+  } catch (error) {
+    message.value = `Error: ${error}`;
   }
-}
+};
 
 const writeTag = async () => {
-  if ('NDEFReader' in window) {
-    try {
-      const ndef = new NDEFReader()
-      await ndef.write({
-        records: [{ recordType: 'text', data: 'hello world' }]
-      })
-      message.value = 'Wrote "hello world" to tag.'
-    } catch (error) {
-      message.value = `Error: ${error}`
-    }
-  } else {
-    message.value = 'Web NFC is not supported on this browser.'
+  try {
+    const ndef = new NDEFReader();
+    await ndef.write({
+      records: [{ recordType: "text", data: "hello world" }],
+    });
+    message.value = 'Wrote "hello world" to tag.';
+  } catch (error) {
+    message.value = `Error: ${error}`;
   }
-}
+};
 </script>
 
 <template>
