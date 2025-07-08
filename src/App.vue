@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import IdCard from "./components/IdCard.vue";
-import SinForm from "./components/SinForm.vue"; // Import SinForm
-import { ShadowrunNationality } from "./components/shadowrun-flags";
+import SinForm from "./components/SinForm.vue";
+import {
+  ShadowrunNationality,
+  type ShadowrunNationalityType,
+} from "./components/shadowrun-flags";
 import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes"; // Import Metatype type
 
 // Define SINData interface
 interface SinData {
   name: string;
   gender: "Male" | "Female" | "Diverse";
-  nationality: ShadowrunNationality;
+  nationality: ShadowrunNationalityType;
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
 }
@@ -103,7 +106,7 @@ const readTag = async () => {
   }
 };
 
-const writeTag = async () => {
+async () => {
   if (!("NDEFReader" in window)) {
     message.value =
       "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
