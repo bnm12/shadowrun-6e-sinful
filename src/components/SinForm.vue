@@ -115,13 +115,24 @@
       </div>
       <!-- End Licenses Section -->
 
-      <button type="submit">Write to Tag</button>
+      <div class="form-submission-area">
+        <button type="submit" :disabled="props.isWriting">
+          <span v-if="props.isWriting">Writing...</span>
+          <span v-else>Write to Tag</span>
+        </button>
+        <p
+          v-if="props.writeStatusMessage"
+          :class="['status-message', props.writeStatusMessageType]"
+        >
+          {{ props.writeStatusMessage }}
+        </p>
+      </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive, ref, computed } from "vue";
 import {
   ShadowrunNationality,
   getAllNationalities,
@@ -147,6 +158,13 @@ interface SinFormData {
   sinQuality: SinQualityValue; // Use SinQualityValue type
   licenses: Record<string, SinQualityValue>; // Licenses
 }
+
+// Props received from App.vue
+const props = defineProps<{
+  isWriting: boolean;
+  writeStatusMessage: string;
+  writeStatusMessageType: "success" | "error" | "";
+}>();
 
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
@@ -345,5 +363,39 @@ button[type="submit"]:hover {
 }
 .delete-button:hover {
   background-color: #ff6969;
+}
+
+.form-submission-area {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-submission-area button {
+  min-width: 150px; /* Give button a decent width */
+}
+
+.status-message {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  width: 100%;
+  max-width: 400px; /* Or adjust as needed */
+  box-sizing: border-box;
+}
+
+.status-message.success {
+  background-color: #28a745; /* Green background */
+  color: #ffffff; /* White text */
+  border: 1px solid #1e7e34;
+}
+
+.status-message.error {
+  background-color: #dc3545; /* Red background */
+  color: #ffffff; /* White text */
+  border: 1px solid #b21f2d;
 }
 </style>
