@@ -233,24 +233,16 @@ const props = withDefaults(defineProps<Props>(), {
   }),
 });
 
-// Seeded random number generator function
-const seededRandom = (seedStr: string | undefined) => {
-  if (!seedStr) {
-    return Math.random; // Fallback to Math.random if no seed
-  }
-  let seed = 0;
-  for (let i = 0; i < seedStr.length; i++) {
-    seed = (seed + seedStr.charCodeAt(i)) % 2147483647; // Simple hashing
-  }
-  return () => {
-    seed = (seed * 16807) % 2147483647; // LCG parameters
-    return (seed - 1) / 2147483646; // Normalize to [0, 1)
-  };
-};
+import { Rand } from "rand-seed";
 
 const getRandomBarcodeWidth = () => {
-  const random = seededRandom(props.profileData.sinId);
-  return Math.floor(random() * 3) + 1; // Generates 1, 2, or 3
+  if (props.profileData.sinId) {
+    const rand = new Rand(props.profileData.sinId);
+    return Math.floor(rand.next() * 3) + 1; // Generates 1, 2, or 3
+  } else {
+    // Fallback for when sinId is not available (e.g. initial state)
+    return Math.floor(Math.random() * 3) + 1;
+  }
 };
 
 const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
