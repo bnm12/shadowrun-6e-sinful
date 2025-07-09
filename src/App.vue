@@ -233,7 +233,7 @@ onBeforeUnmount(() => {
     <!-- Landing View -->
     <div v-if="currentView === 'landing'" class="landing-view main-content">
       <h1 class="landing-headline glitch-text" data-text="SINful">SINful</h1>
-      <img src="/sin-check-logo.png" alt="SIN Check Logo" class="logo" />
+      <div class="logo"></div>
       <div class="navigation-buttons">
         <div @click="setView('sin-check')" class="navigation-button">
           <div class="glitch-text" data-text="SIN Check">SIN Check</div>
@@ -400,7 +400,11 @@ onBeforeUnmount(() => {
 }
 
 .logo {
-  width: auto;
+  background-image: url("/sin-check-logo.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
   height: 50dvh;
   flex-grow: 1;
 }
