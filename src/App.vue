@@ -18,6 +18,7 @@ interface SinData {
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
   sinQuality: SinQualityValue; // Use the new SinQualityValue type
+  licenses?: Record<string, SinQualityValue>; // Optional licenses
 }
 
 const message = ref("");
@@ -33,6 +34,7 @@ const currentProfileData = ref<any>({
   idc: "R-000000000 - 000000000 - 000000000 - 00",
   additionalCode: "<<< WAITING FOR SCAN >>>",
   sinQuality: SinQuality.LEVEL_3, // Default SinQuality.LEVEL_3
+  licenses: {}, // Initialize licenses
 });
 
 const readTag = async () => {
@@ -71,7 +73,8 @@ const readTag = async () => {
               gender: parsedSinData.gender,
               metatype: parsedSinData.metatype,
               photo: parsedSinData.imageUrl || "/blank-profile-picture.svg",
-              sinQuality: parsedSinData.sinQuality || 3, // Use parsed or default
+              sinQuality: parsedSinData.sinQuality || SinQuality.LEVEL_1, // Use parsed or default
+              licenses: parsedSinData.licenses || {}, // Parse licenses
               systemId: "#ACTIVE#", // Indicate active scan
               idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
                 .toString()
