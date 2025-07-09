@@ -3,9 +3,15 @@
     <div class="card-header">
       <div class="header-tabs">
         <div
-          v-for="qualityTab in sinQualitiesList"
+          v-for="qualityTab in sinQualitiesList.filter(
+            (sq) => sq.value <= profileData.sinQuality
+          )"
           :key="`quality-tab-${qualityTab.value}`"
-          :class="['tab', 'quality-tab-item', { active: activeTab === qualityTab.value }]"
+          :class="[
+            'tab',
+            'quality-tab-item',
+            { active: activeTab === qualityTab.value },
+          ]"
           @click="selectTab(qualityTab.value)"
         >
           {{ qualityTab.title }}
@@ -22,11 +28,23 @@
 
     <div class="card-content">
       <!-- Licenses Display Section -->
-      <div v-if="activeTab === 'licenses'" class="licenses-display-section tab-content-section">
+      <div
+        v-if="activeTab === 'licenses'"
+        class="licenses-display-section tab-content-section"
+      >
         <h4>Licenses on Record</h4>
-        <ul v-if="profileData.licenses && Object.keys(profileData.licenses).length > 0" class="licenses-list-display">
+        <ul
+          v-if="
+            profileData.licenses && Object.keys(profileData.licenses).length > 0
+          "
+          class="licenses-list-display"
+        >
           <li v-for="(quality, name) in profileData.licenses" :key="name">
-            <span class="license-name">{{ name }}</span>: <span class="license-quality">{{ getSinQualityTextById(quality) }}</span>
+            <span class="license-name">{{ name }}</span
+            >:
+            <span class="license-quality">{{
+              getSinQualityTextById(quality)
+            }}</span>
           </li>
         </ul>
         <p v-else class="no-licenses-message">No licenses on record.</p>
@@ -36,91 +54,123 @@
       <template v-if="activeTab === SinQuality.LEVEL_1">
         <div class="left-section tab-content-section">
           <div class="photo-section">
-          <div class="photo-container">
-            <img
-              :src="profileData.photo"
-              :alt="profileData.name"
-              class="profile-photo"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="right-section tab-content-section" v-if="activeTab === SinQuality.LEVEL_1">
-        <div class="top-right-section">
-          <div class="barcode">
-            <div class="barcode-lines">
-              <div
-                v-for="n in 45"
-                :key="n"
-                class="barcode-line"
-                :data-barcode-width="
-                  Math.floor(Math.random() * (3 - 1 + 1) + 1)
-                "
-              ></div>
+            <div class="photo-container">
+              <img
+                :src="profileData.photo"
+                :alt="profileData.name"
+                class="profile-photo"
+              />
             </div>
-          </div>
-          <div class="flag-container">
-            <div class="flag" :style="{ background: getFlagColors() }"></div>
           </div>
         </div>
 
-        <div class="info-section">
-          <span class="name">{{ profileData.name }}</span>
-          <div class="details">
-            <div class="detail-row">
-              <span class="label">Nationality</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{ profileData.nationality }}</span>
+        <div
+          class="right-section tab-content-section"
+          v-if="activeTab === SinQuality.LEVEL_1"
+        >
+          <div class="top-right-section">
+            <div class="barcode">
+              <div class="barcode-lines">
+                <div
+                  v-for="n in 45"
+                  :key="n"
+                  class="barcode-line"
+                  :data-barcode-width="
+                    Math.floor(Math.random() * (3 - 1 + 1) + 1)
+                  "
+                ></div>
+              </div>
             </div>
-            <div class="detail-row">
-              <span class="label">Gender</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{ profileData.gender }}</span>
+            <div class="flag-container">
+              <div class="flag" :style="{ background: getFlagColors() }"></div>
             </div>
-            <div class="detail-row">
-              <span class="label">Metatype</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{ profileData.metatype }}</span>
+          </div>
+
+          <div class="info-section">
+            <span class="name">{{ profileData.name }}</span>
+            <div class="details">
+              <div class="detail-row">
+                <span class="label">Nationality</span>
+                <span class="label-colon">:</span>
+                <span class="value">{{ profileData.nationality }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Gender</span>
+                <span class="label-colon">:</span>
+                <span class="value">{{ profileData.gender }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Metatype</span>
+                <span class="label-colon">:</span>
+                <span class="value">{{ profileData.metatype }}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </template>
 
       <!-- Placeholder for Identity Info -->
-      <div v-if="activeTab === SinQuality.LEVEL_2" class="tab-content-section placeholder-content">
+      <div
+        v-if="activeTab === SinQuality.LEVEL_2"
+        class="tab-content-section placeholder-content"
+      >
         <h4>Identity Information</h4>
         <p>Detailed identity records will be displayed here.</p>
-        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_2) }}</p>
+        <p>
+          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_2) }}
+        </p>
       </div>
 
       <!-- Placeholder for Physical Info -->
-      <div v-if="activeTab === SinQuality.LEVEL_3" class="tab-content-section placeholder-content">
+      <div
+        v-if="activeTab === SinQuality.LEVEL_3"
+        class="tab-content-section placeholder-content"
+      >
         <h4>Physical Characteristics</h4>
         <p>Biometric data and physical descriptors will be displayed here.</p>
-        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_3) }}</p>
+        <p>
+          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_3) }}
+        </p>
       </div>
 
       <!-- Placeholder for Medical Info -->
-      <div v-if="activeTab === SinQuality.LEVEL_4" class="tab-content-section placeholder-content">
+      <div
+        v-if="activeTab === SinQuality.LEVEL_4"
+        class="tab-content-section placeholder-content"
+      >
         <h4>Medical Records</h4>
-        <p>Comprehensive medical history and conditions will be displayed here.</p>
-        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_4) }}</p>
+        <p>
+          Comprehensive medical history and conditions will be displayed here.
+        </p>
+        <p>
+          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_4) }}
+        </p>
       </div>
 
       <!-- Placeholder for Employment Info -->
-      <div v-if="activeTab === SinQuality.LEVEL_5" class="tab-content-section placeholder-content">
+      <div
+        v-if="activeTab === SinQuality.LEVEL_5"
+        class="tab-content-section placeholder-content"
+      >
         <h4>Employment History</h4>
-        <p>Official employment records and affiliations will be displayed here.</p>
-        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_5) }}</p>
+        <p>
+          Official employment records and affiliations will be displayed here.
+        </p>
+        <p>
+          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_5) }}
+        </p>
       </div>
 
       <!-- Placeholder for Genetic Info -->
-      <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section placeholder-content">
+      <div
+        v-if="activeTab === SinQuality.LEVEL_6"
+        class="tab-content-section placeholder-content"
+      >
         <h4>Genetic Markers</h4>
         <p>Genetic data and heritage information will be displayed here.</p>
-        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_6) }}</p>
+        <p>
+          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_6) }}
+        </p>
       </div>
     </div>
 
@@ -137,14 +187,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'; // Removed computed as effectiveSinQuality is removed
+import { ref } from "vue"; // Removed computed as effectiveSinQuality is removed
 import {
   ShadowrunNationality,
   getFlagCSS,
   type ShadowrunNationalityType,
 } from "./shadowrun-flags";
 // Removed getSinQualityFlair from this import
-import { SinQuality, type SinQualityValue, getAllSinQualities } from "./sin-quality";
+import {
+  SinQuality,
+  type SinQualityValue,
+  getAllSinQualities,
+} from "./sin-quality";
 
 interface ProfileData {
   name: string;
@@ -179,16 +233,16 @@ const props = withDefaults(defineProps<Props>(), {
   }),
 });
 
-const activeTab = ref<SinQualityValue | 'licenses'>(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
+const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
 const sinQualitiesList = getAllSinQualities();
 
 // The function `getSinQualityTextById` is used in the template to get the flair text.
 const getSinQualityTextById = (qualityValue: SinQualityValue): string => {
-  const quality = sinQualitiesList.find(q => q.value === qualityValue);
-  return quality ? quality.text : 'Unknown Quality';
+  const quality = sinQualitiesList.find((q) => q.value === qualityValue);
+  return quality ? quality.text : "Unknown Quality";
 };
 
-const selectTab = (tabIdentifier: SinQualityValue | 'licenses') => {
+const selectTab = (tabIdentifier: SinQualityValue | "licenses") => {
   activeTab.value = tabIdentifier;
 };
 
@@ -228,6 +282,7 @@ const getFlagColors = (): string => {
 /* Ensure pseudo-elements rotate with the card if they are positioned relative to it */
 .id-card::before,
 .id-card::after {
+  pointer-events: none;
   /* transform-origin might need to be adjusted if they look off */
 }
 
@@ -312,12 +367,11 @@ const getFlagColors = (): string => {
 
 /* Specific styling for when left and right sections are visible for Basic Info */
 .card-content > .left-section.tab-content-section {
-    width: 30%; /* Restore original width */
+  width: 30%; /* Restore original width */
 }
 .card-content > .right-section.tab-content-section {
-    width: 66%; /* Restore original width */
+  width: 66%; /* Restore original width */
 }
-
 
 .placeholder-content h4 {
   color: #4a9eff;
