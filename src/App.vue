@@ -409,12 +409,6 @@ onBeforeUnmount(() => {
   flex-grow: 1;
 }
 
-.landing-view h1 {
-  font-size: 2em;
-  color: #4a9eff;
-  margin-bottom: 30px;
-}
-
 .navigation-buttons {
   display: flex;
   flex-direction: row;
