@@ -190,8 +190,8 @@ const handleSinFormSubmit = async (sinData: SinData) => {
 
 /* IdCard itself will be handled by its own styles for rotation and sizing */
 .id-card-container {
-  height: 85vh;
-  max-height: 95vh;
+  height: 80vh;
+  max-height: 80vh;
   width: 100%;
   display: flex;
   align-items: center;
