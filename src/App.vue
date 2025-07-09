@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {

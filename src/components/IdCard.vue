@@ -2,19 +2,21 @@
   <div class="id-card">
     <div class="card-header">
       <div class="header-tabs">
-        <div
-          v-for="qualityTab in sinQualitiesList.filter(
-            (sq) => sq.value <= profileData.sinQuality
-          )"
-          :key="`quality-tab-${qualityTab.value}`"
-          :class="[
-            'tab',
-            'quality-tab-item',
-            { active: activeTab === qualityTab.value },
-          ]"
-          @click="selectTab(qualityTab.value)"
-        >
-          {{ qualityTab.title }}
+        <div class="quality-tabs">
+          <div
+            v-for="qualityTab in sinQualitiesList.filter(
+              (sq) => sq.value <= profileData.sinQuality
+            )"
+            :key="`quality-tab-${qualityTab.value}`"
+            :class="[
+              'tab',
+              'quality-tab-item',
+              { active: activeTab === qualityTab.value },
+            ]"
+            @click="selectTab(qualityTab.value)"
+          >
+            {{ qualityTab.title }}
+          </div>
         </div>
         <div
           class="tab licenses-tab"
@@ -277,6 +279,7 @@ const getFlagColors = (): string => {
   flex-shrink: 0;
   height: 95vw;
   width: 80vh;
+  gap: 3%;
 }
 
 /* Ensure pseudo-elements rotate with the card if they are positioned relative to it */
@@ -287,30 +290,37 @@ const getFlagColors = (): string => {
 }
 
 .card-header {
-  height: 6%; /* Relative height */
+  height: 8%; /* Relative height */
   background: linear-gradient(to right, #4a9eff, #6ab7ff);
   display: flex;
   align-items: center;
-  padding: 0 2%; /* Relative padding */
+  padding: 0 2px;
 }
 
 .header-tabs {
   display: flex;
-  gap: 1%; /* Relative gap */
   height: 100%;
   width: 100%;
   align-items: center;
+  justify-content: space-between;
   position: relative; /* Ensure it creates a stacking context */
-  z-index: 2; /* Above pseudo-elements */
+}
+
+.quality-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1%; /* Relative gap */
+  height: 100%;
+  width: 100%;
 }
 
 .tab {
-  /* width: 6%; */ /* Let flexbox determine width based on content or flex properties */
   height: 70%; /* Relative to header height, increased slightly */
   background: rgba(255, 255, 255, 0.3);
   border-radius: 3px 3px 0 0; /* Rounded top corners */
   padding: 0 10px; /* Add horizontal padding */
   display: flex;
+  flex-shrink: 1;
   align-items: center;
   justify-content: center;
   font-size: 0.6em; /* Adjusted font size for titles */
@@ -319,6 +329,7 @@ const getFlagColors = (): string => {
   white-space: nowrap;
   border-bottom: 2px solid transparent; /* For active state indication */
   transition: background-color 0.3s, border-color 0.3s;
+  max-width: 14.5%;
 }
 
 .tab:hover {
@@ -332,24 +343,9 @@ const getFlagColors = (): string => {
   font-weight: bold;
 }
 
-.quality-tab-item {
-  /* Specific styles for quality tabs if needed, e.g., flex-grow */
-  flex-grow: 1; /* Allow quality tabs to share space */
-  text-align: center;
-}
-
-.tab.licenses-tab {
-  margin-left: auto; /* Right-align the licenses tab */
-  /* width: auto; */ /* Already handled by flex properties */
-  min-width: 15%; /* Ensure it has some minimum width, adjusted */
-  flex-grow: 0; /* Don't let licenses tab grow as much as others */
-  flex-shrink: 0; /* Prevent shrinking too much */
-}
-
 .card-content {
   display: flex;
   /* flex-direction: column; */ /* Ensure sections stack if not side-by-side */
-  padding: 3%; /* Relative padding */
   gap: 4%; /* Relative gap */
   flex-grow: 1;
   overflow-y: auto; /* Allow scrolling if content overflows */
