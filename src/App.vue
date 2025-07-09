@@ -170,10 +170,9 @@ const handleSinFormSubmit = async (sinData: SinData) => {
         <!-- <button type="button" @click="writeTag">Write Generic Tag</button> -->
         <p v-if="message">{{ message }}</p>
       </div>
-    </div>
-
-    <div v-if="showSinForm" class="sin-form-section">
-      <SinForm @submitSinData="handleSinFormSubmit" />
+      <div v-if="showSinForm" class="sin-form-section">
+        <SinForm @submitSinData="handleSinFormSubmit" />
+      </div>
     </div>
   </div>
 </template>
@@ -185,14 +184,18 @@ const handleSinFormSubmit = async (sinData: SinData) => {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  height: 100%;
+  width: 100%;
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center IdCard horizontally */
+  justify-content: stretch; /* Center IdCard horizontally */
   align-items: center; /* Center IdCard vertically */
+  gap: 40px;
   width: 100%;
+  height: 100%;
   position: relative; /* For potential absolute positioning of children if needed */
 }
 
@@ -210,18 +213,15 @@ const handleSinFormSubmit = async (sinData: SinData) => {
 .sin-form-section {
   width: 100%;
   max-width: 90vw; /* Make form responsive */
-  margin-top: 20px; /* Space above the form if it's visible */
 }
 
 .nfc-controls {
-  margin-top: 20px; /* Space between card area and controls */
   display: flex;
   flex-direction: row; /* Lay out buttons side-by-side */
   flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
   justify-content: center; /* Center buttons */
   align-items: center;
   gap: 10px;
-  padding: 10px;
   background-color: rgba(
     0,
     0,
