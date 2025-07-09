@@ -7,7 +7,8 @@ import {
   type ShadowrunNationalityType,
 } from "./components/shadowrun-flags";
 import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes"; // Import Metatype type
-import type { SinQuality } from "./components/sin-quality"; // Import SinQuality type
+// Import SinQualityValue type and SinQuality value
+import { type SinQualityValue, SinQuality } from "./components/sin-quality";
 
 // Define SINData interface
 interface SinData {
@@ -16,7 +17,7 @@ interface SinData {
   nationality: ShadowrunNationalityType;
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
-  sinQuality: SinQuality; // Added SIN Quality
+  sinQuality: SinQualityValue; // Use the new SinQualityValue type
 }
 
 const message = ref("");
@@ -31,7 +32,7 @@ const currentProfileData = ref<any>({
   systemId: "#STANDBY#",
   idc: "R-000000000 - 000000000 - 000000000 - 00",
   additionalCode: "<<< WAITING FOR SCAN >>>",
-  sinQuality: 3, // Default SinQuality.LEVEL_3
+  sinQuality: SinQuality.LEVEL_3, // Default SinQuality.LEVEL_3
 });
 
 const readTag = async () => {

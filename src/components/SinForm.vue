@@ -84,6 +84,7 @@ import {
 import {
   SinQuality,
   getAllSinQualities,
+  type SinQualityValue, // Import the type
 } from "./sin-quality";
 
 interface SinFormData {
@@ -92,7 +93,7 @@ interface SinFormData {
   nationality: ShadowrunNationalityType;
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
-  sinQuality: SinQuality;
+  sinQuality: SinQualityValue; // Use SinQualityValue type
 }
 
 const nationalities = getAllNationalities();
