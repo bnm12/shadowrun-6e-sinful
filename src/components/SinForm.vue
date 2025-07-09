@@ -1,6 +1,5 @@
 <template>
   <div class="sin-form-container">
-    <h2>Create SIN Data</h2>
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="name">Name:</label>

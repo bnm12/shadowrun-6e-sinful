@@ -656,17 +656,22 @@ const getFlagColors = (): string => {
   left: 0;
   right: 0;
   height: 2px; /* Thickness of the scan line */
-  background: linear-gradient(90deg, transparent, #00ffff, transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 20, 147, 0.5),
+    transparent
+  );
   animation: scan 3s linear infinite;
   z-index: 1; /* Ensure it's above other content if necessary */
 }
 
 @keyframes scan {
   0% {
-    top: 0;
+    top: calc(0 - 2px);
   }
   100% {
-    top: 100%;
+    top: calc(100% + 2px);
   }
 }
 </style>

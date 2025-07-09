@@ -267,6 +267,9 @@ onBeforeUnmount(() => {
       v-else-if="currentView === 'create-sin'"
       class="create-sin-view main-content"
     >
+      <div class="create-sin-heading glitch-text" data-text="Create your SIN">
+        Create your SIN
+      </div>
       <div class="sin-form-section">
         <SinForm
           @submitSinData="handleSinFormSubmit"
@@ -296,26 +299,18 @@ onBeforeUnmount(() => {
   background-color: #1a2332; /* Consistent background */
   color: #00ffff; /* Default text color */
   overflow-y: auto;
+  padding: 10px;
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
+  justify-content: space-between; /* Center content vertically */
   align-items: center;
   gap: 10px;
   width: 100%;
   height: 100%;
   text-align: center; /* Center text elements like h1 */
-}
-
-.main-content.create-sin-view {
-  padding: 10px;
-}
-
-/* Landing View Specific Styles */
-.landing-view {
-  justify-content: center; /* Center vertically */
 }
 
 .landing-view .landing-headline {
@@ -410,7 +405,7 @@ onBeforeUnmount(() => {
 .logo {
   width: auto;
   height: 50dvh;
-  margin-bottom: 20px;
+  flex-grow: 1;
 }
 
 .landing-view h1 {
@@ -457,6 +452,10 @@ onBeforeUnmount(() => {
   color: #00ffff;
   font-size: 0.9em;
   text-align: center;
+}
+
+.create-sin-view .create-sin-heading {
+  font-size: 2em;
 }
 
 /* Create SIN View Specific Styles */
