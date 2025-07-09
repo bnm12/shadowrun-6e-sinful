@@ -20,13 +20,31 @@ export const SinQualityFlairMap = {
   [SinQuality.LEVEL_6]: "6 - Unquestionable",
 } as Record<SinQualityValue, string>;
 
+// Titles for each SIN Quality level
+export const SinQualityTitleMap = {
+  [SinQuality.LEVEL_1]: "Basic",
+  [SinQuality.LEVEL_2]: "Identity",
+  [SinQuality.LEVEL_3]: "Physical",
+  [SinQuality.LEVEL_4]: "Medical",
+  [SinQuality.LEVEL_5]: "Employment",
+  [SinQuality.LEVEL_6]: "Genetic",
+} as Record<SinQualityValue, string>;
+
 export function getSinQualityFlair(quality: SinQualityValue): string {
   return SinQualityFlairMap[quality] || "Unknown Quality";
 }
 
-export function getAllSinQualities(): { value: SinQualityValue; text: string }[] {
-  return Object.entries(SinQualityFlairMap).map(([valueStr, text]) => ({
-    value: Number(valueStr) as SinQualityValue,
-    text,
-  }));
+export function getSinQualityTitle(quality: SinQualityValue): string {
+  return SinQualityTitleMap[quality] || "Unknown Title";
+}
+
+export function getAllSinQualities(): { value: SinQualityValue; text: string; title: string }[] {
+  return Object.entries(SinQualityFlairMap).map(([valueStr, text]) => {
+    const value = Number(valueStr) as SinQualityValue;
+    return {
+      value,
+      text,
+      title: SinQualityTitleMap[value] || "Unknown Title",
+    };
+  });
 }

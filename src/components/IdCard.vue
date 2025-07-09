@@ -3,12 +3,12 @@
     <div class="card-header">
       <div class="header-tabs">
         <div
-          v-for="index in effectiveSinQuality"
-          :key="`quality-tab-${index}`"
-          :class="['tab', { active: activeTab === index }]"
-          @click="selectTab(index)"
+          v-for="qualityTab in sinQualitiesList"
+          :key="`quality-tab-${qualityTab.value}`"
+          :class="['tab', 'quality-tab-item', { active: activeTab === qualityTab.value }]"
+          @click="selectTab(qualityTab.value)"
         >
-          <!-- {{ index }} -->
+          {{ qualityTab.title }}
         </div>
         <div
           class="tab licenses-tab"
@@ -22,7 +22,7 @@
 
     <div class="card-content">
       <!-- Licenses Display Section -->
-      <div v-if="activeTab === 'licenses'" class="licenses-display-section">
+      <div v-if="activeTab === 'licenses'" class="licenses-display-section tab-content-section">
         <h4>Licenses on Record</h4>
         <ul v-if="profileData.licenses && Object.keys(profileData.licenses).length > 0" class="licenses-list-display">
           <li v-for="(quality, name) in profileData.licenses" :key="name">
@@ -32,9 +32,9 @@
         <p v-else class="no-licenses-message">No licenses on record.</p>
       </div>
 
-      <!-- Original Content (shown when licenses tab is not active) -->
-      <template v-else>
-        <div class="left-section">
+      <!-- Basic Info (Original Content) -->
+      <template v-if="activeTab === SinQuality.LEVEL_1">
+        <div class="left-section tab-content-section">
           <div class="photo-section">
           <div class="photo-container">
             <img
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div class="right-section">
+      <div class="right-section tab-content-section" v-if="activeTab === SinQuality.LEVEL_1">
         <div class="top-right-section">
           <div class="barcode">
             <div class="barcode-lines">
@@ -85,8 +85,43 @@
             </div>
           </div>
         </div>
-      </div> <!-- Closing right-section -->
+      </div>
       </template>
+
+      <!-- Placeholder for Identity Info -->
+      <div v-if="activeTab === SinQuality.LEVEL_2" class="tab-content-section placeholder-content">
+        <h4>Identity Information</h4>
+        <p>Detailed identity records will be displayed here.</p>
+        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_2) }}</p>
+      </div>
+
+      <!-- Placeholder for Physical Info -->
+      <div v-if="activeTab === SinQuality.LEVEL_3" class="tab-content-section placeholder-content">
+        <h4>Physical Characteristics</h4>
+        <p>Biometric data and physical descriptors will be displayed here.</p>
+        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_3) }}</p>
+      </div>
+
+      <!-- Placeholder for Medical Info -->
+      <div v-if="activeTab === SinQuality.LEVEL_4" class="tab-content-section placeholder-content">
+        <h4>Medical Records</h4>
+        <p>Comprehensive medical history and conditions will be displayed here.</p>
+        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_4) }}</p>
+      </div>
+
+      <!-- Placeholder for Employment Info -->
+      <div v-if="activeTab === SinQuality.LEVEL_5" class="tab-content-section placeholder-content">
+        <h4>Employment History</h4>
+        <p>Official employment records and affiliations will be displayed here.</p>
+        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_5) }}</p>
+      </div>
+
+      <!-- Placeholder for Genetic Info -->
+      <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section placeholder-content">
+        <h4>Genetic Markers</h4>
+        <p>Genetic data and heritage information will be displayed here.</p>
+        <p>SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_6) }}</p>
+      </div>
     </div>
 
     <div class="system-info">
@@ -102,13 +137,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue'; // Removed computed as effectiveSinQuality is removed
 import {
   ShadowrunNationality,
   getFlagCSS,
   type ShadowrunNationalityType,
 } from "./shadowrun-flags";
-import { SinQuality, type SinQualityValue, getAllSinQualities } from "./sin-quality"; // Import value and type
+// Removed getSinQualityFlair from this import
+import { SinQuality, type SinQualityValue, getAllSinQualities } from "./sin-quality";
 
 interface ProfileData {
   name: string;
@@ -143,26 +179,21 @@ const props = withDefaults(defineProps<Props>(), {
   }),
 });
 
-const activeTab = ref<string | number>(1); // 'licenses' or quality tab index
+const activeTab = ref<SinQualityValue | 'licenses'>(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
 const sinQualitiesList = getAllSinQualities();
 
+// The function `getSinQualityTextById` is used in the template to get the flair text.
 const getSinQualityTextById = (qualityValue: SinQualityValue): string => {
   const quality = sinQualitiesList.find(q => q.value === qualityValue);
   return quality ? quality.text : 'Unknown Quality';
 };
 
-const selectTab = (tabIdentifier: string | number) => {
+const selectTab = (tabIdentifier: SinQualityValue | 'licenses') => {
   activeTab.value = tabIdentifier;
 };
 
-const effectiveSinQuality = computed(() => {
-  const quality = props.profileData.sinQuality;
-  // Ensure quality is within the valid enum range 1-6, default to 1
-  if (quality >= SinQuality.LEVEL_1 && quality <= SinQuality.LEVEL_6) {
-    return quality;
-  }
-  return SinQuality.LEVEL_1;
-});
+// effectiveSinQuality computed property is removed as it's no longer directly used for rendering tabs.
+// The main sinQuality from props.profileData.sinQuality is still available if needed for other logic.
 
 // Function to get flag colors based on nationality or manual override
 const getFlagColors = (): string => {
@@ -219,41 +250,90 @@ const getFlagColors = (): string => {
 }
 
 .tab {
-  width: 6%; /* Relative width */
-  height: 60%; /* Relative to header height */
+  /* width: 6%; */ /* Let flexbox determine width based on content or flex properties */
+  height: 70%; /* Relative to header height, increased slightly */
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
+  border-radius: 3px 3px 0 0; /* Rounded top corners */
+  padding: 0 10px; /* Add horizontal padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6em; /* Adjusted font size for titles */
+  color: #1a2332; /* Darker text for contrast on light tabs */
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent; /* For active state indication */
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .tab.active {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
+  color: #007bff; /* Highlight active tab text */
+  border-bottom: 2px solid #007bff; /* Active tab underline */
+  font-weight: bold;
+}
+
+.quality-tab-item {
+  /* Specific styles for quality tabs if needed, e.g., flex-grow */
+  flex-grow: 1; /* Allow quality tabs to share space */
+  text-align: center;
 }
 
 .tab.licenses-tab {
   margin-left: auto; /* Right-align the licenses tab */
-  width: auto; /* Adjust width to fit content */
-  min-width: 10%; /* Ensure it has some minimum width */
-  font-size: 0.65em; /* Further adjust font size to fit "Licenses" */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 8px; /* Add some padding */
-  white-space: nowrap; /* Prevent text wrapping */
-  cursor: pointer; /* Make it look clickable */
+  /* width: auto; */ /* Already handled by flex properties */
+  min-width: 15%; /* Ensure it has some minimum width, adjusted */
+  flex-grow: 0; /* Don't let licenses tab grow as much as others */
+  flex-shrink: 0; /* Prevent shrinking too much */
 }
 
 .card-content {
   display: flex;
+  /* flex-direction: column; */ /* Ensure sections stack if not side-by-side */
   padding: 3%; /* Relative padding */
   gap: 4%; /* Relative gap */
   flex-grow: 1;
   overflow-y: auto; /* Allow scrolling if content overflows */
+  /* background-color: rgba(0,0,0,0.1); */ /* For debugging layout */
+}
+
+.tab-content-section {
+  width: 100%; /* Each section takes full width */
+  padding: 15px;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 4px;
+  background-color: rgba(0, 255, 255, 0.03);
+  color: #00ffff; /* Default text color for content sections */
+}
+
+/* Specific styling for when left and right sections are visible for Basic Info */
+.card-content > .left-section.tab-content-section {
+    width: 30%; /* Restore original width */
+}
+.card-content > .right-section.tab-content-section {
+    width: 66%; /* Restore original width */
+}
+
+
+.placeholder-content h4 {
+  color: #4a9eff;
+  margin-bottom: 10px;
+}
+
+.placeholder-content p {
+  font-size: clamp(0.7em, 2vh, 1em);
+  line-height: 1.6;
+  margin-bottom: 8px;
 }
 
 .licenses-display-section {
-  width: 100%;
-  padding: 10px;
-  color: #00ffff;
+  /* width: 100%; */ /* Covered by tab-content-section */
+  /* padding: 10px; */ /* Covered by tab-content-section */
+  /* color: #00ffff; */ /* Covered by tab-content-section */
 }
 
 .licenses-display-section h4 {
