@@ -134,9 +134,10 @@ const getFlagColors = (): string => {
   box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
   display: flex;
   flex-direction: column;
-  /*transform: rotate(90deg);
-  transform-origin: center center;*/
-  aspect-ratio: 4 / 2.5;
+  transform: rotate(90deg);
+  transform-origin: center center;
+  flex-shrink: 0;
+  height: 95vw;
 }
 
 /* Ensure pseudo-elements rotate with the card if they are positioned relative to it */
