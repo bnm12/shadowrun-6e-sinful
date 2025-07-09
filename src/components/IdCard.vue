@@ -384,12 +384,6 @@ const getFlagColors = (): string => {
   margin-bottom: 8px;
 }
 
-.licenses-display-section {
-  /* width: 100%; */ /* Covered by tab-content-section */
-  /* padding: 10px; */ /* Covered by tab-content-section */
-  /* color: #00ffff; */ /* Covered by tab-content-section */
-}
-
 .licenses-display-section h4 {
   color: #4a9eff;
   margin-bottom: 10px;
@@ -431,10 +425,12 @@ const getFlagColors = (): string => {
 
 .photo-section {
   width: 100%;
+  height: 100%;
 }
 
 .photo-container {
   width: 100%;
+  height: 100%;
   aspect-ratio: 150 / 170; /* Maintain original aspect ratio */
   border: 2px solid #00ffff;
   border-radius: 4px;
