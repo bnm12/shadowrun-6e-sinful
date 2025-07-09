@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
@@ -158,6 +158,10 @@ const handleSinFormSubmit = async (sinData: SinData) => {
     message.value = `Error writing SIN data: ${error}`;
   }
 };
+
+onMounted(() => {
+  readTag();
+});
 </script>
 
 <template>
@@ -167,7 +171,6 @@ const handleSinFormSubmit = async (sinData: SinData) => {
         <IdCard :profileData="currentProfileData" />
       </div>
       <div class="nfc-controls">
-        <button type="button" @click="readTag">Read Tag</button>
         <!-- Toggle button for showing SIN Form -->
         <button type="button" @click="showSinForm = !showSinForm">
           {{ showSinForm ? "Hide SIN Form" : "Create new SIN" }}
