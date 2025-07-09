@@ -77,9 +77,7 @@
                   v-for="n in 45"
                   :key="n"
                   class="barcode-line"
-                  :data-barcode-width="
-                    Math.floor(Math.random() * (3 - 1 + 1) + 1)
-                  "
+                  :data-barcode-width="getRandomBarcodeWidth()"
                 ></div>
               </div>
             </div>
@@ -214,6 +212,7 @@ interface ProfileData {
   flagColors?: string; // Optional manual override
   sinQuality: SinQualityValue; // Use SinQualityValue type
   licenses?: Record<string, SinQualityValue>; // Optional licenses
+  sinId?: string; // Add sinId to ProfileData
 }
 
 interface Props {
@@ -232,8 +231,21 @@ const props = withDefaults(defineProps<Props>(), {
     additionalCode: "<<< 85478516/GTR/22145 >>> SIN ID",
     sinQuality: SinQuality.LEVEL_1, // Default SIN quality to LEVEL_1
     licenses: {}, // Default licenses
+    sinId: undefined, // Default sinId
   }),
 });
+
+import { Rand } from "rand-seed";
+
+const getRandomBarcodeWidth = () => {
+  if (props.profileData.sinId) {
+    const rand = new Rand(props.profileData.sinId);
+    return Math.floor(rand.next() * 3) + 1; // Generates 1, 2, or 3
+  } else {
+    // Fallback for when sinId is not available (e.g. initial state)
+    return Math.floor(Math.random() * 3) + 1;
+  }
+};
 
 const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
 const sinQualitiesList = getAllSinQualities();
