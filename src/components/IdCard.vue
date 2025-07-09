@@ -365,16 +365,16 @@ const getFlagColors = (): string => {
 
 .card-content {
   display: flex;
-  /* flex-direction: column; */ /* Ensure sections stack if not side-by-side */
-  gap: 4%; /* Relative gap */
+  gap: 10px;
   flex-grow: 1;
-  overflow-y: auto; /* Allow scrolling if content overflows */
-  /* background-color: rgba(0,0,0,0.1); */ /* For debugging layout */
+  overflow-y: auto;
+  justify-content: space-around;
+  padding: 0 10px;
 }
 
 .tab-content-section {
   width: 100%; /* Each section takes full width */
-  padding: 15px;
+  padding: 5px;
   border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: 4px;
   background-color: rgba(0, 255, 255, 0.03);
@@ -537,6 +537,8 @@ const getFlagColors = (): string => {
 .sin-id,
 .flag-nationality {
   font-size: 0.7em;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .flag-container {
