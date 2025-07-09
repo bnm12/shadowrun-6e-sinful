@@ -5,19 +5,37 @@
         <div
           v-for="index in effectiveSinQuality"
           :key="`quality-tab-${index}`"
-          :class="['tab', { active: index === 1 }]"
+          :class="['tab', { active: activeTab === index }]"
+          @click="selectTab(index)"
         >
-          <!-- Content for regular tabs, if any, or leave empty -->
+          <!-- {{ index }} -->
         </div>
-        <div class="tab licenses-tab">
+        <div
+          class="tab licenses-tab"
+          :class="{ active: activeTab === 'licenses' }"
+          @click="selectTab('licenses')"
+        >
           Licenses
         </div>
       </div>
     </div>
 
     <div class="card-content">
-      <div class="left-section">
-        <div class="photo-section">
+      <!-- Licenses Display Section -->
+      <div v-if="activeTab === 'licenses'" class="licenses-display-section">
+        <h4>Licenses on Record</h4>
+        <ul v-if="profileData.licenses && Object.keys(profileData.licenses).length > 0" class="licenses-list-display">
+          <li v-for="(quality, name) in profileData.licenses" :key="name">
+            <span class="license-name">{{ name }}</span>: <span class="license-quality">{{ getSinQualityTextById(quality) }}</span>
+          </li>
+        </ul>
+        <p v-else class="no-licenses-message">No licenses on record.</p>
+      </div>
+
+      <!-- Original Content (shown when licenses tab is not active) -->
+      <template v-else>
+        <div class="left-section">
+          <div class="photo-section">
           <div class="photo-container">
             <img
               :src="profileData.photo"
@@ -67,7 +85,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
 
     <div class="system-info">
@@ -83,12 +101,13 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import {
   ShadowrunNationality,
   getFlagCSS,
   type ShadowrunNationalityType,
 } from "./shadowrun-flags";
-import { SinQuality, type SinQualityValue } from "./sin-quality"; // Import value and type
+import { SinQuality, type SinQualityValue, getAllSinQualities } from "./sin-quality"; // Import value and type
 
 interface ProfileData {
   name: string;
@@ -101,6 +120,7 @@ interface ProfileData {
   additionalCode: string;
   flagColors?: string; // Optional manual override
   sinQuality: SinQualityValue; // Use SinQualityValue type
+  licenses?: Record<string, SinQualityValue>; // Optional licenses
 }
 
 interface Props {
@@ -118,10 +138,21 @@ const props = withDefaults(defineProps<Props>(), {
     idc: "R-025648545482 - 5254267869 - 551247895512 - 02",
     additionalCode: "<<< 85478516/GTR/22145 >>> SIN ID",
     sinQuality: SinQuality.LEVEL_1, // Default SIN quality to LEVEL_1
+    licenses: {}, // Default licenses
   }),
 });
 
-import { computed } from 'vue';
+const activeTab = ref<string | number>(1); // 'licenses' or quality tab index
+const sinQualitiesList = getAllSinQualities();
+
+const getSinQualityTextById = (qualityValue: SinQualityValue): string => {
+  const quality = sinQualitiesList.find(q => q.value === qualityValue);
+  return quality ? quality.text : 'Unknown Quality';
+};
+
+const selectTab = (tabIdentifier: string | number) => {
+  activeTab.value = tabIdentifier;
+};
 
 const effectiveSinQuality = computed(() => {
   const quality = props.profileData.sinQuality;
@@ -197,13 +228,15 @@ const getFlagColors = (): string => {
 
 .tab.licenses-tab {
   margin-left: auto; /* Right-align the licenses tab */
-  /* Additional styling for the Licenses tab if needed */
-  font-size: 0.7em; /* Adjust font size to fit "Licenses" */
+  width: auto; /* Adjust width to fit content */
+  min-width: 10%; /* Ensure it has some minimum width */
+  font-size: 0.65em; /* Further adjust font size to fit "Licenses" */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 5px; /* Add some padding */
+  padding: 0 8px; /* Add some padding */
   white-space: nowrap; /* Prevent text wrapping */
+  cursor: pointer; /* Make it look clickable */
 }
 
 .card-content {
@@ -211,6 +244,46 @@ const getFlagColors = (): string => {
   padding: 3%; /* Relative padding */
   gap: 4%; /* Relative gap */
   flex-grow: 1;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.licenses-display-section {
+  width: 100%;
+  padding: 10px;
+  color: #00ffff;
+}
+
+.licenses-display-section h4 {
+  color: #4a9eff;
+  margin-bottom: 10px;
+  font-size: clamp(0.8em, 2.5vh, 1.2em);
+}
+
+.licenses-list-display {
+  list-style-type: none;
+  padding: 0;
+  font-size: clamp(0.7em, 2vh, 1em);
+}
+
+.licenses-list-display li {
+  margin-bottom: 8px;
+  padding: 5px;
+  background-color: rgba(0, 255, 255, 0.05);
+  border-left: 3px solid #4a9eff;
+}
+
+.license-name {
+  font-weight: bold;
+}
+
+.license-quality {
+  font-style: italic;
+}
+
+.no-licenses-message {
+  font-style: italic;
+  color: #88ddff;
+  font-size: clamp(0.7em, 2vh, 1em);
 }
 
 .left-section {
