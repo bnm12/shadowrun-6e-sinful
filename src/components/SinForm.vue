@@ -132,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed } from "vue";
+import { reactive, ref } from "vue";
 import {
   ShadowrunNationality,
   getAllNationalities,
