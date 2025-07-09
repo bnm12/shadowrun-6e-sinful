@@ -138,6 +138,7 @@ const getFlagColors = (): string => {
   transform-origin: center center;
   flex-shrink: 0;
   height: 95vw;
+  width: 80vh;
 }
 
 /* Ensure pseudo-elements rotate with the card if they are positioned relative to it */
