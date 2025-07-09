@@ -235,11 +235,8 @@ const submitForm = () => {
 <style scoped>
 .sin-form-container {
   padding: 20px;
-  border: 1px solid #4a9eff;
-  border-radius: 8px;
   background-color: #1a2332;
   color: #00ffff;
-  margin-bottom: 20px;
 }
 
 .form-group {
@@ -250,6 +247,7 @@ const submitForm = () => {
   display: block;
   margin-bottom: 5px;
   color: #4a9eff;
+  justify-self: flex-start;
 }
 
 .form-group input[type="text"],

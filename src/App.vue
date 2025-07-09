@@ -232,12 +232,15 @@ onBeforeUnmount(() => {
   <div class="app-container">
     <!-- Landing View -->
     <div v-if="currentView === 'landing'" class="landing-view main-content">
-      <h1 class="landing-headline" data-text="SINful">SINful</h1>
+      <h1 class="landing-headline glitch-text" data-text="SINful">SINful</h1>
       <img src="/sin-check-logo.png" alt="SIN Check Logo" class="logo" />
-      <h1>SIN Management System</h1>
       <div class="navigation-buttons">
-        <button @click="setView('sin-check')">SIN Check</button>
-        <button @click="setView('create-sin')">Create SIN</button>
+        <div @click="setView('sin-check')" class="navigation-button">
+          <div class="glitch-text" data-text="SIN Check">SIN Check</div>
+        </div>
+        <div @click="setView('create-sin')" class="navigation-button">
+          <div class="glitch-text" data-text="Create SIN">Create SIN</div>
+        </div>
       </div>
     </div>
 
@@ -253,7 +256,9 @@ onBeforeUnmount(() => {
         <p v-if="message">{{ message }}</p>
       </div>
       <div class="navigation-buttons">
-        <button @click="setView('landing')">Back to Home</button>
+        <div @click="setView('landing')" class="navigation-button">
+          <div class="glitch-text" data-text="Back to Home">Back to Home</div>
+        </div>
       </div>
     </div>
 
@@ -271,7 +276,9 @@ onBeforeUnmount(() => {
         />
       </div>
       <div class="navigation-buttons">
-        <button @click="setView('landing')">Back to Home</button>
+        <div @click="setView('landing')" class="navigation-button">
+          <div class="glitch-text" data-text="Back to Home">Back to Home</div>
+        </div>
       </div>
     </div>
   </div>
@@ -286,10 +293,9 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   height: 100dvh; /* Full viewport height */
   width: 100dvw; /* Full viewport width */
-  padding: 20px;
   background-color: #1a2332; /* Consistent background */
   color: #00ffff; /* Default text color */
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  overflow-y: auto;
 }
 
 .main-content {
@@ -297,10 +303,14 @@ onBeforeUnmount(() => {
   flex-direction: column;
   justify-content: center; /* Center content vertically */
   align-items: center;
-  gap: 20px; /* Reduced gap for a tighter layout */
+  gap: 10px;
   width: 100%;
-  max-width: 1000px; /* Max width for larger screens */
+  height: 100%;
   text-align: center; /* Center text elements like h1 */
+}
+
+.main-content.create-sin-view {
+  padding: 10px;
 }
 
 /* Landing View Specific Styles */
@@ -310,15 +320,11 @@ onBeforeUnmount(() => {
 
 .landing-view .landing-headline {
   font-size: 5em;
+}
+
+.glitch-text {
   color: rgba(202, 25, 115, 1);
-  background: linear-gradient(
-    180deg,
-    #ff1493 0%,
-    #ff69b4 25%,
-    #da70d6 50%,
-    #9370db 75%,
-    #8a2be2 100%
-  );
+  background: linear-gradient(180deg, #ff1493 0%, #8a2be2 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -328,9 +334,8 @@ onBeforeUnmount(() => {
   z-index: 3;
 }
 
-.landing-view .landing-headline::before,
-.landing-view .landing-headline::after {
-  -webkit-text-fill-color: initial;
+.glitch-text::before,
+.glitch-text::after {
   content: attr(data-text);
   position: absolute;
   top: 0;
@@ -340,13 +345,19 @@ onBeforeUnmount(() => {
   z-index: 1;
 }
 
-.landing-view .landing-headline::before {
+.glitch-text::before {
   color: rgba(202, 25, 115, 0.6);
+  background: rgba(202, 25, 115, 0.3);
+  background-clip: text;
+  -webkit-background-clip: text;
   animation: subtle-glitch 4s infinite;
 }
 
-.landing-view .landing-headline::after {
+.glitch-text::after {
   color: rgba(138, 43, 226, 0.4);
+  background: rgba(138, 43, 226, 0.2);
+  background-clip: text;
+  -webkit-background-clip: text;
   animation: subtle-glitch-2 4s infinite;
 }
 
@@ -412,35 +423,33 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  margin-top: 20px; /* Space above buttons */
   justify-content: center;
+  width: 100%;
 }
 
-.navigation-buttons button {
+.navigation-buttons .navigation-button {
   padding: 12px 25px;
   font-size: 1em;
-  background-color: #4a9eff;
-  color: #1a2332;
-  border: none;
+  background: #10012c;
+  border: 1px solid #ff1493;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.navigation-buttons button:hover {
+.navigation-buttons .navigation-button:hover {
   background-color: #6ab7ff;
 }
 
 /* SIN Check View Specific Styles */
 .sin-check-view .id-card-container {
-  height: 75dvh; /* Adjusted for view */
-  max-height: 75dvh;
+  height: 80dvh; /* Adjusted for view */
+  max-height: 80dvh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 10px; /* Space below card */
 }
 
 .nfc-status-messages {
@@ -453,20 +462,13 @@ onBeforeUnmount(() => {
 /* Create SIN View Specific Styles */
 .create-sin-view .sin-form-section {
   width: 100%;
+  height: 100%;
+  flex-shrink: 1;
   max-width: 600px; /* Max width for the form */
-  margin-bottom: 20px; /* Space below form */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border: 1px solid #4a9eff;
+  border-radius: 8px;
 }
-
-/* Shared styles for IdCard container if needed, but mostly handled by .sin-check-view */
-.id-card-container {
-  /* Styles from original .id-card-container if they were meant to be general */
-  /* This is now more specifically handled by .sin-check-view .id-card-container */
-}
-
-/* Styles for .sin-form-section are now more specific to .create-sin-view */
-.sin-form-section {
-  /* Styles from original .sin-form-section if they were meant to be general */
-}
-
-/* Removed .nfc-controls as it's replaced by more specific view elements */
 </style>
