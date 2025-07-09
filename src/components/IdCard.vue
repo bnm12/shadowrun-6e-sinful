@@ -323,13 +323,13 @@ const getFlagColors = (): string => {
   flex-shrink: 1;
   align-items: center;
   justify-content: center;
-  font-size: 0.6em; /* Adjusted font size for titles */
+  font-size: 0.8em; /* Adjusted font size for titles */
   color: #1a2332; /* Darker text for contrast on light tabs */
   cursor: pointer;
   white-space: nowrap;
   border-bottom: 2px solid transparent; /* For active state indication */
   transition: background-color 0.3s, border-color 0.3s;
-  max-width: 14.5%;
+  max-width: 16%;
 }
 
 .tab:hover {
@@ -337,9 +337,9 @@ const getFlagColors = (): string => {
 }
 
 .tab.active {
-  background: rgba(255, 255, 255, 0.9);
+  background: #00ffff;
   color: #007bff; /* Highlight active tab text */
-  border-bottom: 2px solid #007bff; /* Active tab underline */
+  /*border-bottom: 2px solid #007bff; /* Active tab underline */
   font-weight: bold;
 }
 
