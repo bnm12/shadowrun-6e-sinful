@@ -214,6 +214,8 @@ const getFlagColors = (): string => {
   height: 100%;
   width: 100%;
   align-items: center;
+  position: relative; /* Ensure it creates a stacking context */
+  z-index: 2; /* Above pseudo-elements */
 }
 
 .tab {
