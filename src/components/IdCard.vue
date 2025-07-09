@@ -2,9 +2,16 @@
   <div class="id-card">
     <div class="card-header">
       <div class="header-tabs">
-        <div class="tab active"></div>
-        <div class="tab"></div>
-        <div class="tab"></div>
+        <div
+          v-for="index in effectiveSinQuality"
+          :key="`quality-tab-${index}`"
+          :class="['tab', { active: index === 1 }]"
+        >
+          <!-- Content for regular tabs, if any, or leave empty -->
+        </div>
+        <div class="tab licenses-tab">
+          Licenses
+        </div>
       </div>
     </div>
 
@@ -81,6 +88,7 @@ import {
   getFlagCSS,
   type ShadowrunNationalityType,
 } from "./shadowrun-flags";
+import { SinQuality } from "./sin-quality";
 
 interface ProfileData {
   name: string;
@@ -92,6 +100,7 @@ interface ProfileData {
   idc: string;
   additionalCode: string;
   flagColors?: string; // Optional manual override
+  sinQuality: SinQuality; // Added SIN Quality
 }
 
 interface Props {
@@ -108,7 +117,19 @@ const props = withDefaults(defineProps<Props>(), {
     systemId: "#Error1#",
     idc: "R-025648545482 - 5254267869 - 551247895512 - 02",
     additionalCode: "<<< 85478516/GTR/22145 >>> SIN ID",
+    sinQuality: SinQuality.LEVEL_1, // Default SIN quality to LEVEL_1
   }),
+});
+
+import { computed } from 'vue';
+
+const effectiveSinQuality = computed(() => {
+  const quality = props.profileData.sinQuality;
+  // Ensure quality is within the valid enum range 1-6, default to 1
+  if (quality >= SinQuality.LEVEL_1 && quality <= SinQuality.LEVEL_6) {
+    return quality;
+  }
+  return SinQuality.LEVEL_1;
 });
 
 // Function to get flag colors based on nationality or manual override
@@ -172,6 +193,17 @@ const getFlagColors = (): string => {
 
 .tab.active {
   background: rgba(255, 255, 255, 0.8);
+}
+
+.tab.licenses-tab {
+  margin-left: auto; /* Right-align the licenses tab */
+  /* Additional styling for the Licenses tab if needed */
+  font-size: 0.7em; /* Adjust font size to fit "Licenses" */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px; /* Add some padding */
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .card-content {

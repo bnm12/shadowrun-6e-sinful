@@ -7,6 +7,7 @@ import {
   type ShadowrunNationalityType,
 } from "./components/shadowrun-flags";
 import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes"; // Import Metatype type
+import type { SinQuality } from "./components/sin-quality"; // Import SinQuality type
 
 // Define SINData interface
 interface SinData {
@@ -15,6 +16,7 @@ interface SinData {
   nationality: ShadowrunNationalityType;
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
+  sinQuality: SinQuality; // Added SIN Quality
 }
 
 const message = ref("");
@@ -29,6 +31,7 @@ const currentProfileData = ref<any>({
   systemId: "#STANDBY#",
   idc: "R-000000000 - 000000000 - 000000000 - 00",
   additionalCode: "<<< WAITING FOR SCAN >>>",
+  sinQuality: 3, // Default SinQuality.LEVEL_3
 });
 
 const readTag = async () => {
@@ -67,6 +70,7 @@ const readTag = async () => {
               gender: parsedSinData.gender,
               metatype: parsedSinData.metatype,
               photo: parsedSinData.imageUrl || "/blank-profile-picture.svg",
+              sinQuality: parsedSinData.sinQuality || 3, // Use parsed or default
               systemId: "#ACTIVE#", // Indicate active scan
               idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
                 .toString()

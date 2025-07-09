@@ -43,6 +43,19 @@
       </div>
 
       <div class="form-group">
+        <label for="sinQuality">SIN Quality:</label>
+        <select id="sinQuality" v-model="formData.sinQuality" required>
+          <option
+            v-for="quality in sinQualities"
+            :key="quality.value"
+            :value="quality.value"
+          >
+            {{ quality.text }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label for="imageUrl">Image URL:</label>
         <input type="url" id="imageUrl" v-model="formData.imageUrl" />
       </div>
@@ -68,6 +81,10 @@ import {
   getAllMetatypes,
   type ShadowrunMetatypeType,
 } from "./shadowrun-metatypes";
+import {
+  SinQuality,
+  getAllSinQualities,
+} from "./sin-quality";
 
 interface SinFormData {
   name: string;
@@ -75,10 +92,12 @@ interface SinFormData {
   nationality: ShadowrunNationalityType;
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
+  sinQuality: SinQuality;
 }
 
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
+const sinQualities = getAllSinQualities();
 
 const formData = reactive<SinFormData>({
   name: "",
@@ -86,6 +105,7 @@ const formData = reactive<SinFormData>({
   nationality: ShadowrunNationality.UCAS, // Default nationality
   metatype: ShadowrunMetatype.HUMAN, // Default metatype
   imageUrl: "",
+  sinQuality: SinQuality.LEVEL_3, // Default SIN quality
 });
 
 const emit = defineEmits(["submitSinData"]);
