@@ -12,6 +12,7 @@ import { type SinQualityValue, SinQuality } from "./components/sin-quality";
 
 // Define SINData interface
 interface SinData {
+  sinId?: string; // Optional: UUID for the SIN
   name: string;
   gender: "Male" | "Female" | "Diverse";
   nationality: ShadowrunNationalityType;
@@ -75,6 +76,7 @@ const readTag = async () => {
               photo: parsedSinData.imageUrl || "/blank-profile-picture.svg",
               sinQuality: parsedSinData.sinQuality || SinQuality.LEVEL_1, // Use parsed or default
               licenses: parsedSinData.licenses || {}, // Parse licenses
+              sinId: parsedSinData.sinId, // Pass the sinId
               systemId: "#ACTIVE#", // Indicate active scan
               idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
                 .toString()
@@ -117,9 +119,12 @@ const readTag = async () => {
   }
 };
 
+import { v4 as uuidv4 } from "uuid";
+
 // Handler for SIN form submission
 const handleSinFormSubmit = async (sinData: SinData) => {
   message.value = "Attempting to write SIN data to tag...";
+  sinData.sinId = uuidv4(); // Add sinId to the data
   if (!("NDEFReader" in window)) {
     message.value =
       "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
