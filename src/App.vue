@@ -5,8 +5,8 @@ import SinForm from "./components/SinForm.vue";
 import {
   ShadowrunNationality,
   type ShadowrunNationalityType,
-} from "./components/shadowrun-flags";
-import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes"; // Import Metatype type
+} from "./components/shadowrun-flags.ts";
+import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts"; // Import Metatype type
 // Import SinQualityValue type and SinQuality value
 import { type SinQualityValue, SinQuality } from "./components/sin-quality";
 
