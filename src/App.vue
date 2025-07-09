@@ -23,7 +23,7 @@ interface SinData {
 }
 
 const message = ref("");
-const currentView = ref<'landing' | 'sin-check' | 'create-sin'>('landing');
+const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 
 // Refs for "Write to Tag" button state
 const isWriting = ref(false);
@@ -192,44 +192,47 @@ watch(message, (newMessage) => {
   }
 });
 
-const setView = (viewName: 'landing' | 'sin-check' | 'create-sin') => {
+const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   window.location.hash = viewName;
-  if (viewName === 'sin-check') {
+  if (viewName === "sin-check") {
     readTag(); // Initiate scanning when switching to sin-check view
   }
 };
 
 const handleHashChange = () => {
-  const hash = window.location.hash.replace(/^#/, '') as 'landing' | 'sin-check' | 'create-sin';
-  if (['landing', 'sin-check', 'create-sin'].includes(hash)) {
+  const hash = window.location.hash.replace(/^#/, "") as
+    | "landing"
+    | "sin-check"
+    | "create-sin";
+  if (["landing", "sin-check", "create-sin"].includes(hash)) {
     currentView.value = hash;
-    if (hash === 'sin-check') {
+    if (hash === "sin-check") {
       readTag();
     }
   } else {
     // Default to landing if hash is invalid or not present
-    currentView.value = 'landing';
-    window.location.hash = 'landing'; // Optionally update hash to a valid default
+    currentView.value = "landing";
+    window.location.hash = "landing"; // Optionally update hash to a valid default
   }
 };
 
 onMounted(() => {
   handleHashChange(); // Set initial view based on hash
-  window.addEventListener('hashchange', handleHashChange);
+  window.addEventListener("hashchange", handleHashChange);
   // readTag(); // Removed from here, will be called conditionally by setView/handleHashChange
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('hashchange', handleHashChange);
+  window.removeEventListener("hashchange", handleHashChange);
 });
-
 </script>
 
 <template>
   <div class="app-container">
     <!-- Landing View -->
     <div v-if="currentView === 'landing'" class="landing-view main-content">
+      <h1 class="landing-headline" data-text="SINful">SINful</h1>
       <img src="/sin-check-logo.png" alt="SIN Check Logo" class="logo" />
       <h1>SIN Management System</h1>
       <div class="navigation-buttons">
@@ -239,7 +242,10 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- SIN Check View -->
-    <div v-else-if="currentView === 'sin-check'" class="sin-check-view main-content">
+    <div
+      v-else-if="currentView === 'sin-check'"
+      class="sin-check-view main-content"
+    >
       <div class="id-card-container">
         <IdCard :profileData="currentProfileData" />
       </div>
@@ -252,7 +258,10 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Create SIN View -->
-    <div v-else-if="currentView === 'create-sin'" class="create-sin-view main-content">
+    <div
+      v-else-if="currentView === 'create-sin'"
+      class="create-sin-view main-content"
+    >
       <div class="sin-form-section">
         <SinForm
           @submitSinData="handleSinFormSubmit"
@@ -275,8 +284,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  height: 100vh; /* Full viewport height */
-  width: 100vw; /* Full viewport width */
+  height: 100dvh; /* Full viewport height */
+  width: 100dvw; /* Full viewport width */
   padding: 20px;
   background-color: #1a2332; /* Consistent background */
   color: #00ffff; /* Default text color */
@@ -299,9 +308,97 @@ onBeforeUnmount(() => {
   justify-content: center; /* Center vertically */
 }
 
+.landing-view .landing-headline {
+  font-size: 5em;
+  color: rgba(202, 25, 115, 1);
+  background: linear-gradient(
+    180deg,
+    #ff1493 0%,
+    #ff69b4 25%,
+    #da70d6 50%,
+    #9370db 75%,
+    #8a2be2 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  font-family: "Doctor Glitch";
+  position: relative;
+  z-index: 3;
+}
+
+.landing-view .landing-headline::before,
+.landing-view .landing-headline::after {
+  -webkit-text-fill-color: initial;
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.landing-view .landing-headline::before {
+  color: rgba(202, 25, 115, 0.6);
+  animation: subtle-glitch 4s infinite;
+}
+
+.landing-view .landing-headline::after {
+  color: rgba(138, 43, 226, 0.4);
+  animation: subtle-glitch-2 4s infinite;
+}
+
+@keyframes subtle-glitch {
+  0%,
+  85%,
+  100% {
+    transform: translate(0);
+  }
+  5% {
+    transform: translate(-3px, 1px);
+  }
+  10% {
+    transform: translate(2px, -2px);
+  }
+  15% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 1px);
+  }
+  25% {
+    transform: translate(0);
+  }
+}
+
+@keyframes subtle-glitch-2 {
+  0%,
+  85%,
+  100% {
+    transform: translate(0);
+  }
+  7% {
+    transform: translate(3px, -1px);
+  }
+  12% {
+    transform: translate(-2px, 2px);
+  }
+  17% {
+    transform: translate(0);
+  }
+  22% {
+    transform: translate(2px, -1px);
+  }
+  27% {
+    transform: translate(0);
+  }
+}
+
 .logo {
-  width: 150px; /* Adjust as needed */
-  height: auto;
+  width: auto;
+  height: 50dvh;
   margin-bottom: 20px;
 }
 
@@ -336,8 +433,8 @@ onBeforeUnmount(() => {
 
 /* SIN Check View Specific Styles */
 .sin-check-view .id-card-container {
-  height: 75vh; /* Adjusted for view */
-  max-height: 75vh;
+  height: 75dvh; /* Adjusted for view */
+  max-height: 75dvh;
   width: 100%;
   display: flex;
   align-items: center;
@@ -368,9 +465,8 @@ onBeforeUnmount(() => {
 
 /* Styles for .sin-form-section are now more specific to .create-sin-view */
 .sin-form-section {
-   /* Styles from original .sin-form-section if they were meant to be general */
+  /* Styles from original .sin-form-section if they were meant to be general */
 }
 
 /* Removed .nfc-controls as it's replaced by more specific view elements */
-
 </style>

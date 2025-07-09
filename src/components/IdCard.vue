@@ -297,8 +297,8 @@ const getFlagColors = (): string => {
   transform: rotate(90deg);
   transform-origin: center center;
   flex-shrink: 0;
-  height: 95vw;
-  width: 80vh;
+  height: 95dvw;
+  width: 80dvh;
   gap: 3%;
 }
 
@@ -395,7 +395,7 @@ const getFlagColors = (): string => {
 }
 
 .placeholder-content p {
-  font-size: clamp(0.7em, 2vh, 1em);
+  font-size: clamp(0.7em, 2dvh, 1em);
   line-height: 1.6;
   margin-bottom: 8px;
 }
@@ -403,13 +403,13 @@ const getFlagColors = (): string => {
 .licenses-display-section h4 {
   color: #4a9eff;
   margin-bottom: 10px;
-  font-size: clamp(0.8em, 2.5vh, 1.2em);
+  font-size: clamp(0.8em, 2.5dvh, 1.2em);
 }
 
 .licenses-list-display {
   list-style-type: none;
   padding: 0;
-  font-size: clamp(0.7em, 2vh, 1em);
+  font-size: clamp(0.7em, 2dvh, 1em);
 }
 
 .licenses-list-display li {
@@ -430,7 +430,7 @@ const getFlagColors = (): string => {
 .no-licenses-message {
   font-style: italic;
   color: #88ddff;
-  font-size: clamp(0.7em, 2vh, 1em);
+  font-size: clamp(0.7em, 2dvh, 1em);
 }
 
 .left-section {
@@ -561,7 +561,7 @@ const getFlagColors = (): string => {
 }
 
 .name {
-  font-size: clamp(1em, 4vh, 2em); /* Responsive font size */
+  font-size: clamp(1em, 4dvh, 2em); /* Responsive font size */
   font-weight: bold;
   color: #00ffff;
   text-align: left;
@@ -571,14 +571,14 @@ const getFlagColors = (): string => {
 .details {
   display: flex;
   flex-direction: column;
-  gap: 0.5vh; /* Relative gap */
+  gap: 0.5dvh; /* Relative gap */
 }
 
 .detail-row {
   display: flex;
   flex-direction: row;
   justify-content: start;
-  font-size: clamp(0.6em, 2vh, 1em); /* Responsive font size */
+  font-size: clamp(0.6em, 2dvh, 1em); /* Responsive font size */
   gap: 1%;
 }
 
@@ -604,7 +604,7 @@ const getFlagColors = (): string => {
   background: rgba(0, 255, 255, 0.1);
   padding: 2% 3%; /* Relative padding */
   border-top: 1px solid #4a9eff;
-  font-size: clamp(0.5em, 1.8vh, 0.8em); /* Responsive font size */
+  font-size: clamp(0.5em, 1.8dvh, 0.8em); /* Responsive font size */
 }
 
 .system-title {
@@ -616,12 +616,12 @@ const getFlagColors = (): string => {
 .system-codes {
   display: flex;
   flex-direction: column;
-  gap: 0.3vh;
+  gap: 0.3dvh;
 }
 
 .code-line {
   color: #4a9eff;
-  font-size: clamp(0.4em, 1.5vh, 0.7em); /* Responsive font size */
+  font-size: clamp(0.4em, 1.5dvh, 0.7em); /* Responsive font size */
   font-family: "Courier New", monospace;
 }
 
@@ -666,17 +666,7 @@ const getFlagColors = (): string => {
     top: 0;
   }
   100% {
-    /*
-      The id-card's new height (visual height on screen after rotation) is its CSS width (85vh).
-      We want the 2px line to travel from top to bottom of this.
-      If translateY(100%) refers to the element's own height (2px), this is not what we want.
-      We need to translate it by the height of the container.
-      A common trick for this is to make the pseudo-element itself have 0 height and use a border or box-shadow for visuals,
-      or to translate it by a large fixed/viewport unit that matches the container.
-      Let's try translating it by the visual height of the card.
-      The card's effective height after rotation is its `width` property: 85vh.
-    */
-    top: 100%; /* Travel full visual height minus its own height */
+    top: 100%;
   }
 }
 </style>
