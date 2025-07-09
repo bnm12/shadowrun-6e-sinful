@@ -4,9 +4,7 @@
       <div class="header-tabs">
         <div class="quality-tabs">
           <div
-            v-for="qualityTab in sinQualitiesList.filter(
-              (sq) => sq.value <= profileData.sinQuality
-            )"
+            v-for="qualityTab in filteredSinQualitiesList"
             :key="`quality-tab-${qualityTab.value}`"
             :class="[
               'tab',
@@ -253,6 +251,12 @@ const barcodeWidths = computed(() => {
 
 const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
 const sinQualitiesList = getAllSinQualities();
+
+const filteredSinQualitiesList = computed(() =>
+  sinQualitiesList.filter(
+    (sq) => sq.value <= (props.profileData?.sinQuality ?? SinQuality.LEVEL_1)
+  )
+);
 
 // The function `getSinQualityTextById` is used in the template to get the flair text.
 const getSinQualityTextById = (qualityValue: SinQualityValue): string => {
