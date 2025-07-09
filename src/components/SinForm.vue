@@ -117,7 +117,7 @@
 
       <div class="form-submission-area">
         <button type="submit" :disabled="props.isWriting">
-          <span v-if="props.isWriting">Writing...</span>
+          <span v-if="props.isWriting">Waiting for tag...</span>
           <span v-else>Write to Tag</span>
         </button>
         <p
