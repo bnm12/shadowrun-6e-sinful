@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, onBeforeUnmount } from "vue"; // Added onBeforeUnmount
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
@@ -22,8 +22,8 @@ interface SinData {
   licenses?: Record<string, SinQualityValue>; // Optional licenses
 }
 
-const message = ref(""); // This will be removed as per plan
-const showSinForm = ref(false); // Control visibility of SIN Form
+const message = ref("");
+const currentView = ref<'landing' | 'sin-check' | 'create-sin'>('landing');
 
 // Refs for "Write to Tag" button state
 const isWriting = ref(false);
@@ -133,7 +133,6 @@ const handleSinFormSubmit = async (sinData: SinData) => {
   isWriting.value = true;
   writeStatusMessage.value = "";
   writeStatusMessageType.value = "";
-  // message.value = "Attempting to write SIN data to tag..."; // Replaced by new status refs
   sinData.sinId = uuidv4(); // Add sinId to the data
 
   if (!("NDEFReader" in window)) {
@@ -193,33 +192,77 @@ watch(message, (newMessage) => {
   }
 });
 
+const setView = (viewName: 'landing' | 'sin-check' | 'create-sin') => {
+  currentView.value = viewName;
+  window.location.hash = viewName;
+  if (viewName === 'sin-check') {
+    readTag(); // Initiate scanning when switching to sin-check view
+  }
+};
+
+const handleHashChange = () => {
+  const hash = window.location.hash.replace(/^#/, '') as 'landing' | 'sin-check' | 'create-sin';
+  if (['landing', 'sin-check', 'create-sin'].includes(hash)) {
+    currentView.value = hash;
+    if (hash === 'sin-check') {
+      readTag();
+    }
+  } else {
+    // Default to landing if hash is invalid or not present
+    currentView.value = 'landing';
+    window.location.hash = 'landing'; // Optionally update hash to a valid default
+  }
+};
+
 onMounted(() => {
-  readTag();
+  handleHashChange(); // Set initial view based on hash
+  window.addEventListener('hashchange', handleHashChange);
+  // readTag(); // Removed from here, will be called conditionally by setView/handleHashChange
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('hashchange', handleHashChange);
+});
+
 </script>
 
 <template>
   <div class="app-container">
-    <div class="main-content">
+    <!-- Landing View -->
+    <div v-if="currentView === 'landing'" class="landing-view main-content">
+      <img src="/sin-check-logo.png" alt="SIN Check Logo" class="logo" />
+      <h1>SIN Management System</h1>
+      <div class="navigation-buttons">
+        <button @click="setView('sin-check')">SIN Check</button>
+        <button @click="setView('create-sin')">Create SIN</button>
+      </div>
+    </div>
+
+    <!-- SIN Check View -->
+    <div v-else-if="currentView === 'sin-check'" class="sin-check-view main-content">
       <div class="id-card-container">
         <IdCard :profileData="currentProfileData" />
       </div>
-      <div class="nfc-controls">
-        <!-- Toggle button for showing SIN Form -->
-        <button type="button" @click="showSinForm = !showSinForm">
-          {{ showSinForm ? "Hide SIN Form" : "Create new SIN" }}
-        </button>
-        <!-- Original writeTag button can be removed or repurposed later -->
-        <!-- <button type="button" @click="writeTag">Write Generic Tag</button> -->
-        <!-- Removed message paragraph: <p v-if="message">{{ message }}</p> -->
+      <div class="nfc-status-messages">
+        <p v-if="message">{{ message }}</p>
       </div>
-      <div v-if="showSinForm" class="sin-form-section">
+      <div class="navigation-buttons">
+        <button @click="setView('landing')">Back to Home</button>
+      </div>
+    </div>
+
+    <!-- Create SIN View -->
+    <div v-else-if="currentView === 'create-sin'" class="create-sin-view main-content">
+      <div class="sin-form-section">
         <SinForm
           @submitSinData="handleSinFormSubmit"
           :isWriting="isWriting"
           :writeStatusMessage="writeStatusMessage"
           :writeStatusMessageType="writeStatusMessageType"
         />
+      </div>
+      <div class="navigation-buttons">
+        <button @click="setView('landing')">Back to Home</button>
       </div>
     </div>
   </div>
@@ -228,70 +271,106 @@ onMounted(() => {
 <style scoped>
 .app-container {
   display: flex;
-  flex-direction: column; /* Stack card area and controls vertically */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  height: 100%;
-  width: 100%;
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  padding: 20px;
+  background-color: #1a2332; /* Consistent background */
+  color: #00ffff; /* Default text color */
+  overflow-y: auto; /* Allow scrolling if content overflows */
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
-  justify-content: stretch; /* Center IdCard horizontally */
-  align-items: center; /* Center IdCard vertically */
-  gap: 40px;
+  justify-content: center; /* Center content vertically */
+  align-items: center;
+  gap: 20px; /* Reduced gap for a tighter layout */
   width: 100%;
-  height: 100%;
-  position: relative; /* For potential absolute positioning of children if needed */
-  padding: 1dvh 0;
+  max-width: 1000px; /* Max width for larger screens */
+  text-align: center; /* Center text elements like h1 */
 }
 
-/* IdCard itself will be handled by its own styles for rotation and sizing */
-.id-card-container {
-  height: 80vh;
-  max-height: 80vh;
+/* Landing View Specific Styles */
+.landing-view {
+  justify-content: center; /* Center vertically */
+}
+
+.logo {
+  width: 150px; /* Adjust as needed */
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.landing-view h1 {
+  font-size: 2em;
+  color: #4a9eff;
+  margin-bottom: 30px;
+}
+
+.navigation-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-top: 20px; /* Space above buttons */
+  justify-content: center;
+}
+
+.navigation-buttons button {
+  padding: 12px 25px;
+  font-size: 1em;
+  background-color: #4a9eff;
+  color: #1a2332;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navigation-buttons button:hover {
+  background-color: #6ab7ff;
+}
+
+/* SIN Check View Specific Styles */
+.sin-check-view .id-card-container {
+  height: 75vh; /* Adjusted for view */
+  max-height: 75vh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  margin-bottom: 10px; /* Space below card */
 }
 
-.sin-form-section {
-  width: 100%;
-  max-width: 90vw; /* Make form responsive */
-}
-
-.nfc-controls {
-  display: flex;
-  flex-direction: row; /* Lay out buttons side-by-side */
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-  justify-content: center; /* Center buttons */
-  align-items: center;
-  gap: 10px;
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.3
-  ); /* Optional: slight background for controls */
-  border-radius: 8px;
-  width: auto; /* Fit content */
-  max-width: 90vw; /* Ensure controls don't get too wide */
-}
-
-.nfc-controls button {
-  flex-grow: 1; /* Allow buttons to share space */
-  min-width: 120px; /* Minimum width for readability */
-}
-
-.nfc-controls p {
-  width: 100%; /* Message takes full width of controls area */
-  text-align: center;
-  margin-top: 10px;
+.nfc-status-messages {
+  min-height: 40px; /* Reserve space for messages */
+  color: #00ffff;
   font-size: 0.9em;
-  word-break: break-word;
+  text-align: center;
 }
+
+/* Create SIN View Specific Styles */
+.create-sin-view .sin-form-section {
+  width: 100%;
+  max-width: 600px; /* Max width for the form */
+  margin-bottom: 20px; /* Space below form */
+}
+
+/* Shared styles for IdCard container if needed, but mostly handled by .sin-check-view */
+.id-card-container {
+  /* Styles from original .id-card-container if they were meant to be general */
+  /* This is now more specifically handled by .sin-check-view .id-card-container */
+}
+
+/* Styles for .sin-form-section are now more specific to .create-sin-view */
+.sin-form-section {
+   /* Styles from original .sin-form-section if they were meant to be general */
+}
+
+/* Removed .nfc-controls as it's replaced by more specific view elements */
+
 </style>
