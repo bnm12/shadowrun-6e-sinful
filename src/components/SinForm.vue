@@ -84,16 +84,31 @@
           </select>
         </div>
         <button type="button" @click="addOrUpdateLicense" class="action-button">
-          {{ editingLicenseKey ? 'Update License' : 'Add License' }}
+          {{ editingLicenseKey ? "Update License" : "Add License" }}
         </button>
 
-        <div v-if="Object.keys(formData.licenses).length > 0" class="licenses-list">
+        <div
+          v-if="Object.keys(formData.licenses).length > 0"
+          class="licenses-list"
+        >
           <h4>Current Licenses:</h4>
           <ul>
             <li v-for="(quality, name) in formData.licenses" :key="name">
               {{ name }} ({{ getSinQualityText(quality) }})
-              <button type="button" @click="editLicense(name)" class="edit-button small-button">Edit</button>
-              <button type="button" @click="deleteLicense(name)" class="delete-button small-button">Delete</button>
+              <button
+                type="button"
+                @click="editLicense(name)"
+                class="edit-button small-button"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                @click="deleteLicense(name)"
+                class="delete-button small-button"
+              >
+                Delete
+              </button>
             </li>
           </ul>
         </div>
@@ -155,8 +170,8 @@ const formData = reactive<SinFormData>({
 const emit = defineEmits(["submitSinData"]);
 
 const getSinQualityText = (qualityValue: SinQualityValue): string => {
-  const quality = sinQualities.find(q => q.value === qualityValue);
-  return quality ? quality.text : 'Unknown Quality';
+  const quality = sinQualities.find((q) => q.value === qualityValue);
+  return quality ? quality.text : "Unknown Quality";
 };
 
 const addOrUpdateLicense = () => {
@@ -291,7 +306,9 @@ button[type="submit"]:hover {
   align-items: center;
 }
 
-.action-button, .edit-button, .delete-button {
+.action-button,
+.edit-button,
+.delete-button {
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
