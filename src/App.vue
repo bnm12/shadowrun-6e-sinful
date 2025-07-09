@@ -252,9 +252,6 @@ onBeforeUnmount(() => {
       <div class="id-card-container">
         <IdCard :profileData="currentProfileData" />
       </div>
-      <div class="nfc-status-messages">
-        <p v-if="message">{{ message }}</p>
-      </div>
       <div class="navigation-buttons">
         <div @click="setView('landing')" class="navigation-button">
           <div class="glitch-text" data-text="Back to Home">Back to Home</div>
@@ -420,16 +417,19 @@ onBeforeUnmount(() => {
   gap: 20px;
   justify-content: center;
   width: 100%;
+  height: 5dvh;
 }
 
 .navigation-buttons .navigation-button {
-  padding: 12px 25px;
+  padding: 0px 10px;
   font-size: 1em;
   background: #10012c;
   border: 1px solid #ff1493;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
 }
 
 .navigation-buttons .navigation-button:hover {
@@ -438,20 +438,12 @@ onBeforeUnmount(() => {
 
 /* SIN Check View Specific Styles */
 .sin-check-view .id-card-container {
-  height: 80dvh; /* Adjusted for view */
-  max-height: 80dvh;
+  height: calc(95dvh - 5dvh - 10px * 2);
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-}
-
-.nfc-status-messages {
-  min-height: 40px; /* Reserve space for messages */
-  color: #00ffff;
-  font-size: 0.9em;
-  text-align: center;
 }
 
 .create-sin-view .create-sin-heading {

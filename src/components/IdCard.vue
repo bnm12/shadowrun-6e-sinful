@@ -297,9 +297,9 @@ const getFlagColors = (): string => {
   transform: rotate(90deg);
   transform-origin: center center;
   flex-shrink: 0;
-  height: 95dvw;
-  width: 80dvh;
-  gap: 3%;
+  height: calc(100dvw - 10px * 2);
+  width: calc(95dvh - 5dvh - 10px * 2);
+  gap: 10px;
 }
 
 /* Ensure pseudo-elements rotate with the card if they are positioned relative to it */
