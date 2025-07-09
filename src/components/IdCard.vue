@@ -235,16 +235,11 @@ const props = withDefaults(defineProps<Props>(), {
   }),
 });
 
-import { Rand } from "rand-seed";
+import Rand from "rand-seed";
 
+const barcodeRand = new Rand(props.profileData?.sinId ?? Date.now().toString());
 const getRandomBarcodeWidth = () => {
-  if (props.profileData.sinId) {
-    const rand = new Rand(props.profileData.sinId);
-    return Math.floor(rand.next() * 3) + 1; // Generates 1, 2, or 3
-  } else {
-    // Fallback for when sinId is not available (e.g. initial state)
-    return Math.floor(Math.random() * 3) + 1;
-  }
+  return Math.floor(barcodeRand.next() * 3) + 1; // Generates 1, 2, or 3
 };
 
 const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
