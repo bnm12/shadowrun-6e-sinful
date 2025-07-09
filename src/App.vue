@@ -26,6 +26,7 @@ const message = ref("");
 const showSinForm = ref(false); // Control visibility of SIN Form
 const currentProfileData = ref<any>({
   // To hold data for IdCard
+  sinId: uuidv4(),
   name: "Jane Smith", // Default
   nationality: ShadowrunNationality.UNKNOWN,
   gender: "Female",
@@ -202,6 +203,7 @@ const handleSinFormSubmit = async (sinData: SinData) => {
   width: 100%;
   height: 100%;
   position: relative; /* For potential absolute positioning of children if needed */
+  padding: 1dvh 0;
 }
 
 /* IdCard itself will be handled by its own styles for rotation and sizing */

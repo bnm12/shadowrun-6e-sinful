@@ -74,15 +74,19 @@
             <div class="barcode">
               <div class="barcode-lines">
                 <div
-                  v-for="n in 45"
-                  :key="n"
+                  v-for="(n, index) in barcodeWidths"
+                  :key="index"
                   class="barcode-line"
-                  :data-barcode-width="getRandomBarcodeWidth()"
+                  :data-barcode-width="n"
                 ></div>
+              </div>
+              <div class="sin-id">
+                {{ profileData.sinId }}
               </div>
             </div>
             <div class="flag-container">
               <div class="flag" :style="{ background: getFlagColors() }"></div>
+              <div class="flag-nationality">{{ profileData.nationality }}</div>
             </div>
           </div>
 
@@ -187,7 +191,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"; // Removed computed as effectiveSinQuality is removed
+import Rand from "rand-seed";
+import { computed, ref } from "vue"; // Removed computed as effectiveSinQuality is removed
 import {
   ShadowrunNationality,
   getFlagCSS,
@@ -235,12 +240,16 @@ const props = withDefaults(defineProps<Props>(), {
   }),
 });
 
-import Rand from "rand-seed";
-
-const barcodeRand = new Rand(props.profileData?.sinId ?? Date.now().toString());
-const getRandomBarcodeWidth = () => {
-  return Math.floor(barcodeRand.next() * 3) + 1; // Generates 1, 2, or 3
-};
+const barcodeWidths = computed(() => {
+  const barcodeRand = new Rand(
+    props.profileData?.sinId ?? Date.now().toString()
+  );
+  const max = 9;
+  const min = 0;
+  return Array.from({ length: 75 }, () =>
+    Math.floor(barcodeRand.next() * (max - min + 1) + min)
+  );
+});
 
 const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
 const sinQualitiesList = getAllSinQualities();
@@ -458,12 +467,16 @@ const getFlagColors = (): string => {
   display: flex;
   flex-direction: row;
   gap: 2%; /* Relative gap */
-  height: 15%; /* Relative to right-section height */
+  height: 25%; /* Relative to right-section height */
   justify-content: space-between;
 }
 
 .barcode {
   width: 70%; /* Proportion of top-right-section */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .barcode-lines {
@@ -474,27 +487,64 @@ const getFlagColors = (): string => {
 }
 
 .barcode-line {
+  height: 100%;
+  width: 1px;
+  flex-grow: 1;
+}
+
+.barcode-line::after {
+  content: "";
   background: #00ffff;
+  display: block;
   height: 100%;
 }
 
-.barcode-line[data-barcode-width="1"] {
-  flex-grow: 1;
+.barcode-line[data-barcode-width="0"]::after {
+  width: 0%;
 }
-.barcode-line[data-barcode-width="2"] {
-  flex-grow: 2;
+.barcode-line[data-barcode-width="1"]::after {
+  width: 10%;
 }
-.barcode-line[data-barcode-width="3"] {
-  flex-grow: 3;
+.barcode-line[data-barcode-width="2"]::after {
+  width: 20%;
+}
+.barcode-line[data-barcode-width="3"]::after {
+  width: 30%;
+}
+.barcode-line[data-barcode-width="4"]::after {
+  width: 40%;
+}
+.barcode-line[data-barcode-width="5"]::after {
+  width: 50%;
+}
+.barcode-line[data-barcode-width="6"]::after {
+  width: 60%;
+}
+.barcode-line[data-barcode-width="7"]::after {
+  width: 70%;
+}
+.barcode-line[data-barcode-width="8"]::after {
+  width: 80%;
+}
+.barcode-line[data-barcode-width="9"]::after {
+  width: 90%;
+}
+
+.sin-id,
+.flag-nationality {
+  font-size: 0.7em;
 }
 
 .flag-container {
-  width: 25%; /* Proportion of top-right-section */
-  border: 1px solid #00ffff;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  aspect-ratio: 37/28;
 }
 
 .flag {
+  border: 1px solid #00ffff;
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
 }
