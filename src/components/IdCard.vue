@@ -88,7 +88,7 @@ import {
   getFlagCSS,
   type ShadowrunNationalityType,
 } from "./shadowrun-flags";
-import { SinQuality } from "./sin-quality";
+import { SinQuality, type SinQualityValue } from "./sin-quality"; // Import value and type
 
 interface ProfileData {
   name: string;
@@ -100,7 +100,7 @@ interface ProfileData {
   idc: string;
   additionalCode: string;
   flagColors?: string; // Optional manual override
-  sinQuality: SinQuality; // Added SIN Quality
+  sinQuality: SinQualityValue; // Use SinQualityValue type
 }
 
 interface Props {
