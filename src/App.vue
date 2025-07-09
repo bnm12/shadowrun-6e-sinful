@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
@@ -22,8 +22,14 @@ interface SinData {
   licenses?: Record<string, SinQualityValue>; // Optional licenses
 }
 
-const message = ref("");
+const message = ref(""); // This will be removed as per plan
 const showSinForm = ref(false); // Control visibility of SIN Form
+
+// Refs for "Write to Tag" button state
+const isWriting = ref(false);
+const writeStatusMessage = ref("");
+const writeStatusMessageType = ref<"success" | "error" | "">("");
+
 const currentProfileData = ref<any>({
   // To hold data for IdCard
   sinId: uuidv4(),
@@ -124,11 +130,17 @@ import { v4 as uuidv4 } from "uuid";
 
 // Handler for SIN form submission
 const handleSinFormSubmit = async (sinData: SinData) => {
-  message.value = "Attempting to write SIN data to tag...";
+  isWriting.value = true;
+  writeStatusMessage.value = "";
+  writeStatusMessageType.value = "";
+  // message.value = "Attempting to write SIN data to tag..."; // Replaced by new status refs
   sinData.sinId = uuidv4(); // Add sinId to the data
+
   if (!("NDEFReader" in window)) {
-    message.value =
+    writeStatusMessage.value =
       "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
+    writeStatusMessageType.value = "error";
+    isWriting.value = false;
     return;
   }
 
@@ -152,12 +164,34 @@ const handleSinFormSubmit = async (sinData: SinData) => {
         },
       ],
     });
-    message.value = `Successfully wrote SIN data for ${sinData.name} to tag.`;
+    // message.value = `Successfully wrote SIN data for ${sinData.name} to tag.`; // Replaced
+    writeStatusMessage.value = `Successfully wrote SIN data for ${sinData.name} to tag.`;
+    writeStatusMessageType.value = "success";
   } catch (error) {
     console.error("Error writing SIN data to tag:", error);
-    message.value = `Error writing SIN data: ${error}`;
+    // message.value = `Error writing SIN data: ${error}`; // Replaced
+    writeStatusMessage.value = `Error writing SIN data: ${error}`;
+    writeStatusMessageType.value = "error";
+  } finally {
+    isWriting.value = false;
+    setTimeout(() => {
+      writeStatusMessage.value = "";
+      writeStatusMessageType.value = "";
+    }, 5000); // Clear message after 5 seconds
   }
 };
+
+// Watch for changes in message and clear it after a delay if it's a reading message
+watch(message, (newMessage) => {
+  if (
+    newMessage &&
+    !writeStatusMessage.value // Don't clear if it's a write status message
+  ) {
+    setTimeout(() => {
+      message.value = "";
+    }, 5000); // Clear after 5 seconds
+  }
+});
 
 onMounted(() => {
   readTag();
@@ -177,10 +211,15 @@ onMounted(() => {
         </button>
         <!-- Original writeTag button can be removed or repurposed later -->
         <!-- <button type="button" @click="writeTag">Write Generic Tag</button> -->
-        <p v-if="message">{{ message }}</p>
+        <!-- Removed message paragraph: <p v-if="message">{{ message }}</p> -->
       </div>
       <div v-if="showSinForm" class="sin-form-section">
-        <SinForm @submitSinData="handleSinFormSubmit" />
+        <SinForm
+          @submitSinData="handleSinFormSubmit"
+          :isWriting="isWriting"
+          :writeStatusMessage="writeStatusMessage"
+          :writeStatusMessageType="writeStatusMessageType"
+        />
       </div>
     </div>
   </div>
