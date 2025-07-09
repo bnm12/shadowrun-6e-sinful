@@ -85,6 +85,7 @@
             </div>
           </div>
         </div>
+      </div> <!-- Closing right-section -->
       </template>
     </div>
 
