@@ -75,9 +75,7 @@
                   v-for="n in 45"
                   :key="n"
                   class="barcode-line"
-                  :data-barcode-width="
-                    Math.floor(Math.random() * (3 - 1 + 1) + 1)
-                  "
+                  :data-barcode-width="getRandomBarcodeWidth()"
                 ></div>
               </div>
             </div>
@@ -212,6 +210,7 @@ interface ProfileData {
   flagColors?: string; // Optional manual override
   sinQuality: SinQualityValue; // Use SinQualityValue type
   licenses?: Record<string, SinQualityValue>; // Optional licenses
+  sinId?: string; // Add sinId to ProfileData
 }
 
 interface Props {
@@ -230,8 +229,29 @@ const props = withDefaults(defineProps<Props>(), {
     additionalCode: "<<< 85478516/GTR/22145 >>> SIN ID",
     sinQuality: SinQuality.LEVEL_1, // Default SIN quality to LEVEL_1
     licenses: {}, // Default licenses
+    sinId: undefined, // Default sinId
   }),
 });
+
+// Seeded random number generator function
+const seededRandom = (seedStr: string | undefined) => {
+  if (!seedStr) {
+    return Math.random; // Fallback to Math.random if no seed
+  }
+  let seed = 0;
+  for (let i = 0; i < seedStr.length; i++) {
+    seed = (seed + seedStr.charCodeAt(i)) % 2147483647; // Simple hashing
+  }
+  return () => {
+    seed = (seed * 16807) % 2147483647; // LCG parameters
+    return (seed - 1) / 2147483646; // Normalize to [0, 1)
+  };
+};
+
+const getRandomBarcodeWidth = () => {
+  const random = seededRandom(props.profileData.sinId);
+  return Math.floor(random() * 3) + 1; // Generates 1, 2, or 3
+};
 
 const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
 const sinQualitiesList = getAllSinQualities();
