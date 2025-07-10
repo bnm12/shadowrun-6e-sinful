@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/marked": "^5.0.2",
+    "bz2": "^1.0.1",
     "marked": "^16.0.0",
     "rand-seed": "^3.0.0",
     "uuid": "^11.1.0",
