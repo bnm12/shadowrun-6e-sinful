@@ -166,7 +166,7 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
     const encodedData = strToU8(profileDataString);
 
     // Compress the data using GZip
-    const compressedData = gzipSync(encodedData);
+    const compressedData = gzipSync(encodedData, { level: 9 });
 
     await ndef.write({
       records: [
