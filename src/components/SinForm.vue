@@ -169,7 +169,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import {
   ShadowrunNationality,
   getAllNationalities,
@@ -186,8 +186,8 @@ import {
   type SinQualityValue,
 } from "./sin-quality";
 import type { ProfileData } from "../@types/profile"; // Import ProfileData, ProfileBasic is unused
-
-import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
+import { v4 as uuidv4 } from "uuid";
+import { useLicenseManagement } from "../composables/useLicenseManagement";
 
 // Props received from App.vue
 const props = defineProps<{
@@ -199,11 +199,6 @@ const props = defineProps<{
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
 const sinQualities = getAllSinQualities();
-
-// For license form
-const currentLicenseName = ref("");
-const currentLicenseQuality = ref<SinQualityValue>(SinQuality.LEVEL_1);
-const editingLicenseKey = ref<string | null>(null);
 
 // Initialize formData with the full ProfileData structure
 const formData = reactive<ProfileData>({
@@ -225,45 +220,20 @@ const formData = reactive<ProfileData>({
   Genetic: { dnaFingerprintPattern: Date.now() },
 });
 
+const {
+  currentLicenseName,
+  currentLicenseQuality,
+  editingLicenseKey,
+  addOrUpdateLicense,
+  editLicense,
+  deleteLicense,
+} = useLicenseManagement(formData);
+
 const emit = defineEmits(["submitSinData"]);
 
 const getSinQualityText = (qualityValue: SinQualityValue): string => {
   const quality = sinQualities.find((q) => q.value === qualityValue);
   return quality ? quality.text : "Unknown Quality";
-};
-
-const addOrUpdateLicense = () => {
-  if (!currentLicenseName.value.trim()) {
-    alert("License name cannot be empty.");
-    return;
-  }
-  const name = currentLicenseName.value.trim();
-  if (editingLicenseKey.value && editingLicenseKey.value !== name) {
-    // If name changed during edit, delete old entry
-    delete formData.licenses![editingLicenseKey.value];
-  }
-  formData.licenses![name] = currentLicenseQuality.value;
-  currentLicenseName.value = "";
-  currentLicenseQuality.value = SinQuality.LEVEL_1;
-  editingLicenseKey.value = null;
-};
-
-const editLicense = (licenseName: string) => {
-  currentLicenseName.value = licenseName;
-  currentLicenseQuality.value = formData.licenses![licenseName];
-  editingLicenseKey.value = licenseName;
-};
-
-const deleteLicense = (licenseName: string) => {
-  if (confirm(`Are you sure you want to delete license "${licenseName}"?`)) {
-    delete formData.licenses![licenseName];
-    if (editingLicenseKey.value === licenseName) {
-      // Clear form if currently editing the deleted license
-      currentLicenseName.value = "";
-      currentLicenseQuality.value = SinQuality.LEVEL_1;
-      editingLicenseKey.value = null;
-    }
-  }
 };
 
 const submitForm = () => {

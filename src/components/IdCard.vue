@@ -320,72 +320,28 @@
   </div>
 </template>
 
-<script lang="ts">
-// This is a separate, non-setup script block for module-scoped constants/functions
-import { ShadowrunNationality } from "./shadowrun-flags";
-import { SinQuality } from "./sin-quality";
-import type { ProfileData } from "../@types/profile";
-
-const INITIAL_SIN_ID_MODULE = "00000000-0000-0000-0000-000000000000";
-
-export const getDefaultProfileData = (): ProfileData => ({
-  sinId: INITIAL_SIN_ID_MODULE,
-  active: false,
-  sinQuality: SinQuality.LEVEL_1,
-  licenses: {},
-  Basic: {
-    name: "Jane Doe",
-    gender: "N/A",
-    nationality: ShadowrunNationality.UNKNOWN,
-    metatype: "N/A",
-    photo: "/blank-profile-picture.svg",
-  },
-  Identity: {
-    address: "N/A",
-    city: "N/A",
-    country: "N/A",
-    birthdate: "N/A",
-  },
-  Physical: {
-    size: "N/A",
-    height: "N/A",
-    weight: "N/A",
-    skin: "N/A",
-    hair: "N/A",
-    eyes: "N/A",
-    fingerprints: "N/A",
-  },
-  Medical: {
-    bloodType: "N/A",
-    eyeScan: "N/A",
-    medicalRecord: "N/A",
-  },
-  Employment: {
-    profession: "N/A",
-    employer: "N/A",
-    employerAddress: "N/A",
-    verifiedDataLinks: { civil: "N/A", bank: "N/A", personal: "N/A" },
-  },
-  Genetic: {
-    dnaFingerprintPattern: 0,
-  },
-});
-</script>
-
 <script setup lang="ts">
-import Rand from "rand-seed";
-import { computed, ref, watch } from "vue"; // Removed computed as effectiveSinQuality is removed // Added watch
-import IdCardOverlay from "./IdCardOverlay.vue"; // Import the overlay component
+import { computed, ref, watch } from "vue";
+import IdCardOverlay from "./IdCardOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
-import { getFlagCSS } from "./shadowrun-flags"; // ShadowrunNationality is imported in the script block above
-// Removed getSinQualityFlair from this import
-import { getAllSinQualities, type SinQualityValue } from "./sin-quality"; // SinQuality is imported above
-// ProfileData is imported in the script block above
+import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
+import { useIdCardBarcode } from "../composables/useIdCardBarcode";
+import {
+  ShadowrunNationality,
+  getFlagCSS,
+} from "./shadowrun-flags";
+import {
+  SinQuality,
+  getAllSinQualities,
+  type SinQualityValue,
+} from "./sin-quality";
+import type { ProfileData } from "../@types/profile";
+import { getDefaultProfileData } from "../utils/profile";
 
 type ScanStatus = "idle" | "scanning" | "success" | "error";
 
 interface Props {
-  profileData: ProfileData; // Use the imported ProfileData
+  profileData: ProfileData;
   scanStatus: ScanStatus;
   scanResultMessage?: string;
 }
@@ -484,32 +440,10 @@ const internalProfileData = computed(() => {
   };
 });
 
-const idc = computed(() => {
-  const myRand = new Rand(internalProfileData.value.sinId);
-  return `R-${myRand.next().toString().slice(-9)} - ${myRand
-    .next()
-    .toString()
-    .slice(2, 11)} - ${myRand.next().toString().slice(2, 11)} - 01`;
-});
+const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);
+const { barcodeWidths } = useIdCardBarcode(internalProfileData);
 
-const additionalCode = computed(() => {
-  return `<<< ${
-    internalProfileData.value.Basic?.nationality || ShadowrunNationality.UNKNOWN
-  }/${
-    internalProfileData.value.Basic?.metatype || "UNKNOWN"
-  } >>> SIN ID VERIFIED`;
-});
-
-const barcodeWidths = computed(() => {
-  const barcodeRand = new Rand(internalProfileData.value.sinId);
-  const max = 9;
-  const min = 0;
-  return Array.from({ length: 75 }, () =>
-    Math.floor(barcodeRand.next() * (max - min + 1) + min)
-  );
-});
-
-const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1); // Default to Basic (LEVEL_1)
+const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1);
 const sinQualitiesList = getAllSinQualities();
 
 const filteredSinQualitiesList = computed(() =>

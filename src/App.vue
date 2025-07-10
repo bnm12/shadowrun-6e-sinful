@@ -1,182 +1,48 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { marked } from "marked";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
-import type { ProfileData } from "./@types/profile"; // Import the new ProfileData type
-
-import { gzipSync, strToU8, gunzipSync } from "fflate";
-
-// SinData interface is no longer needed as ProfileData will be used throughout.
+import type { ProfileData } from "./@types/profile";
+import { useNfc } from "./composables/useNfc";
+import { useReadme } from "./composables/useReadme";
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 
-// Refs for "Write to Tag" button state
-const isWriting = ref(false);
-const writeStatusMessage = ref("");
-const writeStatusMessageType = ref<"success" | "error" | "">("");
+const {
+  isWriting,
+  writeStatusMessage,
+  writeStatusMessageType,
+  currentScanStatus,
+  currentScanResultMessage,
+  scannedProfileData,
+  readTag,
+  writeTag,
+} = useNfc();
 
-// New reactive variables for scan status and message
-type ScanStatusApp = "idle" | "scanning" | "success" | "error";
-const currentScanStatus = ref<ScanStatusApp>("idle");
-const currentScanResultMessage = ref("");
+const {
+  showReadmeModal,
+  readmeHtmlContent,
+  // loadReadme, // loadReadme is called internally by toggleReadmeModal
+  toggleReadmeModal,
+} = useReadme();
 
 // Initialize currentProfileData as a minimal empty object.
 // IdCard.vue's withDefaults will handle showing its own default "standby" data.
 const currentProfileData = ref<ProfileData>({} as ProfileData);
 
-const readTag = async () => {
-  currentScanStatus.value = "idle";
-  currentScanResultMessage.value = "";
-
-  if (!("NDEFReader" in window)) {
-    currentScanStatus.value = "error";
-    currentScanResultMessage.value =
-      "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
-    return;
+// Watch for changes in scannedProfileData from the composable and update local currentProfileData
+watch(scannedProfileData, (newData) => {
+  if (newData && newData.sinId) {
+    currentProfileData.value = newData;
   }
-  try {
-    // @ts-ignore
-    const ndef = new NDEFReader();
-    await ndef.scan();
-    currentScanStatus.value = "scanning";
-    currentScanResultMessage.value = "Bring a tag closer to read. Scanning...";
-
-    ndef.onreading = (event: any) => {
-      let sinDataFound = false;
-      currentScanResultMessage.value = "Tag detected! Processing..."; // Update message
-
-      for (const record of event.message.records) {
-        if (record.recordType === "mime") {
-          let jsonData = "";
-          try {
-            // We only support gzip now
-            if (record.mediaType === "application/vnd.shadowrun.sin+gzip") {
-              if (!record.data) throw new Error("Record data is undefined.");
-              const compressedData = new Uint8Array(record.data.buffer); // NDEF record.data is an ArrayBuffer
-              const decompressedData = gunzipSync(compressedData); // Changed to decompressSync
-              // strFromU8 is not needed here if TextDecoder is used,
-              // TextDecoder can decode Uint8Array directly.
-              jsonData = new TextDecoder().decode(decompressedData);
-              currentScanResultMessage.value =
-                "Decompressed (auto-detect format) and processing SIN data..."; // Updated message
-            } else {
-              // Not a SIN record we can handle or unknown/old format
-              console.log("Skipping record with mediaType:", record.mediaType);
-              continue;
-            }
-
-            const parsedProfileData: ProfileData = JSON.parse(jsonData);
-            sinDataFound = true;
-            currentScanStatus.value = "success";
-            currentScanResultMessage.value = "SIN data found and parsed.";
-
-            // Tag data is expected to be complete. App.vue only sets systemId.
-            currentProfileData.value = parsedProfileData;
-
-            break; // Found and processed a SIN record
-          } catch (e: any) {
-            currentScanStatus.value = "error";
-            currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
-            console.error("Error processing SIN data:", e);
-            // If one record fails, we might want to continue to check other records
-            // or break if this was the intended record. For now, let's break.
-            break;
-          }
-        }
-      }
-      if (!sinDataFound && currentScanStatus.value !== "error") {
-        currentScanStatus.value = "error";
-        currentScanResultMessage.value =
-          "No Shadowrun SIN data found on this tag, or data is corrupted/unreadable.";
-      }
-      // Message for IdCard overlay will be handled by IdCard based on sinId change or status
-    };
-
-    ndef.onreadingerror = (event: any) => {
-      // Changed from `event: any` to `event: NDEFReadingErrorEvent` if type available
-      currentScanStatus.value = "error";
-      currentScanResultMessage.value = `Error reading tag: ${
-        event.message || "Unknown read error"
-      }`;
-      console.error("NDEFReader.onreadingerror", event);
-    };
-  } catch (error: any) {
-    currentScanStatus.value = "error";
-    currentScanResultMessage.value = `Error starting scan: ${
-      error.message || "Failed to start NDEFReader"
-    }`;
-    console.error("Error starting NDEFReader scan:", error);
-  }
-};
-
-// Handler for SIN form submission
-// Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
-const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
-  isWriting.value = true;
-  writeStatusMessage.value = "";
-  writeStatusMessageType.value = "";
-
-  if (!("NDEFReader" in window)) {
-    writeStatusMessage.value =
-      "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
-    writeStatusMessageType.value = "error";
-    isWriting.value = false;
-    return;
-  }
-
-  try {
-    // @ts-ignore
-    const ndef = new NDEFReader();
-    const profileDataString = JSON.stringify(profileDataFromForm);
-    // fflate's strToU8 can convert string to Uint8Array (UTF-8)
-    const encodedData = strToU8(profileDataString);
-
-    // Compress the data using GZip
-    const compressedData = gzipSync(encodedData, { level: 9 });
-
-    const readPageUrl = new URL(window.location.href);
-    readPageUrl.hash = "sin-check";
-    await ndef.write({
-      records: [
-        {
-          recordType: "url",
-          data: readPageUrl.toString(),
-        },
-        {
-          recordType: "mime",
-          mediaType: "application/vnd.shadowrun.sin+gzip", // Switched to GZip MIME type
-          data: compressedData, // Use GZipped data
-        },
-      ],
-    });
-    writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataFromForm.Basic.name} to tag.`;
-    writeStatusMessageType.value = "success";
-  } catch (error: any) {
-    console.error("Error writing compressed SIN data to tag:", error);
-    writeStatusMessage.value = `Error writing SIN data: ${
-      error.message || error
-    }`;
-    writeStatusMessageType.value = "error";
-  } finally {
-    isWriting.value = false;
-    setTimeout(() => {
-      writeStatusMessage.value = "";
-      writeStatusMessageType.value = "";
-    }, 5000); // Clear message after 5 seconds
-  }
-};
+});
 
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   history.replaceState(null, "", `#${viewName}`);
   if (viewName === "sin-check") {
-    // Reset currentProfileData to an empty object.
-    // IdCard.vue's withDefaults will handle showing its "standby" data.
-    currentProfileData.value = {} as ProfileData;
-    currentScanStatus.value = "idle"; // Reset scan status
-    currentScanResultMessage.value = "";
-    readTag(); // Initiate scanning when switching to sin-check view
+    currentProfileData.value = {} as ProfileData; // Reset before scan
+    readTag();
   }
 };
 
@@ -188,66 +54,23 @@ const handleHashChange = () => {
   if (["landing", "sin-check", "create-sin"].includes(hash)) {
     currentView.value = hash;
     if (hash === "sin-check") {
+      currentProfileData.value = {} as ProfileData; // Reset before scan
       readTag();
     }
   } else {
-    // Default to landing if hash is invalid or not present
     currentView.value = "landing";
-    window.location.hash = "landing"; // Optionally update hash to a valid default
+    window.location.hash = "landing";
   }
 };
 
 onMounted(() => {
-  handleHashChange(); // Set initial view based on hash
+  handleHashChange();
   window.addEventListener("hashchange", handleHashChange);
+  // Initial README load can be triggered here if desired, or on first click via toggleReadmeModal
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("hashchange", handleHashChange);
-});
-
-// README Modal
-const showReadmeModal = ref(false);
-const readmeHtmlContent = ref("");
-
-const loadReadme = async () => {
-  if (readmeHtmlContent.value) return; // Already loaded
-
-  try {
-    const response = await fetch("/info.md");
-    if (!response.ok) {
-      throw new Error(`Failed to fetch info.md: ${response.statusText}`);
-    }
-    const markdownText = await response.text();
-    // Adjust image paths: replace 'public/' with './' or '/'
-    // Marked by default will resolve relative paths from the HTML page's location.
-    // If images are in 'public/img.png' and README refers to 'public/img.png',
-    // and the app serves 'public' as root, then '/img.png' should work.
-    // Or, if README uses 'img.png' and images are in 'public', we might need to prepend '/' if not served from root.
-    // For this project, files in `public` are served from the root.
-    // So, `public/sin-check-logo.png` in Markdown should become `/sin-check-logo.png` or `sin-check-logo.png` in HTML.
-    // `marked` should handle relative paths correctly if the image `src` in markdown is like `sin-check-logo.png`
-    // but the README uses `public/sin-check-logo.png`.
-    // Let's replace `public/` with `/` to ensure they are treated as root-relative.
-    const adjustedMarkdownText = markdownText.replace(/public\//g, "/");
-    readmeHtmlContent.value = marked(adjustedMarkdownText) as string;
-  } catch (error) {
-    console.error("Error loading README:", error);
-    readmeHtmlContent.value =
-      "<p>Error loading README. Please try again later.</p>";
-  }
-};
-
-const toggleReadmeModal = () => {
-  showReadmeModal.value = !showReadmeModal.value;
-  if (showReadmeModal.value && !readmeHtmlContent.value) {
-    loadReadme();
-  }
-};
-
-onMounted(() => {
-  // Optional: Preload README if desired, or load on first click (current behavior)
-  // loadReadme();
 });
 </script>
 
@@ -307,7 +130,7 @@ onMounted(() => {
       </div>
       <div class="sin-form-section">
         <SinForm
-          @submitSinData="handleSinFormSubmit"
+          @submitSinData="writeTag"
           :isWriting="isWriting"
           :writeStatusMessage="writeStatusMessage"
           :writeStatusMessageType="writeStatusMessageType"
