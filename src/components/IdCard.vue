@@ -460,9 +460,6 @@ const getFlagColors = (): string => {
 .photo-container {
   width: 100%;
   height: 100%;
-  aspect-ratio: 150 / 170; /* Maintain original aspect ratio */
-  border: 2px solid #00ffff;
-  border-radius: 4px;
   overflow: hidden;
 }
 
