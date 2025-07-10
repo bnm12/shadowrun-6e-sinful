@@ -115,6 +115,32 @@
       </div>
       <!-- End Licenses Section -->
 
+      <!-- Identity Details Section -->
+      <div v-if="formData.sinQuality >= SinQuality.LEVEL_2" class="identity-details-section">
+        <h3>Identity Details</h3>
+        <div class="form-group">
+          <label for="address">Address:</label>
+          <input type="text" id="address" v-model="formData.Identity.address" />
+        </div>
+        <div class="form-group">
+          <label for="city">City:</label>
+          <input type="text" id="city" v-model="formData.Identity.city" />
+        </div>
+        <div class="form-group">
+          <label for="country">Country:</label>
+          <input type="text" id="country" v-model="formData.Identity.country" />
+        </div>
+        <div class="form-group">
+          <label for="birthdate">Birthdate:</label>
+          <input type="date" id="birthdate" v-model="formData.Identity.birthdate" />
+        </div>
+        <div class="form-group">
+          <label for="birthplace">Birthplace:</label>
+          <input type="text" id="birthplace" v-model="formData.Identity.birthplace" />
+        </div>
+      </div>
+      <!-- End Identity Details Section -->
+
       <div class="form-submission-area">
         <button type="submit" :disabled="props.isWriting">
           <span v-if="props.isWriting">Waiting for tag...</span>
@@ -298,9 +324,15 @@ button[type="submit"]:hover {
   border-top: 1px solid #4a9eff;
 }
 
-.licenses-section h3 {
+.licenses-section h3, .identity-details-section h3 {
   color: #4a9eff;
   margin-bottom: 10px;
+}
+
+.identity-details-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #4a9eff;
 }
 
 .licenses-section h4 {
