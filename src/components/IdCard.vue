@@ -112,68 +112,143 @@
         </div>
       </template>
 
-      <!-- Placeholder for Identity Info -->
-      <div
-        v-if="activeTab === SinQuality.LEVEL_2"
-        class="tab-content-section placeholder-content"
-      >
+      <!-- Identity Info (SIN Quality 2) -->
+      <div v-if="activeTab === SinQuality.LEVEL_2" class="tab-content-section">
         <h4>Identity Information</h4>
-        <p>Detailed identity records will be displayed here.</p>
-        <p>
-          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_2) }}
-        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Address</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.address || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">City</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.city || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Country</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.country || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Birthdate</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.birthdate || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Birthplace</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.birthplace || 'N/A' }}</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Placeholder for Physical Info -->
-      <div
-        v-if="activeTab === SinQuality.LEVEL_3"
-        class="tab-content-section placeholder-content"
-      >
+      <!-- Physical Info (SIN Quality 3) -->
+      <div v-if="activeTab === SinQuality.LEVEL_3" class="tab-content-section">
         <h4>Physical Characteristics</h4>
-        <p>Biometric data and physical descriptors will be displayed here.</p>
-        <p>
-          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_3) }}
-        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Size</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.size || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Height</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.height || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Weight</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.weight || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Skin</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.skin || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Hair</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.hair || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Eyes</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.eyes || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Blood Type</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.bloodType || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Fingerprints</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.fingerprints || 'N/A' }}</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Placeholder for Medical Info -->
-      <div
-        v-if="activeTab === SinQuality.LEVEL_4"
-        class="tab-content-section placeholder-content"
-      >
+      <!-- Medical Info (SIN Quality 4) -->
+      <div v-if="activeTab === SinQuality.LEVEL_4" class="tab-content-section">
         <h4>Medical Records</h4>
-        <p>
-          Comprehensive medical history and conditions will be displayed here.
-        </p>
-        <p>
-          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_4) }}
-        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Eye Scan</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.eyeScan || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Medical Record</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.medicalRecord || 'N/A' }}</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Placeholder for Employment Info -->
-      <div
-        v-if="activeTab === SinQuality.LEVEL_5"
-        class="tab-content-section placeholder-content"
-      >
+      <!-- Employment Info (SIN Quality 5) -->
+      <div v-if="activeTab === SinQuality.LEVEL_5" class="tab-content-section">
         <h4>Employment History</h4>
-        <p>
-          Official employment records and affiliations will be displayed here.
-        </p>
-        <p>
-          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_5) }}
-        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Profession</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.profession || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Employer</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.employer || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Employer Address</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.employerAddress || 'N/A' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Verified Data Links</span>
+            <span class="label-colon">:</span>
+            <div class="value">
+              <div>Civil: {{ internalProfileData.verifiedDataLinks?.civil || 'N/A' }}</div>
+              <div>Bank: {{ internalProfileData.verifiedDataLinks?.bank || 'N/A' }}</div>
+              <div>Personal: {{ internalProfileData.verifiedDataLinks?.personal || 'N/A' }}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Placeholder for Genetic Info -->
-      <div
-        v-if="activeTab === SinQuality.LEVEL_6"
-        class="tab-content-section placeholder-content"
-      >
+      <!-- Genetic Info (SIN Quality 6) -->
+      <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section">
         <h4>Genetic Markers</h4>
-        <p>Genetic data and heritage information will be displayed here.</p>
-        <p>
-          SIN Quality Flair: {{ getSinQualityTextById(SinQuality.LEVEL_6) }}
-        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">DNA Fingerprint Pattern</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{ internalProfileData.dnaFingerprintPattern || 'N/A' }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -218,6 +293,40 @@ interface ProfileData {
   sinQuality: SinQualityValue; // Use SinQualityValue type
   licenses?: Record<string, SinQualityValue>; // Optional licenses
   sinId?: string; // Add sinId to ProfileData
+
+  // Identity (SIN Quality 2)
+  address?: string;
+  city?: string;
+  country?: string;
+  birthdate?: string;
+  birthplace?: string;
+
+  // Physical (SIN Quality 3)
+  size?: string;
+  height?: string;
+  weight?: string;
+  skin?: string;
+  hair?: string;
+  eyes?: string;
+  bloodType?: string;
+  fingerprints?: string;
+
+  // Medical (SIN Quality 4)
+  eyeScan?: string;
+  medicalRecord?: string;
+
+  // Employment (SIN Quality 5)
+  profession?: string;
+  employer?: string;
+  employerAddress?: string; // Renamed from fullAddress for clarity
+  verifiedDataLinks?: {
+    civil?: string;
+    bank?: string;
+    personal?: string;
+  };
+
+  // Genetic (SIN Quality 6)
+  dnaFingerprintPattern?: string;
 }
 
 type ScanStatus = "idle" | "scanning" | "success" | "error";
