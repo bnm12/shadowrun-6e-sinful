@@ -5,21 +5,13 @@ import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
   ShadowrunNationality,
-  type ShadowrunNationalityType,
+  // type ShadowrunNationalityType, // Unused
 } from "./components/shadowrun-flags.ts";
-import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts";
-import { type SinQualityValue, SinQuality } from "./components/sin-quality";
+// import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts"; // Unused
+import { /*type SinQualityValue,*/ SinQuality } from "./components/sin-quality"; // SinQualityValue unused
+import type { ProfileData } from "./@types/profile"; // Import the new ProfileData type
 
-interface SinData {
-  sinId?: string;
-  name: string;
-  gender: "Male" | "Female" | "Diverse";
-  nationality: ShadowrunNationalityType;
-  metatype: ShadowrunMetatypeType;
-  imageUrl: string;
-  sinQuality: SinQualityValue;
-  licenses?: Record<string, SinQualityValue>;
-}
+// SinData interface is no longer needed as ProfileData will be used throughout.
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 
@@ -33,14 +25,28 @@ type ScanStatusApp = "idle" | "scanning" | "success" | "error";
 const currentScanStatus = ref<ScanStatusApp>("idle");
 const currentScanResultMessage = ref("");
 
-const currentProfileData = ref<any>({
-  // To hold data for IdCard - initialized to a minimal/empty state
-  nationality: ShadowrunNationality.UNKNOWN, // Minimal necessary defaults
-  gender: "N/A",
-  metatype: "N/A",
-  photo: "/blank-profile-picture.svg", // Default photo can remain
-  sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
+// Initialize currentProfileData with the new nested structure
+const currentProfileData = ref<ProfileData>({
+  sinId: undefined,
+  systemId: "#STANDBY#",
+  idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
+    .toString()
+    .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 00`,
+  additionalCode: "<<< WAITING FOR SCAN >>>",
+  sinQuality: SinQuality.LEVEL_1,
   licenses: {},
+  Basic: {
+    name: "Jane Doe", // Default name for initial display
+    gender: "N/A",
+    nationality: ShadowrunNationality.UNKNOWN,
+    metatype: "N/A",
+    photo: "/blank-profile-picture.svg",
+  },
+  Identity: {},
+  Physical: {},
+  Medical: {},
+  Employment: {},
+  Genetic: {},
 });
 
 const readTag = async () => {
@@ -72,53 +78,30 @@ const readTag = async () => {
         ) {
           try {
             const jsonData = decoder.decode(record.data);
-            const parsedSinData: SinData = JSON.parse(jsonData);
+            // Assume data from tag is always in ProfileData format now
+            const parsedProfileData: ProfileData = JSON.parse(jsonData);
             sinDataFound = true;
-            currentScanStatus.value = "success"; // Set status to success
-            currentScanResultMessage.value = "SIN data found and parsed."; // Generic success message
+            currentScanStatus.value = "success";
+            currentScanResultMessage.value = "SIN data found and parsed.";
 
-            // Update IdCard data
+            // Directly assign parsedProfileData, ensuring essential fields are present/defaulted
             currentProfileData.value = {
-              name: parsedSinData.name,
-              nationality: parsedSinData.nationality,
-              gender: parsedSinData.gender,
-              metatype: parsedSinData.metatype,
-              photo: parsedSinData.imageUrl || "/blank-profile-picture.svg",
-              sinQuality: parsedSinData.sinQuality || SinQuality.LEVEL_1,
-              licenses: parsedSinData.licenses || {},
-              sinId: parsedSinData.sinId || uuidv4(), // Ensure sinId is present
-              systemId: "#ACTIVE#",
-              idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
-                .toString()
-                .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 01`,
-              additionalCode: `<<< ${parsedSinData.nationality}/${parsedSinData.metatype} >>> SIN ID VERIFIED`,
-
-              // Sample data for new fields
-              address: "123 Main St, Apt 4B",
-              city: "Seattle",
-              country: "UCAS",
-              birthdate: "2050-08-15",
-              birthplace: "Seattle General Hospital",
-              size: "Average",
-              height: "1.75m",
-              weight: "70kg",
-              skin: "Pale",
-              hair: "Brown",
-              eyes: "Blue",
-              bloodType: "O+",
-              fingerprints: "On File",
-              eyeScan: "Retinal Scan Verified",
-              medicalRecord: "No major conditions on file. Last checkup: 2077-03-10.",
-              profession: "System Administrator",
-              employer: "Ares Macrotechnology",
-              employerAddress: "456 Tech Ave, Bellevue, UCAS",
-              verifiedDataLinks: {
-                civil: "UCAS Civil Registry ID: 789012",
-                bank: "Eurobank Account: ****-****-1234",
-                personal: "Personal Commlink: +1-206-555-0100",
-              },
-              dnaFingerprintPattern: "ACGTAGCATCGATCG...",
+              ...parsedProfileData, // Spread the data from the tag first
+              sinId: parsedProfileData.sinId || uuidv4(), // Ensure sinId
+              systemId: parsedProfileData.systemId || "#ACTIVE#",
+              idc: parsedProfileData.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`,
+              additionalCode: parsedProfileData.additionalCode || `<<< ${parsedProfileData.Basic?.nationality || ShadowrunNationality.UNKNOWN}/${parsedProfileData.Basic?.metatype || 'UNKNOWN'} >>> SIN ID VERIFIED`,
+              sinQuality: parsedProfileData.sinQuality || SinQuality.LEVEL_1,
+              licenses: parsedProfileData.licenses || {},
+              // Ensure all nested objects are at least empty objects if not provided by the tag
+              Basic: parsedProfileData.Basic || { name: "N/A", gender: "N/A", nationality: ShadowrunNationality.UNKNOWN, metatype: "N/A", photo: "/blank-profile-picture.svg" },
+              Identity: parsedProfileData.Identity || {},
+              Physical: parsedProfileData.Physical || {},
+              Medical: parsedProfileData.Medical || {},
+              Employment: parsedProfileData.Employment || {},
+              Genetic: parsedProfileData.Genetic || {},
             };
+
             // IdCard overlay will show "SIN Scanned successfully" due to sinId change
             break;
           } catch (e: any) {
@@ -150,11 +133,22 @@ const readTag = async () => {
 import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
 
 // Handler for SIN form submission
-const handleSinFormSubmit = async (sinData: SinData) => {
+// Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
+const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
   isWriting.value = true;
   writeStatusMessage.value = "";
   writeStatusMessageType.value = "";
-  sinData.sinId = uuidv4(); // Add sinId to the data
+
+  // Ensure sinId and other system-generated fields are set
+  const profileDataToWrite: ProfileData = {
+    ...profileDataFromForm, // Spread the data from the form
+    sinId: profileDataFromForm.sinId || uuidv4(), // Ensure sinId
+    systemId: profileDataFromForm.systemId || "#ACTIVE#", // Ensure systemId, default to #ACTIVE#
+    idc: profileDataFromForm.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`, // Ensure idc
+    // Ensure additionalCode, generate if not present or use Basic info
+    additionalCode: profileDataFromForm.additionalCode || `<<< ${profileDataFromForm.Basic?.nationality || ShadowrunNationality.UNKNOWN}/${profileDataFromForm.Basic?.metatype || 'UNKNOWN'} >>> SIN ID VERIFIED`,
+    // Basic, Identity, etc., are already part of profileDataFromForm
+  };
 
   if (!("NDEFReader" in window)) {
     writeStatusMessage.value =
@@ -167,7 +161,7 @@ const handleSinFormSubmit = async (sinData: SinData) => {
   try {
     // @ts-ignore
     const ndef = new NDEFReader();
-    const sinDataString = JSON.stringify(sinData);
+    const profileDataString = JSON.stringify(profileDataToWrite); // Use the transformed data
     const encoder = new TextEncoder();
 
     await ndef.write({
@@ -175,21 +169,19 @@ const handleSinFormSubmit = async (sinData: SinData) => {
         {
           recordType: "mime",
           mediaType: "application/vnd.shadowrun.sin",
-          data: encoder.encode(sinDataString),
+          data: encoder.encode(profileDataString), // Ensure this uses the stringified version of profileDataToWrite
         },
         // Optional: Add a standard NDEF text record for basic info or URL
         {
           recordType: "text",
-          data: `SIN Holder: ${sinData.name}`,
+          data: `SIN Holder: ${profileDataToWrite.Basic.name}`, // Use name from the structured data
         },
       ],
     });
-    // message.value = `Successfully wrote SIN data for ${sinData.name} to tag.`; // Replaced
-    writeStatusMessage.value = `Successfully wrote SIN data for ${sinData.name} to tag.`;
+    writeStatusMessage.value = `Successfully wrote SIN data for ${profileDataToWrite.Basic.name} to tag.`; // Use name from structured data
     writeStatusMessageType.value = "success";
   } catch (error) {
     console.error("Error writing SIN data to tag:", error);
-    // message.value = `Error writing SIN data: ${error}`; // Replaced
     writeStatusMessage.value = `Error writing SIN data: ${error}`;
     writeStatusMessageType.value = "error";
   } finally {
@@ -205,14 +197,28 @@ const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   window.location.hash = viewName;
   if (viewName === "sin-check") {
+    // Reset currentProfileData to its initial standby state using the new nested structure
     currentProfileData.value = {
-      nationality: ShadowrunNationality.UNKNOWN,
-      gender: "N/A",
-      metatype: "N/A",
-      photo: "/blank-profile-picture.svg",
+      sinId: undefined, // Or a specific standby SIN ID if preferred
       systemId: "#STANDBY#",
-      sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
+      idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
+        .toString()
+        .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 00`, // Placeholder IDC
+      additionalCode: "<<< WAITING FOR SCAN >>>",
+      sinQuality: SinQuality.LEVEL_1,
       licenses: {},
+      Basic: {
+        name: "Jane Doe", // Default standby name
+        gender: "N/A",
+        nationality: ShadowrunNationality.UNKNOWN,
+        metatype: "N/A",
+        photo: "/blank-profile-picture.svg",
+      },
+      Identity: {}, // Empty objects for other sections
+      Physical: {},
+      Medical: {},
+      Employment: {},
+      Genetic: {},
     };
     currentScanStatus.value = "idle"; // Reset scan status
     currentScanResultMessage.value = "";

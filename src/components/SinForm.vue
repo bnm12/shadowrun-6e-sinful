@@ -3,12 +3,12 @@
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="name">Name:</label>
-        <input type="text" id="name" v-model="formData.name" required />
+        <input type="text" id="name" v-model="formData.Basic.name" required />
       </div>
 
       <div class="form-group">
         <label for="gender">Gender:</label>
-        <select id="gender" v-model="formData.gender" required>
+        <select id="gender" v-model="formData.Basic.gender" required>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
           <option value="Diverse">Diverse</option>
@@ -17,7 +17,7 @@
 
       <div class="form-group">
         <label for="nationality">Nationality:</label>
-        <select id="nationality" v-model="formData.nationality" required>
+        <select id="nationality" v-model="formData.Basic.nationality" required>
           <option
             v-for="nationality in nationalities"
             :key="nationality"
@@ -30,7 +30,7 @@
 
       <div class="form-group">
         <label for="metatype">Metatype:</label>
-        <select id="metatype" v-model="formData.metatype" required>
+        <select id="metatype" v-model="formData.Basic.metatype" required>
           <option
             v-for="metatype in metatypes"
             :key="metatype"
@@ -43,7 +43,7 @@
 
       <div class="form-group">
         <label for="sinQuality">SIN Quality:</label>
-        <select id="sinQuality" v-model="formData.sinQuality" required>
+        <select id="sinQuality" v-model="formData.sinQuality" required> <!-- sinQuality is top-level -->
           <option
             v-for="quality in sinQualities"
             :key="quality.value"
@@ -55,12 +55,12 @@
       </div>
 
       <div class="form-group">
-        <label for="imageUrl">Image URL:</label>
-        <input type="url" id="imageUrl" v-model="formData.imageUrl" />
+        <label for="imageUrl">Image URL (for Basic Photo):</label>
+        <input type="url" id="imageUrl" v-model="formData.Basic.photo" />
       </div>
 
-      <div v-if="formData.imageUrl" class="image-preview">
-        <img :src="formData.imageUrl" alt="Image Preview" />
+      <div v-if="formData.Basic.photo" class="image-preview">
+        <img :src="formData.Basic.photo" alt="Image Preview" />
       </div>
 
       <!-- Licenses Section -->
@@ -87,12 +87,12 @@
         </button>
 
         <div
-          v-if="Object.keys(formData.licenses).length > 0"
+          v-if="Object.keys(formData.licenses || {}).length > 0"
           class="licenses-list"
         >
           <h4>Current Licenses:</h4>
           <ul>
-            <li v-for="(quality, name) in formData.licenses" :key="name">
+            <li v-for="(quality, name) in formData.licenses!" :key="name">
               {{ name }} ({{ getSinQualityText(quality) }})
               <button
                 type="button"
@@ -135,28 +135,19 @@ import { reactive, ref } from "vue";
 import {
   ShadowrunNationality,
   getAllNationalities,
-  type ShadowrunNationalityType,
+  // type ShadowrunNationalityType, // Unused
 } from "./shadowrun-flags";
 import {
   ShadowrunMetatype,
   getAllMetatypes,
-  type ShadowrunMetatypeType,
+  // type ShadowrunMetatypeType, // Unused
 } from "./shadowrun-metatypes";
 import {
   SinQuality,
   getAllSinQualities,
-  type SinQualityValue, // Import the type
+  type SinQualityValue,
 } from "./sin-quality";
-
-interface SinFormData {
-  name: string;
-  gender: "Male" | "Female" | "Diverse";
-  nationality: ShadowrunNationalityType;
-  metatype: ShadowrunMetatypeType;
-  imageUrl: string;
-  sinQuality: SinQualityValue; // Use SinQualityValue type
-  licenses: Record<string, SinQualityValue>; // Licenses
-}
+import type { ProfileData } from "../@types/profile"; // Import ProfileData, ProfileBasic is unused
 
 // Props received from App.vue
 const props = defineProps<{
@@ -174,14 +165,26 @@ const currentLicenseName = ref("");
 const currentLicenseQuality = ref<SinQualityValue>(SinQuality.LEVEL_1);
 const editingLicenseKey = ref<string | null>(null);
 
-const formData = reactive<SinFormData>({
-  name: "",
-  gender: "Male",
-  nationality: ShadowrunNationality.UCAS, // Default nationality
-  metatype: ShadowrunMetatype.HUMAN, // Default metatype
-  imageUrl: "",
-  sinQuality: SinQuality.LEVEL_3, // Default SIN quality
+// Initialize formData with the full ProfileData structure
+const formData = reactive<ProfileData>({
+  sinId: undefined, // Will be set in App.vue before writing
+  systemId: '', // Will be set in App.vue
+  idc: '',      // Will be set in App.vue
+  additionalCode: '', // Will be set in App.vue
+  sinQuality: SinQuality.LEVEL_3, // Default SIN quality for new SINs
   licenses: {}, // Initialize licenses as an empty object
+  Basic: {
+    name: "",
+    gender: "Male",
+    nationality: ShadowrunNationality.UCAS, // Default nationality
+    metatype: ShadowrunMetatype.HUMAN, // Default metatype
+    photo: "", // imageUrl maps to photo
+  },
+  Identity: {}, // Initialize other sections as empty.
+  Physical: {}, // Form could be expanded to include these.
+  Medical: {},
+  Employment: {},
+  Genetic: {},
 });
 
 const emit = defineEmits(["submitSinData"]);
@@ -199,9 +202,9 @@ const addOrUpdateLicense = () => {
   const name = currentLicenseName.value.trim();
   if (editingLicenseKey.value && editingLicenseKey.value !== name) {
     // If name changed during edit, delete old entry
-    delete formData.licenses[editingLicenseKey.value];
+    delete formData.licenses![editingLicenseKey.value];
   }
-  formData.licenses[name] = currentLicenseQuality.value;
+  formData.licenses![name] = currentLicenseQuality.value;
   currentLicenseName.value = "";
   currentLicenseQuality.value = SinQuality.LEVEL_1;
   editingLicenseKey.value = null;
@@ -209,13 +212,13 @@ const addOrUpdateLicense = () => {
 
 const editLicense = (licenseName: string) => {
   currentLicenseName.value = licenseName;
-  currentLicenseQuality.value = formData.licenses[licenseName];
+  currentLicenseQuality.value = formData.licenses![licenseName];
   editingLicenseKey.value = licenseName;
 };
 
 const deleteLicense = (licenseName: string) => {
   if (confirm(`Are you sure you want to delete license "${licenseName}"?`)) {
-    delete formData.licenses[licenseName];
+    delete formData.licenses![licenseName];
     if (editingLicenseKey.value === licenseName) {
       // Clear form if currently editing the deleted license
       currentLicenseName.value = "";
