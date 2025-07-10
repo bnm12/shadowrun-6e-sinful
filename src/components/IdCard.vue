@@ -294,12 +294,25 @@ const getFlagColors = (): string => {
   box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
   display: flex;
   flex-direction: column;
-  transform: rotate(90deg);
-  transform-origin: center center;
   flex-shrink: 0;
-  height: calc(100dvw - 10px * 2);
-  width: calc(95dvh - 5dvh - 10px * 2);
   gap: 10px;
+  aspect-ratio: 4/2;
+}
+
+@media (orientation: landscape) {
+  .id-card {
+    height: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (orientation: portrait) {
+  .id-card {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    height: calc(100dvw - 10px * 2);
+    max-width: calc(95dvh - 5dvh - 10px * 2);
+  }
 }
 
 /* Ensure pseudo-elements rotate with the card if they are positioned relative to it */

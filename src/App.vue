@@ -436,12 +436,25 @@ onBeforeUnmount(() => {
 
 /* SIN Check View Specific Styles */
 .sin-check-view .id-card-container {
-  height: calc(95dvh - 5dvh - 10px * 2);
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  aspect-ratio: 4/2;
+}
+
+@media (orientation: landscape) {
+  .sin-check-view .id-card-container {
+    height: 100%;
+  }
+}
+
+@media (orientation: portrait) {
+  .sin-check-view .id-card-container {
+    height: calc(95dvh - 5dvh - 10px * 2);
+    max-width: 100%;
+  }
 }
 
 .create-sin-view .create-sin-heading {
