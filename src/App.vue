@@ -254,9 +254,9 @@ const loadReadme = async () => {
   if (readmeHtmlContent.value) return; // Already loaded
 
   try {
-    const response = await fetch('/README.md');
+    const response = await fetch('/info.md');
     if (!response.ok) {
-      throw new Error(`Failed to fetch README.md: ${response.statusText}`);
+      throw new Error(`Failed to fetch info.md: ${response.statusText}`);
     }
     const markdownText = await response.text();
     // Adjust image paths: replace 'public/' with './' or '/'
