@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { marked } from 'marked';
+import { marked } from "marked";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
@@ -56,12 +56,13 @@ const readTag = async () => {
             // We only support gzip now
             if (record.mediaType === "application/vnd.shadowrun.sin+gzip") {
               if (!record.data) throw new Error("Record data is undefined.");
-              const compressedData = new Uint8Array(record.data); // NDEF record.data is an ArrayBuffer
+              const compressedData = new Uint8Array(record.data.buffer); // NDEF record.data is an ArrayBuffer
               const decompressedData = decompressSync(compressedData); // Changed to decompressSync
               // strFromU8 is not needed here if TextDecoder is used,
               // TextDecoder can decode Uint8Array directly.
               jsonData = new TextDecoder().decode(decompressedData);
-              currentScanResultMessage.value = "Decompressed (auto-detect format) and processing SIN data..."; // Updated message
+              currentScanResultMessage.value =
+                "Decompressed (auto-detect format) and processing SIN data..."; // Updated message
             } else {
               // Not a SIN record we can handle or unknown/old format
               console.log("Skipping record with mediaType:", record.mediaType);
@@ -79,7 +80,6 @@ const readTag = async () => {
               systemId: "#ACTIVE#", // Mark as active system from scan
               // All other fields (sinId, sinQuality, Basic, Identity, etc.)
               // are expected to come directly and completely from parsedProfileData.
-              
             };
             break; // Found and processed a SIN record
           } catch (e: any) {
@@ -92,27 +92,33 @@ const readTag = async () => {
           }
         }
       }
-      if (!sinDataFound && currentScanStatus.value !== 'error') {
+      if (!sinDataFound && currentScanStatus.value !== "error") {
         currentScanStatus.value = "error";
-        currentScanResultMessage.value = "No Shadowrun SIN data found on this tag, or data is corrupted/unreadable.";
+        currentScanResultMessage.value =
+          "No Shadowrun SIN data found on this tag, or data is corrupted/unreadable.";
       }
       // Message for IdCard overlay will be handled by IdCard based on sinId change or status
     };
 
-    ndef.onreadingerror = (event: any) => { // Changed from `event: any` to `event: NDEFReadingErrorEvent` if type available
+    ndef.onreadingerror = (event: any) => {
+      // Changed from `event: any` to `event: NDEFReadingErrorEvent` if type available
       currentScanStatus.value = "error";
-      currentScanResultMessage.value = `Error reading tag: ${event.message || 'Unknown read error'}`;
+      currentScanResultMessage.value = `Error reading tag: ${
+        event.message || "Unknown read error"
+      }`;
       console.error("NDEFReader.onreadingerror", event);
     };
   } catch (error: any) {
     currentScanStatus.value = "error";
-    currentScanResultMessage.value = `Error starting scan: ${error.message || 'Failed to start NDEFReader'}`;
+    currentScanResultMessage.value = `Error starting scan: ${
+      error.message || "Failed to start NDEFReader"
+    }`;
     console.error("Error starting NDEFReader scan:", error);
   }
 };
 
 import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
-import { gzipSync, strToU8, decompressSync } from 'fflate';
+import { gzipSync, strToU8, decompressSync } from "fflate";
 
 // Handler for SIN form submission
 // Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
@@ -128,8 +134,18 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
     sinId: profileDataFromForm.sinId || uuidv4(), // Ensure sinId is present, generate if new
     systemId: "#ACTIVE#", // Always set to #ACTIVE# for a written SIN
     // Generate idc and additionalCode if not provided by the form, or use form's values
-    idc: profileDataFromForm.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`,
-    additionalCode: profileDataFromForm.additionalCode || `<<< ${profileDataFromForm.Basic?.nationality || ShadowrunNationality.UNKNOWN}/${profileDataFromForm.Basic?.metatype || 'UNKNOWN'} >>> SIN ID VERIFIED`,
+    idc:
+      profileDataFromForm.idc ||
+      `R-${Date.now().toString().slice(-9)} - ${Math.random()
+        .toString()
+        .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 01`,
+    additionalCode:
+      profileDataFromForm.additionalCode ||
+      `<<< ${
+        profileDataFromForm.Basic?.nationality || ShadowrunNationality.UNKNOWN
+      }/${
+        profileDataFromForm.Basic?.metatype || "UNKNOWN"
+      } >>> SIN ID VERIFIED`,
     // All other fields (sinQuality, licenses, Basic, Identity, etc.)
     // are expected to come directly and completely from profileDataFromForm.
   };
@@ -170,7 +186,9 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
     writeStatusMessageType.value = "success";
   } catch (error: any) {
     console.error("Error writing compressed SIN data to tag:", error);
-    writeStatusMessage.value = `Error writing SIN data: ${error.message || error}`;
+    writeStatusMessage.value = `Error writing SIN data: ${
+      error.message || error
+    }`;
     writeStatusMessageType.value = "error";
   } finally {
     isWriting.value = false;
@@ -222,13 +240,13 @@ onBeforeUnmount(() => {
 
 // README Modal
 const showReadmeModal = ref(false);
-const readmeHtmlContent = ref('');
+const readmeHtmlContent = ref("");
 
 const loadReadme = async () => {
   if (readmeHtmlContent.value) return; // Already loaded
 
   try {
-    const response = await fetch('/info.md');
+    const response = await fetch("/info.md");
     if (!response.ok) {
       throw new Error(`Failed to fetch info.md: ${response.statusText}`);
     }
@@ -243,11 +261,12 @@ const loadReadme = async () => {
     // `marked` should handle relative paths correctly if the image `src` in markdown is like `sin-check-logo.png`
     // but the README uses `public/sin-check-logo.png`.
     // Let's replace `public/` with `/` to ensure they are treated as root-relative.
-    const adjustedMarkdownText = markdownText.replace(/public\//g, '/');
+    const adjustedMarkdownText = markdownText.replace(/public\//g, "/");
     readmeHtmlContent.value = marked(adjustedMarkdownText) as string;
   } catch (error) {
     console.error("Error loading README:", error);
-    readmeHtmlContent.value = "<p>Error loading README. Please try again later.</p>";
+    readmeHtmlContent.value =
+      "<p>Error loading README. Please try again later.</p>";
   }
 };
 
@@ -262,14 +281,19 @@ onMounted(() => {
   // Optional: Preload README if desired, or load on first click (current behavior)
   // loadReadme();
 });
-
 </script>
 
 <template>
   <div class="app-container">
     <!-- Info Button for Landing View -->
     <div v-if="currentView === 'landing'" class="info-button-container">
-      <button @click="toggleReadmeModal" class="info-button glitch-text" data-text="(i)">(i)</button>
+      <button
+        @click="toggleReadmeModal"
+        class="info-button glitch-text"
+        data-text="(i)"
+      >
+        (i)
+      </button>
     </div>
 
     <!-- Landing View -->
@@ -329,9 +353,19 @@ onMounted(() => {
     </div>
 
     <!-- README Modal -->
-    <div v-if="showReadmeModal" class="readme-modal-overlay" @click.self="toggleReadmeModal">
+    <div
+      v-if="showReadmeModal"
+      class="readme-modal-overlay"
+      @click.self="toggleReadmeModal"
+    >
       <div class="readme-modal-content">
-        <button @click="toggleReadmeModal" class="close-readme-button glitch-text" data-text="X">X</button>
+        <button
+          @click="toggleReadmeModal"
+          class="close-readme-button glitch-text"
+          data-text="X"
+        >
+          X
+        </button>
         <div v-html="readmeHtmlContent" class="readme-html-container"></div>
       </div>
     </div>
@@ -362,7 +396,6 @@ onMounted(() => {
   background-color: #ff1493;
   color: #10012c;
 }
-
 
 .readme-modal-overlay {
   position: fixed;
@@ -423,9 +456,15 @@ onMounted(() => {
   margin-top: 1em;
   margin-bottom: 0.5em;
 }
-.readme-html-container :deep(h1) { font-size: 2em; }
-.readme-html-container :deep(h2) { font-size: 1.75em; }
-.readme-html-container :deep(h3) { font-size: 1.5em; }
+.readme-html-container :deep(h1) {
+  font-size: 2em;
+}
+.readme-html-container :deep(h2) {
+  font-size: 1.75em;
+}
+.readme-html-container :deep(h3) {
+  font-size: 1.5em;
+}
 
 .readme-html-container :deep(p) {
   line-height: 1.6;
