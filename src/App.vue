@@ -54,21 +54,18 @@ const readTag = async () => {
         if (record.recordType === "mime") {
           let jsonData = "";
           try {
-            if (record.mediaType === "application/vnd.shadowrun.sin+bzip2") {
-              // Ensure record.data is not undefined and is an ArrayBuffer
+            // We only support gzip now
+            if (record.mediaType === "application/vnd.shadowrun.sin+gzip") {
               if (!record.data) throw new Error("Record data is undefined.");
-              const compressedData = new Uint8Array(record.data);
-              const decompressedData = bz2.decompress(compressedData);
-              jsonData = decoder.decode(decompressedData);
-              currentScanResultMessage.value = "Decompressed and processing SIN data...";
-            } else if (record.mediaType === "application/vnd.shadowrun.sin") {
-              // Handle uncompressed data if necessary, or log it
-              if (!record.data) throw new Error("Record data is undefined.");
-              jsonData = decoder.decode(record.data);
-              currentScanResultMessage.value = "Processing uncompressed SIN data...";
-              // Optionally, add a specific message or handling for older tags
+              const compressedData = new Uint8Array(record.data); // NDEF record.data is an ArrayBuffer
+              const decompressedData = gunzipSync(compressedData);
+              // strFromU8 is not needed here if TextDecoder is used,
+              // TextDecoder can decode Uint8Array directly.
+              jsonData = new TextDecoder().decode(decompressedData);
+              currentScanResultMessage.value = "Decompressed (GZip) and processing SIN data...";
             } else {
-              // Not a SIN record we can handle
+              // Not a SIN record we can handle or unknown/old format
+              console.log("Skipping record with mediaType:", record.mediaType);
               continue;
             }
 
@@ -116,7 +113,7 @@ const readTag = async () => {
 };
 
 import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
-import bz2 from 'bz2';
+import { gzipSync, gunzipSync, strToU8, strFromU8 } from 'fflate';
 
 // Handler for SIN form submission
 // Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
@@ -150,18 +147,18 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
     // @ts-ignore
     const ndef = new NDEFReader();
     const profileDataString = JSON.stringify(profileDataToWrite);
-    const encoder = new TextEncoder();
-    const encodedData = encoder.encode(profileDataString);
+    // fflate's strToU8 can convert string to Uint8Array (UTF-8)
+    const encodedData = strToU8(profileDataString);
 
-    // Compress the data
-    const compressedData = bz2.compress(encodedData);
+    // Compress the data using GZip
+    const compressedData = gzipSync(encodedData);
 
     await ndef.write({
       records: [
         {
           recordType: "mime",
-          mediaType: "application/vnd.shadowrun.sin+bzip2", // Updated mediaType
-          data: compressedData, // Use compressed data
+          mediaType: "application/vnd.shadowrun.sin+gzip", // Switched to GZip MIME type
+          data: compressedData, // Use GZipped data
         },
         // Optional: Add a standard NDEF text record for basic info or URL
         {
