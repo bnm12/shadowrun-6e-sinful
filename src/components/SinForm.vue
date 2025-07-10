@@ -101,6 +101,47 @@
       </div>
       <!-- End Identity Details Section -->
 
+      <!-- Physical Details Section -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.LEVEL_3"
+        class="physical-details-section"
+      >
+        <h3>Physical Details</h3>
+        <div class="form-group">
+          <label for="size">Size:</label>
+          <input type="text" id="size" v-model="formData.Physical.size" />
+        </div>
+        <div class="form-group">
+          <label for="height">Height:</label>
+          <input type="text" id="height" v-model="formData.Physical.height" />
+        </div>
+        <div class="form-group">
+          <label for="weight">Weight:</label>
+          <input type="text" id="weight" v-model="formData.Physical.weight" />
+        </div>
+        <div class="form-group">
+          <label for="skin">Skin:</label>
+          <input type="text" id="skin" v-model="formData.Physical.skin" />
+        </div>
+        <div class="form-group">
+          <label for="hair">Hair:</label>
+          <input type="text" id="hair" v-model="formData.Physical.hair" />
+        </div>
+        <div class="form-group">
+          <label for="eyes">Eyes:</label>
+          <input type="text" id="eyes" v-model="formData.Physical.eyes" />
+        </div>
+        <div class="form-group">
+          <label for="fingerprints">Fingerprints:</label>
+          <input
+            type="text"
+            id="fingerprints"
+            v-model="formData.Physical.fingerprints"
+          />
+        </div>
+      </div>
+      <!-- End Physical Details Section -->
+
       <!-- Licenses Section -->
       <div class="licenses-section">
         <h3>Manage Licenses</h3>
@@ -306,12 +347,14 @@ button[type="submit"]:hover {
 }
 
 .licenses-section h3,
-.identity-details-section h3 {
+.identity-details-section h3,
+.physical-details-section h3 {
   color: #4a9eff;
   margin-bottom: 10px;
 }
 
-.identity-details-section {
+.identity-details-section,
+.physical-details-section {
   margin-top: 20px;
   padding-top: 15px;
   border-top: 1px solid #4a9eff;
