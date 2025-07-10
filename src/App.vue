@@ -84,7 +84,7 @@ const readTag = async () => {
             break; // Found and processed a SIN record
           } catch (e: any) {
             currentScanStatus.value = "error";
-            currentScanResultMessage.value = `Error processing SIN data: ${e.message} ${jsonData}`;
+            currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
             console.error("Error processing SIN data:", e);
             // If one record fails, we might want to continue to check other records
             // or break if this was the intended record. For now, let's break.
