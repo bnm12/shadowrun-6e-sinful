@@ -46,7 +46,6 @@ const readTag = async () => {
     currentScanResultMessage.value = "Bring a tag closer to read. Scanning...";
 
     ndef.onreading = (event: any) => {
-      const decoder = new TextDecoder();
       let sinDataFound = false;
       currentScanResultMessage.value = "Tag detected! Processing..."; // Update message
 
@@ -113,7 +112,7 @@ const readTag = async () => {
 };
 
 import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
-import { gzipSync, gunzipSync, strToU8, strFromU8 } from 'fflate';
+import { gzipSync, gunzipSync, strToU8 } from 'fflate';
 
 // Handler for SIN form submission
 // Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
