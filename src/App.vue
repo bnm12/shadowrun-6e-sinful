@@ -135,17 +135,18 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
     // Compress the data using GZip
     const compressedData = gzipSync(encodedData, { level: 9 });
 
+    const readPageUrl = new URL(window.location.href);
+    readPageUrl.hash = "sin-check";
     await ndef.write({
       records: [
+        {
+          recordType: "url",
+          data: readPageUrl.toString(),
+        },
         {
           recordType: "mime",
           mediaType: "application/vnd.shadowrun.sin+gzip", // Switched to GZip MIME type
           data: compressedData, // Use GZipped data
-        },
-        // Optional: Add a standard NDEF text record for basic info or URL
-        {
-          recordType: "text",
-          data: `SIN Holder: ${profileDataFromForm.Basic.name}`,
         },
       ],
     });
@@ -168,7 +169,7 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
 
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
-  window.location.hash = viewName;
+  history.replaceState(null, "", `#${viewName}`);
   if (viewName === "sin-check") {
     // Reset currentProfileData to an empty object.
     // IdCard.vue's withDefaults will handle showing its "standby" data.
