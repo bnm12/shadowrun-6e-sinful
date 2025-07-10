@@ -305,13 +305,11 @@
       <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section">
         <h4>Genetic Markers</h4>
         <div class="details">
-          <div class="detail-row">
-            <span class="label">DNA Fingerprint Pattern</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.Genetic.dnaFingerprintPattern || "N/A"
-            }}</span>
-          </div>
+          <DnaFingerprint
+            :seed="internalProfileData.sinId"
+            :lanes="6"
+            :animated="true"
+          />
         </div>
       </div>
     </div>
@@ -385,6 +383,7 @@ export const getDefaultProfileData = (): ProfileData => ({
 import Rand from "rand-seed";
 import { computed, ref, watch } from "vue"; // Removed computed as effectiveSinQuality is removed // Added watch
 import IdCardOverlay from "./IdCardOverlay.vue"; // Import the overlay component
+import DnaFingerprint from "./DnaFingerprint.vue";
 import { getFlagCSS } from "./shadowrun-flags"; // ShadowrunNationality is imported in the script block above
 // Removed getSinQualityFlair from this import
 import { getAllSinQualities, type SinQualityValue } from "./sin-quality"; // SinQuality is imported above
