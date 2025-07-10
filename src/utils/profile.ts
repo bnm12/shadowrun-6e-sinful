@@ -23,26 +23,25 @@ export const getDefaultProfileData = (): ProfileData => ({
     birthdate: "N/A",
   },
   Physical: {
-    size: "N/A",
-    height: "N/A",
-    weight: "N/A",
+    height: 0,
+    weight: 0,
     skin: "N/A",
     hair: "N/A",
     eyes: "N/A",
-    fingerprints: "N/A",
+    seed: 0,
   },
   Medical: {
     bloodType: "N/A",
     eyeScan: "N/A",
-    medicalRecord: "N/A",
+    seed: 0,
   },
   Employment: {
     profession: "N/A",
     employer: "N/A",
     employerAddress: "N/A",
-    verifiedDataLinks: { civil: "N/A", bank: "N/A", personal: "N/A" },
+    seed: 0,
   },
   Genetic: {
-    dnaFingerprintPattern: 0,
+    seed: 0,
   },
 });

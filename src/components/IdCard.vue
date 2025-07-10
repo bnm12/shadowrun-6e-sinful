@@ -160,42 +160,35 @@
         <h4>Physical Characteristics</h4>
         <div class="details">
           <div class="detail-row">
-            <span class="label">Size</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.Physical.size || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Height</span>
+            <span class="label">Height (cm)</span>
             <span class="label-colon">:</span>
             <span class="value">{{
               internalProfileData.Physical.height || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Weight</span>
+            <span class="label">Weight (kg)</span>
             <span class="label-colon">:</span>
             <span class="value">{{
               internalProfileData.Physical.weight || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Skin</span>
+            <span class="label">Skin color</span>
             <span class="label-colon">:</span>
             <span class="value">{{
               internalProfileData.Physical.skin || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Hair</span>
+            <span class="label">Hair color</span>
             <span class="label-colon">:</span>
             <span class="value">{{
               internalProfileData.Physical.hair || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Eyes</span>
+            <span class="label">Eye color</span>
             <span class="label-colon">:</span>
             <span class="value">{{
               internalProfileData.Physical.eyes || "N/A"
@@ -205,7 +198,7 @@
             <span class="label">Fingerprints</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.Physical.fingerprints || "N/A"
+              internalProfileData.Physical.seed || "N/A"
             }}</span>
           </div>
         </div>
@@ -233,7 +226,7 @@
             <span class="label">Medical Record</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.Medical.medicalRecord || "N/A"
+              internalProfileData.Medical.seed ?? "N/A"
             }}</span>
           </div>
         </div>
@@ -268,27 +261,9 @@
             <span class="label">Verified Data Links</span>
             <span class="label-colon">:</span>
             <div class="value">
-              <div>
-                Civil:
-                {{
-                  internalProfileData.Employment.verifiedDataLinks?.civil ||
-                  "N/A"
-                }}
-              </div>
-              <div>
-                Bank:
-                {{
-                  internalProfileData.Employment.verifiedDataLinks?.bank ||
-                  "N/A"
-                }}
-              </div>
-              <div>
-                Personal:
-                {{
-                  internalProfileData.Employment.verifiedDataLinks?.personal ||
-                  "N/A"
-                }}
-              </div>
+              <div>Civil: "N/A"</div>
+              <div>Bank: "N/A"</div>
+              <div>Personal: "N/A"</div>
             </div>
           </div>
         </div>
@@ -298,10 +273,7 @@
       <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section">
         <h4>Genetic Markers</h4>
         <DnaFingerprint
-          :seed="
-            internalProfileData.sinId +
-            internalProfileData.Genetic.dnaFingerprintPattern
-          "
+          :seed="internalProfileData.sinId + internalProfileData.Genetic.seed"
           :lanes="12"
           :animated="true"
         />

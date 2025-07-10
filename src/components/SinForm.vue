@@ -108,36 +108,24 @@
       >
         <h3>Physical Details</h3>
         <div class="form-group">
-          <label for="size">Size:</label>
-          <input type="text" id="size" v-model="formData.Physical.size" />
+          <label for="height">Height (cm):</label>
+          <input type="number" id="height" v-model="formData.Physical.height" />
         </div>
         <div class="form-group">
-          <label for="height">Height:</label>
-          <input type="text" id="height" v-model="formData.Physical.height" />
+          <label for="weight">Weight (kg):</label>
+          <input type="number" id="weight" v-model="formData.Physical.weight" />
         </div>
         <div class="form-group">
-          <label for="weight">Weight:</label>
-          <input type="text" id="weight" v-model="formData.Physical.weight" />
-        </div>
-        <div class="form-group">
-          <label for="skin">Skin:</label>
+          <label for="skin">Skin color:</label>
           <input type="text" id="skin" v-model="formData.Physical.skin" />
         </div>
         <div class="form-group">
-          <label for="hair">Hair:</label>
+          <label for="hair">Hair color:</label>
           <input type="text" id="hair" v-model="formData.Physical.hair" />
         </div>
         <div class="form-group">
-          <label for="eyes">Eyes:</label>
+          <label for="eyes">Eye color:</label>
           <input type="text" id="eyes" v-model="formData.Physical.eyes" />
-        </div>
-        <div class="form-group">
-          <label for="fingerprints">Fingerprints:</label>
-          <input
-            type="text"
-            id="fingerprints"
-            v-model="formData.Physical.fingerprints"
-          />
         </div>
       </div>
       <!-- End Physical Details Section -->
@@ -258,7 +246,7 @@ const formData = reactive<ProfileData>({
   Physical: {}, // Form could be expanded to include these.
   Medical: {},
   Employment: {},
-  Genetic: { dnaFingerprintPattern: Date.now() },
+  Genetic: {},
 });
 
 const {
@@ -279,6 +267,31 @@ const getSinQualityText = (qualityValue: SinQualityValue): string => {
 
 const submitForm = () => {
   // Basic validation can be added here if needed
+  if (formData.sinQuality > 0) {
+  }
+  if (formData.sinQuality > 1) {
+  }
+  if (formData.sinQuality > 2) {
+    formData.Physical.seed = formData.Physical.seed ?? Date.now();
+  }
+  if (formData.sinQuality > 3) {
+    formData.Medical.seed = formData.Medical.seed ?? Date.now();
+  }
+  if (formData.sinQuality > 4) {
+    formData.Employment.seed = formData.Employment.seed ?? Date.now();
+  }
+  if (formData.sinQuality > 5) {
+    formData.Genetic.seed = formData.Genetic.seed ?? Date.now();
+  }
+
+  switch (formData.sinQuality) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+  }
   emit("submitSinData", formData);
 };
 </script>

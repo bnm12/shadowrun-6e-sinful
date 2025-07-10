@@ -23,20 +23,19 @@ export interface ProfileIdentity {
 
 // Based on SinQuality.LEVEL_3 in IdCard.vue
 export interface ProfilePhysical {
-  size?: string;
-  height?: string;
-  weight?: string;
+  height?: number;
+  weight?: number;
   skin?: string;
   hair?: string;
   eyes?: string;
-  fingerprints?: string;
+  seed?: number;
 }
 
 // Based on SinQuality.LEVEL_4 in IdCard.vue
 export interface ProfileMedical {
   bloodType?: string;
   eyeScan?: string;
-  medicalRecord?: string;
+  seed?: number;
 }
 
 // Based on SinQuality.LEVEL_5 in IdCard.vue
@@ -44,16 +43,12 @@ export interface ProfileEmployment {
   profession?: string;
   employer?: string;
   employerAddress?: string;
-  verifiedDataLinks?: {
-    civil?: string;
-    bank?: string;
-    personal?: string;
-  };
+  seed?: number;
 }
 
 // Based on SinQuality.LEVEL_6 in IdCard.vue
 export interface ProfileGenetic {
-  dnaFingerprintPattern?: number;
+  seed?: number;
 }
 
 export interface ProfileData {
