@@ -3,14 +3,8 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { marked } from "marked";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
-import {
-  ShadowrunNationality,
-  // type ShadowrunNationalityType, // Unused
-} from "./components/shadowrun-flags.ts";
-// import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts"; // Unused
 import type { ProfileData } from "./@types/profile"; // Import the new ProfileData type
 
-import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
 import { gzipSync, strToU8, gunzipSync } from "fflate";
 
 // SinData interface is no longer needed as ProfileData will be used throughout.
@@ -78,12 +72,8 @@ const readTag = async () => {
             currentScanResultMessage.value = "SIN data found and parsed.";
 
             // Tag data is expected to be complete. App.vue only sets systemId.
-            currentProfileData.value = {
-              ...parsedProfileData,
-              systemId: "#ACTIVE#", // Mark as active system from scan
-              // All other fields (sinId, sinQuality, Basic, Identity, etc.)
-              // are expected to come directly and completely from parsedProfileData.
-            };
+            currentProfileData.value = parsedProfileData;
+
             break; // Found and processed a SIN record
           } catch (e: any) {
             currentScanStatus.value = "error";
@@ -127,29 +117,6 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
   writeStatusMessage.value = "";
   writeStatusMessageType.value = "";
 
-  // SinForm.vue is expected to provide complete ProfileData.
-  // App.vue only ensures essential system-generated/override fields.
-  const profileDataToWrite: ProfileData = {
-    ...profileDataFromForm, // Spread the data from the form
-    sinId: profileDataFromForm.sinId || uuidv4(), // Ensure sinId is present, generate if new
-    systemId: "#ACTIVE#", // Always set to #ACTIVE# for a written SIN
-    // Generate idc and additionalCode if not provided by the form, or use form's values
-    idc:
-      profileDataFromForm.idc ||
-      `R-${Date.now().toString().slice(-9)} - ${Math.random()
-        .toString()
-        .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 01`,
-    additionalCode:
-      profileDataFromForm.additionalCode ||
-      `<<< ${
-        profileDataFromForm.Basic?.nationality || ShadowrunNationality.UNKNOWN
-      }/${
-        profileDataFromForm.Basic?.metatype || "UNKNOWN"
-      } >>> SIN ID VERIFIED`,
-    // All other fields (sinQuality, licenses, Basic, Identity, etc.)
-    // are expected to come directly and completely from profileDataFromForm.
-  };
-
   if (!("NDEFReader" in window)) {
     writeStatusMessage.value =
       "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
@@ -161,7 +128,7 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
   try {
     // @ts-ignore
     const ndef = new NDEFReader();
-    const profileDataString = JSON.stringify(profileDataToWrite);
+    const profileDataString = JSON.stringify(profileDataFromForm);
     // fflate's strToU8 can convert string to Uint8Array (UTF-8)
     const encodedData = strToU8(profileDataString);
 
@@ -178,11 +145,11 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
         // Optional: Add a standard NDEF text record for basic info or URL
         {
           recordType: "text",
-          data: `SIN Holder: ${profileDataToWrite.Basic.name}`,
+          data: `SIN Holder: ${profileDataFromForm.Basic.name}`,
         },
       ],
     });
-    writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataToWrite.Basic.name} to tag.`;
+    writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataFromForm.Basic.name} to tag.`;
     writeStatusMessageType.value = "success";
   } catch (error: any) {
     console.error("Error writing compressed SIN data to tag:", error);

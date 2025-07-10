@@ -43,7 +43,8 @@
 
       <div class="form-group">
         <label for="sinQuality">SIN Quality:</label>
-        <select id="sinQuality" v-model="formData.sinQuality" required> <!-- sinQuality is top-level -->
+        <select id="sinQuality" v-model="formData.sinQuality" required>
+          <!-- sinQuality is top-level -->
           <option
             v-for="quality in sinQualities"
             :key="quality.value"
@@ -149,6 +150,8 @@ import {
 } from "./sin-quality";
 import type { ProfileData } from "../@types/profile"; // Import ProfileData, ProfileBasic is unused
 
+import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
+
 // Props received from App.vue
 const props = defineProps<{
   isWriting: boolean;
@@ -167,10 +170,8 @@ const editingLicenseKey = ref<string | null>(null);
 
 // Initialize formData with the full ProfileData structure
 const formData = reactive<ProfileData>({
-  sinId: undefined, // Will be set in App.vue before writing
-  systemId: '', // Will be set in App.vue
-  idc: '',      // Will be set in App.vue
-  additionalCode: '', // Will be set in App.vue
+  sinId: uuidv4(), // Will be set in App.vue before writing
+  active: true,
   sinQuality: SinQuality.LEVEL_3, // Default SIN quality for new SINs
   licenses: {}, // Initialize licenses as an empty object
   Basic: {

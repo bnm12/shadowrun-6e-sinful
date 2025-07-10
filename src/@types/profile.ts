@@ -59,10 +59,8 @@ export interface ProfileGenetic {
 
 export interface ProfileData {
   // Top-level identifiers and metadata
-  sinId?: string; // SIN (System Identification Number) or internal ID
-  systemId?: string; // System status/ID for display
-  idc?: string; // Identification Code for display
-  additionalCode?: string; // Additional codes/text for display
+  sinId: string; // SIN (System Identification Number) or internal ID
+  active: boolean; // Active / burned
   sinQuality: SinQualityValue; // Overall quality of the SIN
   licenses?: Record<string, SinQualityValue>; // Licenses associated with the SIN
 

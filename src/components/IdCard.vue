@@ -85,7 +85,9 @@
             </div>
             <div class="flag-container">
               <div class="flag" :style="{ background: getFlagColors() }"></div>
-              <div class="flag-nationality">{{ internalProfileData.Basic.nationality }}</div>
+              <div class="flag-nationality">
+                {{ internalProfileData.Basic.nationality }}
+              </div>
             </div>
           </div>
 
@@ -95,17 +97,23 @@
               <div class="detail-row">
                 <span class="label">Nationality</span>
                 <span class="label-colon">:</span>
-                <span class="value">{{ internalProfileData.Basic.nationality }}</span>
+                <span class="value">{{
+                  internalProfileData.Basic.nationality
+                }}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Gender</span>
                 <span class="label-colon">:</span>
-                <span class="value">{{ internalProfileData.Basic.gender }}</span>
+                <span class="value">{{
+                  internalProfileData.Basic.gender
+                }}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Metatype</span>
                 <span class="label-colon">:</span>
-                <span class="value">{{ internalProfileData.Basic.metatype }}</span>
+                <span class="value">{{
+                  internalProfileData.Basic.metatype
+                }}</span>
               </div>
             </div>
           </div>
@@ -119,27 +127,37 @@
           <div class="detail-row">
             <span class="label">Address</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Identity.address || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Identity.address || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">City</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Identity.city || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Identity.city || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Country</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Identity.country || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Identity.country || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Birthdate</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Identity.birthdate || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Identity.birthdate || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Birthplace</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Identity.birthplace || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Identity.birthplace || "N/A"
+            }}</span>
           </div>
         </div>
       </div>
@@ -151,42 +169,58 @@
           <div class="detail-row">
             <span class="label">Size</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.size || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.size || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Height</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.height || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.height || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Weight</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.weight || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.weight || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Skin</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.skin || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.skin || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Hair</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.hair || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.hair || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Eyes</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.eyes || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.eyes || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Blood Type</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.bloodType || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.bloodType || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Fingerprints</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Physical.fingerprints || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Physical.fingerprints || "N/A"
+            }}</span>
           </div>
         </div>
       </div>
@@ -198,12 +232,16 @@
           <div class="detail-row">
             <span class="label">Eye Scan</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Medical.eyeScan || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Medical.eyeScan || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Medical Record</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Medical.medicalRecord || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Medical.medicalRecord || "N/A"
+            }}</span>
           </div>
         </div>
       </div>
@@ -215,25 +253,49 @@
           <div class="detail-row">
             <span class="label">Profession</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Employment.profession || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Employment.profession || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Employer</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Employment.employer || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Employment.employer || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Employer Address</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Employment.employerAddress || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Employment.employerAddress || "N/A"
+            }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Verified Data Links</span>
             <span class="label-colon">:</span>
             <div class="value">
-              <div>Civil: {{ internalProfileData.Employment.verifiedDataLinks?.civil || 'N/A' }}</div>
-              <div>Bank: {{ internalProfileData.Employment.verifiedDataLinks?.bank || 'N/A' }}</div>
-              <div>Personal: {{ internalProfileData.Employment.verifiedDataLinks?.personal || 'N/A' }}</div>
+              <div>
+                Civil:
+                {{
+                  internalProfileData.Employment.verifiedDataLinks?.civil ||
+                  "N/A"
+                }}
+              </div>
+              <div>
+                Bank:
+                {{
+                  internalProfileData.Employment.verifiedDataLinks?.bank ||
+                  "N/A"
+                }}
+              </div>
+              <div>
+                Personal:
+                {{
+                  internalProfileData.Employment.verifiedDataLinks?.personal ||
+                  "N/A"
+                }}
+              </div>
             </div>
           </div>
         </div>
@@ -246,7 +308,9 @@
           <div class="detail-row">
             <span class="label">DNA Fingerprint Pattern</span>
             <span class="label-colon">:</span>
-            <span class="value">{{ internalProfileData.Genetic.dnaFingerprintPattern || 'N/A' }}</span>
+            <span class="value">{{
+              internalProfileData.Genetic.dnaFingerprintPattern || "N/A"
+            }}</span>
           </div>
         </div>
       </div>
@@ -254,11 +318,11 @@
 
     <div class="system-info">
       <div class="system-title">
-        System Identification Number : {{ internalProfileData.systemId }}
+        {{ internalProfileData.active ? "## ACTIVE ##" : "## BURNED ##" }}
       </div>
       <div class="system-codes">
-        <div class="code-line">IDC : {{ internalProfileData.idc }}</div>
-        <div class="code-line">{{ internalProfileData.additionalCode }}</div>
+        <div class="code-line">IDC : {{ idc }}</div>
+        <div class="code-line">{{ additionalCode }}</div>
       </div>
     </div>
   </div>
@@ -274,9 +338,7 @@ const INITIAL_SIN_ID_MODULE = "00000000-0000-0000-0000-000000000000";
 
 export const getDefaultProfileData = (): ProfileData => ({
   sinId: INITIAL_SIN_ID_MODULE,
-  systemId: "#STANDBY#",
-  idc: "R-000000000 - 000000000 - 000000000 - 00",
-  additionalCode: "<<< WAITING FOR SCAN >>>",
+  active: false,
   sinQuality: SinQuality.LEVEL_1,
   licenses: {},
   Basic: {
@@ -287,19 +349,34 @@ export const getDefaultProfileData = (): ProfileData => ({
     photo: "/blank-profile-picture.svg",
   },
   Identity: {
-    address: 'N/A', city: 'N/A', country: 'N/A', birthdate: 'N/A', birthplace: 'N/A'
+    address: "N/A",
+    city: "N/A",
+    country: "N/A",
+    birthdate: "N/A",
+    birthplace: "N/A",
   },
   Physical: {
-    size: 'N/A', height: 'N/A', weight: 'N/A', skin: 'N/A', hair: 'N/A', eyes: 'N/A', bloodType: 'N/A', fingerprints: 'N/A'
+    size: "N/A",
+    height: "N/A",
+    weight: "N/A",
+    skin: "N/A",
+    hair: "N/A",
+    eyes: "N/A",
+    bloodType: "N/A",
+    fingerprints: "N/A",
   },
   Medical: {
-    eyeScan: 'N/A', medicalRecord: 'N/A'
+    eyeScan: "N/A",
+    medicalRecord: "N/A",
   },
   Employment: {
-    profession: 'N/A', employer: 'N/A', employerAddress: 'N/A', verifiedDataLinks: { civil: 'N/A', bank: 'N/A', personal: 'N/A' }
+    profession: "N/A",
+    employer: "N/A",
+    employerAddress: "N/A",
+    verifiedDataLinks: { civil: "N/A", bank: "N/A", personal: "N/A" },
   },
   Genetic: {
-    dnaFingerprintPattern: 'N/A'
+    dnaFingerprintPattern: "N/A",
   },
 });
 </script>
@@ -336,7 +413,11 @@ const overlayMessage = ref("Waiting for SIN");
 
 // New watcher for overlay logic
 watch(
-  [() => props.scanStatus, () => props.scanResultMessage, () => props.profileData.sinId],
+  [
+    () => props.scanStatus,
+    () => props.scanResultMessage,
+    () => props.profileData.sinId,
+  ],
   ([newStatus, newMessage, newSinId], [_oldStatus, _oldMessage, oldSinId]) => {
     // Priority 1: Actual SIN data changed (successful read)
     if (newSinId && newSinId !== INITIAL_SIN_ID && newSinId !== oldSinId) {
@@ -359,7 +440,9 @@ watch(
       // Generic success from App.vue, only if not handled by sinId change.
       overlayMessage.value = newMessage || "Operation successful.";
       isOverlayVisible.value = true;
-      setTimeout(() => { isOverlayVisible.value = false; }, 2000);
+      setTimeout(() => {
+        isOverlayVisible.value = false;
+      }, 2000);
     }
     // Priority 3: Idle states
     else if (newStatus === "idle") {
@@ -381,25 +464,6 @@ watch(
   { immediate: true, deep: false }
 );
 
-// This watcher will be replaced by logic reacting to scanStatus and profileData.sinId changes
-// watch(
-//   () => props.profileData.systemId,
-//   (newSystemId, _oldSystemId) => {
-//     if (newSystemId === "#ACTIVE#") {
-//       overlayMessage.value = "SIN Scanned successfully";
-//       isOverlayVisible.value = true; // Ensure it's visible
-//
-//       setTimeout(() => {
-//         isOverlayVisible.value = false;
-//       }, 2000); // Display success message for 2 seconds then fade out
-//     } else if (newSystemId === "#STANDBY#") {
-//       overlayMessage.value = "Waiting for SIN";
-//       isOverlayVisible.value = true;
-//     }
-//   },
-//   { immediate: true }
-// );
-
 const internalProfileData = computed(() => {
   // If the passed sinId is undefined or the initial one, use full default data
   // When props.profileData.sinId is undefined or INITIAL_SIN_ID,
@@ -410,7 +474,9 @@ const internalProfileData = computed(() => {
     return {
       ...defaultData, // Spread all default fields
       // Compute flagColors based on the default nationality
-      flagColors: getFlagCSS(defaultData.Basic.nationality || ShadowrunNationality.UNKNOWN),
+      flagColors: getFlagCSS(
+        defaultData.Basic.nationality || ShadowrunNationality.UNKNOWN
+      ),
     };
   }
 
@@ -420,18 +486,30 @@ const internalProfileData = computed(() => {
     ...props.profileData, // Use the actual data from App.vue (already nested)
     // Compute flagColors based on the actual nationality
     // Ensure Basic object and nationality exist, otherwise default to UNKNOWN
-    flagColors: getFlagCSS(props.profileData.Basic?.nationality || ShadowrunNationality.UNKNOWN),
+    flagColors: getFlagCSS(
+      props.profileData.Basic?.nationality || ShadowrunNationality.UNKNOWN
+    ),
   };
 });
 
+const idc = computed(() => {
+  const myRand = new Rand(internalProfileData.value.sinId);
+  return `R-${myRand.next().toString().slice(-9)} - ${myRand
+    .next()
+    .toString()
+    .slice(2, 11)} - ${myRand.next().toString().slice(2, 11)} - 01`;
+});
+
+const additionalCode = computed(() => {
+  return `<<< ${
+    internalProfileData.value.Basic?.nationality || ShadowrunNationality.UNKNOWN
+  }/${
+    internalProfileData.value.Basic?.metatype || "UNKNOWN"
+  } >>> SIN ID VERIFIED`;
+});
 
 const barcodeWidths = computed(() => {
-  const barcodeRand = new Rand(
-    // Use a default seed if sinId is not available or system is not active
-    internalProfileData.value.sinId && internalProfileData.value.sinId !== INITIAL_SIN_ID
-      ? internalProfileData.value.sinId
-      : Date.now().toString()
-  );
+  const barcodeRand = new Rand(internalProfileData.value.sinId);
   const max = 9;
   const min = 0;
   return Array.from({ length: 75 }, () =>
@@ -470,7 +548,9 @@ const getFlagColors = (): string => {
   }
 
   // Otherwise, look up by nationality from the Basic profile data
-  return getFlagCSS(internalProfileData.value.Basic?.nationality || ShadowrunNationality.UNKNOWN);
+  return getFlagCSS(
+    internalProfileData.value.Basic?.nationality || ShadowrunNationality.UNKNOWN
+  );
 };
 </script>
 
