@@ -30,12 +30,12 @@ export interface ProfilePhysical {
   skin?: string;
   hair?: string;
   eyes?: string;
-  bloodType?: string;
   fingerprints?: string;
 }
 
 // Based on SinQuality.LEVEL_4 in IdCard.vue
 export interface ProfileMedical {
+  bloodType?: string;
   eyeScan?: string;
   medicalRecord?: string;
 }
@@ -54,7 +54,7 @@ export interface ProfileEmployment {
 
 // Based on SinQuality.LEVEL_6 in IdCard.vue
 export interface ProfileGenetic {
-  dnaFingerprintPattern?: string;
+  dnaFingerprintPattern?: number;
 }
 
 export interface ProfileData {

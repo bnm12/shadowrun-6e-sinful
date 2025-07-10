@@ -185,7 +185,7 @@ const formData = reactive<ProfileData>({
   Physical: {}, // Form could be expanded to include these.
   Medical: {},
   Employment: {},
-  Genetic: {},
+  Genetic: { dnaFingerprintPattern: Date.now() },
 });
 
 const emit = defineEmits(["submitSinData"]);
@@ -231,7 +231,7 @@ const deleteLicense = (licenseName: string) => {
 
 const submitForm = () => {
   // Basic validation can be added here if needed
-  emit("submitSinData", { ...formData });
+  emit("submitSinData", formData);
 };
 </script>
 

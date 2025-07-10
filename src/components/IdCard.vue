@@ -209,13 +209,6 @@
             }}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Blood Type</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.Physical.bloodType || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
             <span class="label">Fingerprints</span>
             <span class="label-colon">:</span>
             <span class="value">{{
@@ -229,6 +222,13 @@
       <div v-if="activeTab === SinQuality.LEVEL_4" class="tab-content-section">
         <h4>Medical Records</h4>
         <div class="details">
+          <div class="detail-row">
+            <span class="label">Blood Type</span>
+            <span class="label-colon">:</span>
+            <span class="value">{{
+              internalProfileData.Medical.bloodType || "N/A"
+            }}</span>
+          </div>
           <div class="detail-row">
             <span class="label">Eye Scan</span>
             <span class="label-colon">:</span>
@@ -305,7 +305,10 @@
       <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section">
         <h4>Genetic Markers</h4>
         <DnaFingerprint
-          :seed="internalProfileData.sinId"
+          :seed="
+            internalProfileData.sinId +
+            internalProfileData.Genetic.dnaFingerprintPattern
+          "
           :lanes="12"
           :animated="true"
         />
@@ -358,10 +361,10 @@ export const getDefaultProfileData = (): ProfileData => ({
     skin: "N/A",
     hair: "N/A",
     eyes: "N/A",
-    bloodType: "N/A",
     fingerprints: "N/A",
   },
   Medical: {
+    bloodType: "N/A",
     eyeScan: "N/A",
     medicalRecord: "N/A",
   },
@@ -372,7 +375,7 @@ export const getDefaultProfileData = (): ProfileData => ({
     verifiedDataLinks: { civil: "N/A", bank: "N/A", personal: "N/A" },
   },
   Genetic: {
-    dnaFingerprintPattern: "N/A",
+    dnaFingerprintPattern: 0,
   },
 });
 </script>
