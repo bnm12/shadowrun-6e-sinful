@@ -326,10 +326,7 @@ import IdCardOverlay from "./IdCardOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
-import {
-  ShadowrunNationality,
-  getFlagCSS,
-} from "./shadowrun-flags";
+import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
 import {
   SinQuality,
   getAllSinQualities,
@@ -872,12 +869,15 @@ const getFlagColors = (): string => {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px; /* Thickness of the scan line */
+  height: 4px; /* Thickness of the scan line */
   background: linear-gradient(
     90deg,
-    transparent,
-    rgba(255, 20, 147, 0.5),
-    transparent
+    transparent 0%,
+    rgba(255, 20, 147, 0.3) 20%,
+    rgba(255, 20, 147, 0.5) 45%,
+    rgba(255, 20, 147, 0.5) 55%,
+    rgba(255, 20, 147, 0.3) 80%,
+    transparent 100%
   );
   animation: scan 8s linear infinite;
   z-index: 1; /* Ensure it's above other content if necessary */
