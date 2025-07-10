@@ -1,28 +1,25 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue"; // Removed watch
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
   ShadowrunNationality,
   type ShadowrunNationalityType,
 } from "./components/shadowrun-flags.ts";
-import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts"; // Import Metatype type
-// Import SinQualityValue type and SinQuality value
+import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts";
 import { type SinQualityValue, SinQuality } from "./components/sin-quality";
 
-// Define SINData interface
 interface SinData {
-  sinId?: string; // Optional: UUID for the SIN
+  sinId?: string;
   name: string;
   gender: "Male" | "Female" | "Diverse";
   nationality: ShadowrunNationalityType;
   metatype: ShadowrunMetatypeType;
   imageUrl: string;
-  sinQuality: SinQualityValue; // Use the new SinQualityValue type
-  licenses?: Record<string, SinQualityValue>; // Optional licenses
+  sinQuality: SinQualityValue;
+  licenses?: Record<string, SinQualityValue>;
 }
 
-// const message = ref(""); // Replaced by currentScanStatus and currentScanResultMessage
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 
 // Refs for "Write to Tag" button state
@@ -35,25 +32,18 @@ type ScanStatusApp = "idle" | "scanning" | "success" | "error";
 const currentScanStatus = ref<ScanStatusApp>("idle");
 const currentScanResultMessage = ref("");
 
-const INITIAL_SIN_ID_APP = "00000000-0000-0000-0000-000000000000"; // Consistent with IdCard.vue
-
 const currentProfileData = ref<any>({
   // To hold data for IdCard - initialized to a minimal/empty state
-  sinId: INITIAL_SIN_ID_APP, // Use the same initial SIN ID
-  name: "", // All other fields will be set by IdCard's defaults or by scan
   nationality: ShadowrunNationality.UNKNOWN, // Minimal necessary defaults
   gender: "N/A",
   metatype: "N/A",
   photo: "/blank-profile-picture.svg", // Default photo can remain
-  systemId: "#STANDBY#", // System ID can still be managed here
-  idc: "",
-  additionalCode: "",
   sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
   licenses: {},
 });
 
 const readTag = async () => {
-  currentScanStatus.value = "idle"; // Reset status at the beginning of a scan attempt
+  currentScanStatus.value = "idle";
   currentScanResultMessage.value = "";
 
   if (!("NDEFReader" in window)) {
@@ -184,34 +174,16 @@ const handleSinFormSubmit = async (sinData: SinData) => {
   }
 };
 
-// Watch for changes in message and clear it after a delay if it's a reading message - NO LONGER NEEDED for general message
-// watch(message, (newMessage) => {
-//   if (
-//     newMessage &&
-//     !writeStatusMessage.value // Don't clear if it's a write status message
-//   ) {
-//     setTimeout(() => {
-//       message.value = "";
-//     }, 5000); // Clear after 5 seconds
-//   }
-// });
-
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   window.location.hash = viewName;
   if (viewName === "sin-check") {
-    // Reset profile data to initial state when navigating to sin-check view
-    // This ensures the "Waiting for SIN" overlay appears correctly.
     currentProfileData.value = {
-      sinId: INITIAL_SIN_ID_APP,
-      name: "",
       nationality: ShadowrunNationality.UNKNOWN,
       gender: "N/A",
       metatype: "N/A",
       photo: "/blank-profile-picture.svg",
       systemId: "#STANDBY#",
-      idc: "",
-      additionalCode: "",
       sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
       licenses: {},
     };
@@ -241,7 +213,6 @@ const handleHashChange = () => {
 onMounted(() => {
   handleHashChange(); // Set initial view based on hash
   window.addEventListener("hashchange", handleHashChange);
-  // readTag(); // Removed from here, will be called conditionally by setView/handleHashChange
 });
 
 onBeforeUnmount(() => {
