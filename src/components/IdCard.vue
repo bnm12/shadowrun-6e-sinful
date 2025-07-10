@@ -304,13 +304,11 @@
       <!-- Genetic Info (SIN Quality 6) -->
       <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section">
         <h4>Genetic Markers</h4>
-        <div class="details">
-          <DnaFingerprint
-            :seed="internalProfileData.sinId"
-            :lanes="6"
-            :animated="true"
-          />
-        </div>
+        <DnaFingerprint
+          :seed="internalProfileData.sinId"
+          :lanes="12"
+          :animated="true"
+        />
       </div>
     </div>
 
@@ -656,12 +654,19 @@ const getFlagColors = (): string => {
 }
 
 .tab-content-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   width: 100%; /* Each section takes full width */
   padding: 5px;
   border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: 4px;
   background-color: rgba(0, 255, 255, 0.03);
   color: #00ffff; /* Default text color for content sections */
+}
+
+.tab-content-section h4 {
+  margin: 0;
 }
 
 /* Specific styling for when left and right sections are visible for Basic Info */
@@ -884,7 +889,7 @@ const getFlagColors = (): string => {
 
 .system-info {
   background: rgba(0, 255, 255, 0.1);
-  padding: 2% 3%; /* Relative padding */
+  padding: 10px; /* Relative padding */
   border-top: 1px solid #4a9eff;
   font-size: clamp(0.5em, 1.8dvh, 0.8em); /* Responsive font size */
 }
@@ -897,7 +902,8 @@ const getFlagColors = (): string => {
 
 .system-codes {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   gap: 0.3dvh;
 }
 
@@ -944,7 +950,7 @@ const getFlagColors = (): string => {
     rgba(255, 20, 147, 0.5),
     transparent
   );
-  animation: scan 3s linear infinite;
+  animation: scan 8s linear infinite;
   z-index: 1; /* Ensure it's above other content if necessary */
 }
 
