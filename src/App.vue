@@ -8,7 +8,6 @@ import {
   // type ShadowrunNationalityType, // Unused
 } from "./components/shadowrun-flags.ts";
 // import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts"; // Unused
-import { /*type SinQualityValue,*/ SinQuality } from "./components/sin-quality"; // SinQualityValue unused
 import type { ProfileData } from "./@types/profile"; // Import the new ProfileData type
 
 // SinData interface is no longer needed as ProfileData will be used throughout.
