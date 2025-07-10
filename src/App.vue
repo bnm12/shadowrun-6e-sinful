@@ -10,6 +10,9 @@ import {
 // import type { ShadowrunMetatypeType } from "./components/shadowrun-metatypes.ts"; // Unused
 import type { ProfileData } from "./@types/profile"; // Import the new ProfileData type
 
+import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
+import { gzipSync, strToU8, gunzipSync } from "fflate";
+
 // SinData interface is no longer needed as ProfileData will be used throughout.
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
@@ -57,7 +60,7 @@ const readTag = async () => {
             if (record.mediaType === "application/vnd.shadowrun.sin+gzip") {
               if (!record.data) throw new Error("Record data is undefined.");
               const compressedData = new Uint8Array(record.data.buffer); // NDEF record.data is an ArrayBuffer
-              const decompressedData = decompressSync(compressedData); // Changed to decompressSync
+              const decompressedData = gunzipSync(compressedData); // Changed to decompressSync
               // strFromU8 is not needed here if TextDecoder is used,
               // TextDecoder can decode Uint8Array directly.
               jsonData = new TextDecoder().decode(decompressedData);
@@ -116,9 +119,6 @@ const readTag = async () => {
     console.error("Error starting NDEFReader scan:", error);
   }
 };
-
-import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
-import { gzipSync, strToU8, decompressSync } from "fflate";
 
 // Handler for SIN form submission
 // Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
