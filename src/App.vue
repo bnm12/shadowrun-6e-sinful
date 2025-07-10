@@ -91,6 +91,32 @@ const readTag = async () => {
                 .toString()
                 .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 01`,
               additionalCode: `<<< ${parsedSinData.nationality}/${parsedSinData.metatype} >>> SIN ID VERIFIED`,
+
+              // Sample data for new fields
+              address: "123 Main St, Apt 4B",
+              city: "Seattle",
+              country: "UCAS",
+              birthdate: "2050-08-15",
+              birthplace: "Seattle General Hospital",
+              size: "Average",
+              height: "1.75m",
+              weight: "70kg",
+              skin: "Pale",
+              hair: "Brown",
+              eyes: "Blue",
+              bloodType: "O+",
+              fingerprints: "On File",
+              eyeScan: "Retinal Scan Verified",
+              medicalRecord: "No major conditions on file. Last checkup: 2077-03-10.",
+              profession: "System Administrator",
+              employer: "Ares Macrotechnology",
+              employerAddress: "456 Tech Ave, Bellevue, UCAS",
+              verifiedDataLinks: {
+                civil: "UCAS Civil Registry ID: 789012",
+                bank: "Eurobank Account: ****-****-1234",
+                personal: "Personal Commlink: +1-206-555-0100",
+              },
+              dnaFingerprintPattern: "ACGTAGCATCGATCG...",
             };
             // IdCard overlay will show "SIN Scanned successfully" due to sinId change
             break;
