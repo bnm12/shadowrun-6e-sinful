@@ -152,13 +152,6 @@
               internalProfileData.Identity.birthdate || "N/A"
             }}</span>
           </div>
-          <div class="detail-row">
-            <span class="label">Birthplace</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.Identity.birthplace || "N/A"
-            }}</span>
-          </div>
         </div>
       </div>
 
@@ -352,7 +345,6 @@ export const getDefaultProfileData = (): ProfileData => ({
     city: "N/A",
     country: "N/A",
     birthdate: "N/A",
-    birthplace: "N/A",
   },
   Physical: {
     size: "N/A",

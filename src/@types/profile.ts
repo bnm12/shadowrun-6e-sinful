@@ -19,7 +19,6 @@ export interface ProfileIdentity {
   city?: string;
   country?: string;
   birthdate?: string;
-  birthplace?: string;
 }
 
 // Based on SinQuality.LEVEL_3 in IdCard.vue
