@@ -1,5 +1,6 @@
 <template>
   <div class="id-card">
+    <IdCardOverlay :visible="isOverlayVisible" :message="overlayMessage" />
     <div class="card-header">
       <div class="header-tabs">
         <div class="quality-tabs">
@@ -79,32 +80,32 @@
                 ></div>
               </div>
               <div class="sin-id">
-                {{ profileData.sinId }}
+                {{ internalProfileData.sinId }}
               </div>
             </div>
             <div class="flag-container">
               <div class="flag" :style="{ background: getFlagColors() }"></div>
-              <div class="flag-nationality">{{ profileData.nationality }}</div>
+              <div class="flag-nationality">{{ internalProfileData.nationality }}</div>
             </div>
           </div>
 
           <div class="info-section">
-            <span class="name">{{ profileData.name }}</span>
+            <span class="name">{{ internalProfileData.name }}</span>
             <div class="details">
               <div class="detail-row">
                 <span class="label">Nationality</span>
                 <span class="label-colon">:</span>
-                <span class="value">{{ profileData.nationality }}</span>
+                <span class="value">{{ internalProfileData.nationality }}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Gender</span>
                 <span class="label-colon">:</span>
-                <span class="value">{{ profileData.gender }}</span>
+                <span class="value">{{ internalProfileData.gender }}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Metatype</span>
                 <span class="label-colon">:</span>
-                <span class="value">{{ profileData.metatype }}</span>
+                <span class="value">{{ internalProfileData.metatype }}</span>
               </div>
             </div>
           </div>
@@ -178,11 +179,11 @@
 
     <div class="system-info">
       <div class="system-title">
-        System Identification Number : {{ profileData.systemId }}
+        System Identification Number : {{ internalProfileData.systemId }}
       </div>
       <div class="system-codes">
-        <div class="code-line">IDC : {{ profileData.idc }}</div>
-        <div class="code-line">{{ profileData.additionalCode }}</div>
+        <div class="code-line">IDC : {{ internalProfileData.idc }}</div>
+        <div class="code-line">{{ internalProfileData.additionalCode }}</div>
       </div>
     </div>
   </div>
@@ -190,7 +191,8 @@
 
 <script setup lang="ts">
 import Rand from "rand-seed";
-import { computed, ref } from "vue"; // Removed computed as effectiveSinQuality is removed
+import { computed, ref, watch } from "vue"; // Removed computed as effectiveSinQuality is removed // Added watch
+import IdCardOverlay from "./IdCardOverlay.vue"; // Import the overlay component
 import {
   ShadowrunNationality,
   getFlagCSS,
@@ -218,29 +220,144 @@ interface ProfileData {
   sinId?: string; // Add sinId to ProfileData
 }
 
+type ScanStatus = "idle" | "scanning" | "success" | "error";
+
 interface Props {
   profileData: ProfileData;
+  scanStatus: ScanStatus;
+  scanResultMessage?: string;
 }
+
+const INITIAL_SIN_ID = "00000000-0000-0000-0000-000000000000"; // Hardcoded initial SIN ID
 
 const props = withDefaults(defineProps<Props>(), {
   profileData: () => ({
-    name: "John Doe",
+    name: "John Doe", // Default name
     nationality: ShadowrunNationality.UNKNOWN,
     gender: "Male",
     metatype: "Human",
     photo: "./blank-profile-picture.svg",
-    systemId: "#Error1#",
-    idc: "R-025648545482 - 5254267869 - 551247895512 - 02",
-    additionalCode: "<<< 85478516/GTR/22145 >>> SIN ID",
-    sinQuality: SinQuality.LEVEL_1, // Default SIN quality to LEVEL_1
-    licenses: {}, // Default licenses
-    sinId: undefined, // Default sinId
+    systemId: "#STANDBY#", // Default systemId, will be updated by App.vue
+    idc: "R-000000000 - 000000000 - 000000000 - 00",
+    additionalCode: "<<< WAITING FOR SCAN >>>",
+    sinQuality: SinQuality.LEVEL_1,
+    licenses: {},
+    sinId: INITIAL_SIN_ID, // Use hardcoded initial SIN ID
   }),
+  scanStatus: "idle",
+  scanResultMessage: "",
 });
+
+// Overlay state - will be computed based on props
+const isOverlayVisible = ref(true); // Will be managed by new logic
+const overlayMessage = ref("Waiting for SIN");
+
+// New watcher for overlay logic
+watch(
+  [() => props.scanStatus, () => props.scanResultMessage, () => props.profileData.sinId],
+  ([newStatus, newMessage, newSinId], [_oldStatus, _oldMessage, oldSinId]) => {
+    // Priority 1: Actual SIN data changed (successful read)
+    if (newSinId && newSinId !== INITIAL_SIN_ID && newSinId !== oldSinId) {
+      overlayMessage.value = "SIN Scanned successfully";
+      isOverlayVisible.value = true;
+      setTimeout(() => {
+        isOverlayVisible.value = false;
+      }, 2000);
+    }
+    // Priority 2: Specific scanning states from App.vue
+    else if (newStatus === "scanning") {
+      overlayMessage.value = newMessage || "Scanning...";
+      isOverlayVisible.value = true;
+    } else if (newStatus === "error") {
+      overlayMessage.value = newMessage || "Error during scan.";
+      isOverlayVisible.value = true;
+      // Optional: auto-hide error after a delay
+      // setTimeout(() => { isOverlayVisible.value = false; }, 3000);
+    } else if (newStatus === "success") {
+      // Generic success from App.vue, only if not handled by sinId change.
+      overlayMessage.value = newMessage || "Operation successful.";
+      isOverlayVisible.value = true;
+      setTimeout(() => { isOverlayVisible.value = false; }, 2000);
+    }
+    // Priority 3: Idle states
+    else if (newStatus === "idle") {
+      if (!newSinId || newSinId === INITIAL_SIN_ID) {
+        overlayMessage.value = "Waiting for SIN";
+        isOverlayVisible.value = true;
+      } else {
+        // Idle and have a valid SIN, hide overlay
+        isOverlayVisible.value = false;
+      }
+    }
+    // Fallback for initial load or unhandled states:
+    // If visible is true and no message set, default to "Waiting for SIN"
+    // This is mostly covered by immediate:true and idle state logic.
+    // else if (isOverlayVisible.value && !overlayMessage.value) {
+    //   overlayMessage.value = "Waiting for SIN";
+    // }
+  },
+  { immediate: true, deep: false }
+);
+
+// This watcher will be replaced by logic reacting to scanStatus and profileData.sinId changes
+// watch(
+//   () => props.profileData.systemId,
+//   (newSystemId, _oldSystemId) => {
+//     if (newSystemId === "#ACTIVE#") {
+//       overlayMessage.value = "SIN Scanned successfully";
+//       isOverlayVisible.value = true; // Ensure it's visible
+//
+//       setTimeout(() => {
+//         isOverlayVisible.value = false;
+//       }, 2000); // Display success message for 2 seconds then fade out
+//     } else if (newSystemId === "#STANDBY#") {
+//       overlayMessage.value = "Waiting for SIN";
+//       isOverlayVisible.value = true;
+//     }
+//   },
+//   { immediate: true }
+// );
+
+const internalProfileData = computed(() => {
+  // If the passed sinId is undefined or the initial one, use full default data
+  if (!props.profileData.sinId || props.profileData.sinId === INITIAL_SIN_ID) {
+    // This block is entered for the initial state.
+    return {
+      // Start with App.vue's minimal passed data (e.g., photo URL might be specific)
+      ...props.profileData,
+
+      // Now, explicitly set IdCard.vue's own defaults for the "Waiting for SIN" display.
+      // These will override anything from the spread above if there were conflicts for these keys.
+      name: "Jane Doe", // IdCard's default waiting name
+      gender: "N/A",   // IdCard's default waiting gender
+      metatype: "N/A", // IdCard's default waiting metatype
+      systemId: "#STANDBY#",
+      idc: "R-000000000 - 000000000 - 000000000 - 00",
+      additionalCode: "<<< WAITING FOR SCAN >>>",
+      sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
+      sinId: INITIAL_SIN_ID, // Crucially, ensure sinId is the initial one
+      // nationality and photo can come from props.profileData or their defaults if not set by App.vue
+      nationality: props.profileData.nationality || ShadowrunNationality.UNKNOWN,
+      photo: props.profileData.photo || "./blank-profile-picture.svg",
+      licenses: props.profileData.licenses || {}, // Ensure licenses is an object
+      flagColors: getFlagCSS(props.profileData.nationality || ShadowrunNationality.UNKNOWN),
+    };
+  }
+  // This is for when a real SIN is scanned
+  return {
+    ...props.profileData, // Use the actual data from App.vue
+    // Ensure nationality is valid for getFlagCSS if profileData might be incomplete
+    flagColors: getFlagCSS(props.profileData.nationality || ShadowrunNationality.UNKNOWN),
+  };
+});
+
 
 const barcodeWidths = computed(() => {
   const barcodeRand = new Rand(
-    props.profileData?.sinId ?? Date.now().toString()
+    // Use a default seed if sinId is not available or system is not active
+    internalProfileData.value.sinId && internalProfileData.value.sinId !== INITIAL_SIN_ID
+      ? internalProfileData.value.sinId
+      : Date.now().toString()
   );
   const max = 9;
   const min = 0;
@@ -269,17 +386,16 @@ const selectTab = (tabIdentifier: SinQualityValue | "licenses") => {
 };
 
 // effectiveSinQuality computed property is removed as it's no longer directly used for rendering tabs.
-// The main sinQuality from props.profileData.sinQuality is still available if needed for other logic.
 
 // Function to get flag colors based on nationality or manual override
 const getFlagColors = (): string => {
   // If manual colors are provided, use them
-  if (props.profileData.flagColors) {
-    return props.profileData.flagColors;
+  if (internalProfileData.value.flagColors) { // Use internalProfileData
+    return internalProfileData.value.flagColors;
   }
 
   // Otherwise, look up by nationality
-  return getFlagCSS(props.profileData.nationality);
+  return getFlagCSS(internalProfileData.value.nationality); // Use internalProfileData
 };
 </script>
 

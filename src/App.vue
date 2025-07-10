@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onBeforeUnmount } from "vue"; // Added onBeforeUnmount
+import { ref, onMounted, onBeforeUnmount } from "vue"; // Removed watch
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import {
@@ -22,7 +22,7 @@ interface SinData {
   licenses?: Record<string, SinQualityValue>; // Optional licenses
 }
 
-const message = ref("");
+// const message = ref(""); // Replaced by currentScanStatus and currentScanResultMessage
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 
 // Refs for "Write to Tag" button state
@@ -30,24 +30,35 @@ const isWriting = ref(false);
 const writeStatusMessage = ref("");
 const writeStatusMessageType = ref<"success" | "error" | "">("");
 
+// New reactive variables for scan status and message
+type ScanStatusApp = "idle" | "scanning" | "success" | "error";
+const currentScanStatus = ref<ScanStatusApp>("idle");
+const currentScanResultMessage = ref("");
+
+const INITIAL_SIN_ID_APP = "00000000-0000-0000-0000-000000000000"; // Consistent with IdCard.vue
+
 const currentProfileData = ref<any>({
-  // To hold data for IdCard
-  sinId: uuidv4(),
-  name: "Jane Smith", // Default
-  nationality: ShadowrunNationality.UNKNOWN,
-  gender: "Female",
-  metatype: "Elf",
-  photo: "/blank-profile-picture.svg",
-  systemId: "#STANDBY#",
-  idc: "R-000000000 - 000000000 - 000000000 - 00",
-  additionalCode: "<<< WAITING FOR SCAN >>>",
-  sinQuality: SinQuality.LEVEL_3, // Default SinQuality.LEVEL_3
-  licenses: {}, // Initialize licenses
+  // To hold data for IdCard - initialized to a minimal/empty state
+  sinId: INITIAL_SIN_ID_APP, // Use the same initial SIN ID
+  name: "", // All other fields will be set by IdCard's defaults or by scan
+  nationality: ShadowrunNationality.UNKNOWN, // Minimal necessary defaults
+  gender: "N/A",
+  metatype: "N/A",
+  photo: "/blank-profile-picture.svg", // Default photo can remain
+  systemId: "#STANDBY#", // System ID can still be managed here
+  idc: "",
+  additionalCode: "",
+  sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
+  licenses: {},
 });
 
 const readTag = async () => {
+  currentScanStatus.value = "idle"; // Reset status at the beginning of a scan attempt
+  currentScanResultMessage.value = "";
+
   if (!("NDEFReader" in window)) {
-    message.value =
+    currentScanStatus.value = "error";
+    currentScanResultMessage.value =
       "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
     return;
   }
@@ -55,16 +66,15 @@ const readTag = async () => {
     // @ts-ignore
     const ndef = new NDEFReader();
     await ndef.scan();
-    message.value = "Bring a tag closer to read. Scanning...";
+    currentScanStatus.value = "scanning";
+    currentScanResultMessage.value = "Bring a tag closer to read. Scanning...";
 
     ndef.onreading = (event: any) => {
-      message.value = "Tag detected!\n";
       const decoder = new TextDecoder();
       let sinDataFound = false;
+      currentScanResultMessage.value = "Tag detected! Processing..."; // Update message
 
       for (const record of event.message.records) {
-        message.value += `Record type: ${record.recordType}, MIME type: ${record.mediaType}\n`;
-
         if (
           record.recordType === "mime" &&
           record.mediaType === "application/vnd.shadowrun.sin"
@@ -73,6 +83,8 @@ const readTag = async () => {
             const jsonData = decoder.decode(record.data);
             const parsedSinData: SinData = JSON.parse(jsonData);
             sinDataFound = true;
+            currentScanStatus.value = "success"; // Set status to success
+            currentScanResultMessage.value = "SIN data found and parsed."; // Generic success message
 
             // Update IdCard data
             currentProfileData.value = {
@@ -81,52 +93,44 @@ const readTag = async () => {
               gender: parsedSinData.gender,
               metatype: parsedSinData.metatype,
               photo: parsedSinData.imageUrl || "/blank-profile-picture.svg",
-              sinQuality: parsedSinData.sinQuality || SinQuality.LEVEL_1, // Use parsed or default
-              licenses: parsedSinData.licenses || {}, // Parse licenses
-              sinId: parsedSinData.sinId, // Pass the sinId
-              systemId: "#ACTIVE#", // Indicate active scan
+              sinQuality: parsedSinData.sinQuality || SinQuality.LEVEL_1,
+              licenses: parsedSinData.licenses || {},
+              sinId: parsedSinData.sinId || uuidv4(), // Ensure sinId is present
+              systemId: "#ACTIVE#",
               idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
                 .toString()
-                .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 01`, // Dummy IDC
+                .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 01`,
               additionalCode: `<<< ${parsedSinData.nationality}/${parsedSinData.metatype} >>> SIN ID VERIFIED`,
             };
-            message.value += `SIN Data: ${JSON.stringify(
-              parsedSinData,
-              null,
-              2
-            )}\n`;
-            break; // Found SIN data, no need to process other records for this purpose
-          } catch (e) {
-            message.value += `Error parsing SIN data: ${e}\n`;
+            // IdCard overlay will show "SIN Scanned successfully" due to sinId change
+            break;
+          } catch (e: any) {
+            currentScanStatus.value = "error";
+            currentScanResultMessage.value = `Error parsing SIN data: ${e.message}`;
             console.error("Error parsing SIN data:", e);
           }
-        } else if (record.recordType === "text") {
-          message.value += `Text Data: ${decoder.decode(record.data)}\n`;
-        } else {
-          // Handle other record types if necessary
         }
       }
-      if (!sinDataFound) {
-        message.value += "No Shadowrun SIN data found on this tag.";
-      } else {
-        // Clear the message after a delay if SIN data was found
-        setTimeout(() => {
-          message.value = "";
-        }, 5000); // Clear after 5 seconds
+      if (!sinDataFound && currentScanStatus.value !== 'error') { // Don't overwrite parse error
+        currentScanStatus.value = "error"; // Or perhaps a different status like 'nodata'
+        currentScanResultMessage.value = "No Shadowrun SIN data found on this tag.";
       }
+      // Message for IdCard overlay will be handled by IdCard based on sinId change or status
     };
 
-    ndef.onreadingerror = (event: any) => {
-      message.value = `Error reading tag: ${event.message}`;
+    ndef.onreadingerror = (event: any) => { // Changed from `event: any` to `event: NDEFReadingErrorEvent` if type available
+      currentScanStatus.value = "error";
+      currentScanResultMessage.value = `Error reading tag: ${event.message || 'Unknown read error'}`;
       console.error("NDEFReader.onreadingerror", event);
     };
-  } catch (error) {
-    message.value = `Error starting scan: ${error}`;
+  } catch (error: any) {
+    currentScanStatus.value = "error";
+    currentScanResultMessage.value = `Error starting scan: ${error.message || 'Failed to start NDEFReader'}`;
     console.error("Error starting NDEFReader scan:", error);
   }
 };
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
 
 // Handler for SIN form submission
 const handleSinFormSubmit = async (sinData: SinData) => {
@@ -180,22 +184,39 @@ const handleSinFormSubmit = async (sinData: SinData) => {
   }
 };
 
-// Watch for changes in message and clear it after a delay if it's a reading message
-watch(message, (newMessage) => {
-  if (
-    newMessage &&
-    !writeStatusMessage.value // Don't clear if it's a write status message
-  ) {
-    setTimeout(() => {
-      message.value = "";
-    }, 5000); // Clear after 5 seconds
-  }
-});
+// Watch for changes in message and clear it after a delay if it's a reading message - NO LONGER NEEDED for general message
+// watch(message, (newMessage) => {
+//   if (
+//     newMessage &&
+//     !writeStatusMessage.value // Don't clear if it's a write status message
+//   ) {
+//     setTimeout(() => {
+//       message.value = "";
+//     }, 5000); // Clear after 5 seconds
+//   }
+// });
 
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   window.location.hash = viewName;
   if (viewName === "sin-check") {
+    // Reset profile data to initial state when navigating to sin-check view
+    // This ensures the "Waiting for SIN" overlay appears correctly.
+    currentProfileData.value = {
+      sinId: INITIAL_SIN_ID_APP,
+      name: "",
+      nationality: ShadowrunNationality.UNKNOWN,
+      gender: "N/A",
+      metatype: "N/A",
+      photo: "/blank-profile-picture.svg",
+      systemId: "#STANDBY#",
+      idc: "",
+      additionalCode: "",
+      sinQuality: SinQuality.LEVEL_1, // Corrected: Default to lowest valid quality
+      licenses: {},
+    };
+    currentScanStatus.value = "idle"; // Reset scan status
+    currentScanResultMessage.value = "";
     readTag(); // Initiate scanning when switching to sin-check view
   }
 };
@@ -250,7 +271,11 @@ onBeforeUnmount(() => {
       class="sin-check-view main-content"
     >
       <div class="id-card-container">
-        <IdCard :profileData="currentProfileData" />
+        <IdCard
+          :profileData="currentProfileData"
+          :scanStatus="currentScanStatus"
+          :scanResultMessage="currentScanResultMessage"
+        />
       </div>
       <div class="navigation-buttons">
         <div @click="setView('landing')" class="navigation-button">
