@@ -25,29 +25,9 @@ type ScanStatusApp = "idle" | "scanning" | "success" | "error";
 const currentScanStatus = ref<ScanStatusApp>("idle");
 const currentScanResultMessage = ref("");
 
-// Initialize currentProfileData with the new nested structure
-const currentProfileData = ref<ProfileData>({
-  sinId: undefined,
-  systemId: "#STANDBY#",
-  idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
-    .toString()
-    .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 00`,
-  additionalCode: "<<< WAITING FOR SCAN >>>",
-  sinQuality: SinQuality.LEVEL_1,
-  licenses: {},
-  Basic: {
-    name: "Jane Doe", // Default name for initial display
-    gender: "N/A",
-    nationality: ShadowrunNationality.UNKNOWN,
-    metatype: "N/A",
-    photo: "/blank-profile-picture.svg",
-  },
-  Identity: {},
-  Physical: {},
-  Medical: {},
-  Employment: {},
-  Genetic: {},
-});
+// Initialize currentProfileData as a minimal empty object.
+// IdCard.vue's withDefaults will handle showing its own default "standby" data.
+const currentProfileData = ref<ProfileData>({} as ProfileData);
 
 const readTag = async () => {
   currentScanStatus.value = "idle";
@@ -98,20 +78,13 @@ const readTag = async () => {
             currentScanStatus.value = "success";
             currentScanResultMessage.value = "SIN data found and parsed.";
 
+            // Tag data is expected to be complete. App.vue only sets systemId.
             currentProfileData.value = {
               ...parsedProfileData,
-              sinId: parsedProfileData.sinId || uuidv4(),
-              systemId: parsedProfileData.systemId || "#ACTIVE#",
-              idc: parsedProfileData.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`,
-              additionalCode: parsedProfileData.additionalCode || `<<< ${parsedProfileData.Basic?.nationality || ShadowrunNationality.UNKNOWN}/${parsedProfileData.Basic?.metatype || 'UNKNOWN'} >>> SIN ID VERIFIED`,
-              sinQuality: parsedProfileData.sinQuality || SinQuality.LEVEL_1,
-              licenses: parsedProfileData.licenses || {},
-              Basic: parsedProfileData.Basic || { name: "N/A", gender: "N/A", nationality: ShadowrunNationality.UNKNOWN, metatype: "N/A", photo: "/blank-profile-picture.svg" },
-              Identity: parsedProfileData.Identity || {},
-              Physical: parsedProfileData.Physical || {},
-              Medical: parsedProfileData.Medical || {},
-              Employment: parsedProfileData.Employment || {},
-              Genetic: parsedProfileData.Genetic || {},
+              systemId: "#ACTIVE#", // Mark as active system from scan
+              // All other fields (sinId, sinQuality, Basic, Identity, etc.)
+              // are expected to come directly and completely from parsedProfileData.
+              
             };
             break; // Found and processed a SIN record
           } catch (e: any) {
@@ -153,15 +126,17 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
   writeStatusMessage.value = "";
   writeStatusMessageType.value = "";
 
-  // Ensure sinId and other system-generated fields are set
+  // SinForm.vue is expected to provide complete ProfileData.
+  // App.vue only ensures essential system-generated/override fields.
   const profileDataToWrite: ProfileData = {
     ...profileDataFromForm, // Spread the data from the form
-    sinId: profileDataFromForm.sinId || uuidv4(), // Ensure sinId
-    systemId: profileDataFromForm.systemId || "#ACTIVE#", // Ensure systemId, default to #ACTIVE#
-    idc: profileDataFromForm.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`, // Ensure idc
-    // Ensure additionalCode, generate if not present or use Basic info
+    sinId: profileDataFromForm.sinId || uuidv4(), // Ensure sinId is present, generate if new
+    systemId: "#ACTIVE#", // Always set to #ACTIVE# for a written SIN
+    // Generate idc and additionalCode if not provided by the form, or use form's values
+    idc: profileDataFromForm.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`,
     additionalCode: profileDataFromForm.additionalCode || `<<< ${profileDataFromForm.Basic?.nationality || ShadowrunNationality.UNKNOWN}/${profileDataFromForm.Basic?.metatype || 'UNKNOWN'} >>> SIN ID VERIFIED`,
-    // Basic, Identity, etc., are already part of profileDataFromForm
+    // All other fields (sinQuality, licenses, Basic, Identity, etc.)
+    // are expected to come directly and completely from profileDataFromForm.
   };
 
   if (!("NDEFReader" in window)) {
@@ -215,29 +190,9 @@ const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   window.location.hash = viewName;
   if (viewName === "sin-check") {
-    // Reset currentProfileData to its initial standby state using the new nested structure
-    currentProfileData.value = {
-      sinId: undefined, // Or a specific standby SIN ID if preferred
-      systemId: "#STANDBY#",
-      idc: `R-${Date.now().toString().slice(-9)} - ${Math.random()
-        .toString()
-        .slice(2, 11)} - ${Math.random().toString().slice(2, 11)} - 00`, // Placeholder IDC
-      additionalCode: "<<< WAITING FOR SCAN >>>",
-      sinQuality: SinQuality.LEVEL_1,
-      licenses: {},
-      Basic: {
-        name: "Jane Doe", // Default standby name
-        gender: "N/A",
-        nationality: ShadowrunNationality.UNKNOWN,
-        metatype: "N/A",
-        photo: "/blank-profile-picture.svg",
-      },
-      Identity: {}, // Empty objects for other sections
-      Physical: {},
-      Medical: {},
-      Employment: {},
-      Genetic: {},
-    };
+    // Reset currentProfileData to an empty object.
+    // IdCard.vue's withDefaults will handle showing its "standby" data.
+    currentProfileData.value = {} as ProfileData;
     currentScanStatus.value = "idle"; // Reset scan status
     currentScanResultMessage.value = "";
     readTag(); // Initiate scanning when switching to sin-check view
