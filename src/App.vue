@@ -72,28 +72,40 @@ const readTag = async () => {
       currentScanResultMessage.value = "Tag detected! Processing..."; // Update message
 
       for (const record of event.message.records) {
-        if (
-          record.recordType === "mime" &&
-          record.mediaType === "application/vnd.shadowrun.sin"
-        ) {
+        if (record.recordType === "mime") {
+          let jsonData = "";
           try {
-            const jsonData = decoder.decode(record.data);
-            // Assume data from tag is always in ProfileData format now
+            if (record.mediaType === "application/vnd.shadowrun.sin+bzip2") {
+              // Ensure record.data is not undefined and is an ArrayBuffer
+              if (!record.data) throw new Error("Record data is undefined.");
+              const compressedData = new Uint8Array(record.data);
+              const decompressedData = bz2.decompress(compressedData);
+              jsonData = decoder.decode(decompressedData);
+              currentScanResultMessage.value = "Decompressed and processing SIN data...";
+            } else if (record.mediaType === "application/vnd.shadowrun.sin") {
+              // Handle uncompressed data if necessary, or log it
+              if (!record.data) throw new Error("Record data is undefined.");
+              jsonData = decoder.decode(record.data);
+              currentScanResultMessage.value = "Processing uncompressed SIN data...";
+              // Optionally, add a specific message or handling for older tags
+            } else {
+              // Not a SIN record we can handle
+              continue;
+            }
+
             const parsedProfileData: ProfileData = JSON.parse(jsonData);
             sinDataFound = true;
             currentScanStatus.value = "success";
             currentScanResultMessage.value = "SIN data found and parsed.";
 
-            // Directly assign parsedProfileData, ensuring essential fields are present/defaulted
             currentProfileData.value = {
-              ...parsedProfileData, // Spread the data from the tag first
-              sinId: parsedProfileData.sinId || uuidv4(), // Ensure sinId
+              ...parsedProfileData,
+              sinId: parsedProfileData.sinId || uuidv4(),
               systemId: parsedProfileData.systemId || "#ACTIVE#",
               idc: parsedProfileData.idc || `R-${Date.now().toString().slice(-9)} - ${Math.random().toString().slice(2,11)} - ${Math.random().toString().slice(2,11)} - 01`,
               additionalCode: parsedProfileData.additionalCode || `<<< ${parsedProfileData.Basic?.nationality || ShadowrunNationality.UNKNOWN}/${parsedProfileData.Basic?.metatype || 'UNKNOWN'} >>> SIN ID VERIFIED`,
               sinQuality: parsedProfileData.sinQuality || SinQuality.LEVEL_1,
               licenses: parsedProfileData.licenses || {},
-              // Ensure all nested objects are at least empty objects if not provided by the tag
               Basic: parsedProfileData.Basic || { name: "N/A", gender: "N/A", nationality: ShadowrunNationality.UNKNOWN, metatype: "N/A", photo: "/blank-profile-picture.svg" },
               Identity: parsedProfileData.Identity || {},
               Physical: parsedProfileData.Physical || {},
@@ -101,19 +113,20 @@ const readTag = async () => {
               Employment: parsedProfileData.Employment || {},
               Genetic: parsedProfileData.Genetic || {},
             };
-
-            // IdCard overlay will show "SIN Scanned successfully" due to sinId change
-            break;
+            break; // Found and processed a SIN record
           } catch (e: any) {
             currentScanStatus.value = "error";
-            currentScanResultMessage.value = `Error parsing SIN data: ${e.message}`;
-            console.error("Error parsing SIN data:", e);
+            currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
+            console.error("Error processing SIN data:", e);
+            // If one record fails, we might want to continue to check other records
+            // or break if this was the intended record. For now, let's break.
+            break;
           }
         }
       }
-      if (!sinDataFound && currentScanStatus.value !== 'error') { // Don't overwrite parse error
-        currentScanStatus.value = "error"; // Or perhaps a different status like 'nodata'
-        currentScanResultMessage.value = "No Shadowrun SIN data found on this tag.";
+      if (!sinDataFound && currentScanStatus.value !== 'error') {
+        currentScanStatus.value = "error";
+        currentScanResultMessage.value = "No Shadowrun SIN data found on this tag, or data is corrupted/unreadable.";
       }
       // Message for IdCard overlay will be handled by IdCard based on sinId change or status
     };
@@ -131,6 +144,7 @@ const readTag = async () => {
 };
 
 import { v4 as uuidv4 } from "uuid"; // Ensure uuid is imported
+import bz2 from 'bz2';
 
 // Handler for SIN form submission
 // Parameter is now ProfileData, as SinForm.vue emits ProfileData directly
@@ -161,28 +175,32 @@ const handleSinFormSubmit = async (profileDataFromForm: ProfileData) => {
   try {
     // @ts-ignore
     const ndef = new NDEFReader();
-    const profileDataString = JSON.stringify(profileDataToWrite); // Use the transformed data
+    const profileDataString = JSON.stringify(profileDataToWrite);
     const encoder = new TextEncoder();
+    const encodedData = encoder.encode(profileDataString);
+
+    // Compress the data
+    const compressedData = bz2.compress(encodedData);
 
     await ndef.write({
       records: [
         {
           recordType: "mime",
-          mediaType: "application/vnd.shadowrun.sin",
-          data: encoder.encode(profileDataString), // Ensure this uses the stringified version of profileDataToWrite
+          mediaType: "application/vnd.shadowrun.sin+bzip2", // Updated mediaType
+          data: compressedData, // Use compressed data
         },
         // Optional: Add a standard NDEF text record for basic info or URL
         {
           recordType: "text",
-          data: `SIN Holder: ${profileDataToWrite.Basic.name}`, // Use name from the structured data
+          data: `SIN Holder: ${profileDataToWrite.Basic.name}`,
         },
       ],
     });
-    writeStatusMessage.value = `Successfully wrote SIN data for ${profileDataToWrite.Basic.name} to tag.`; // Use name from structured data
+    writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataToWrite.Basic.name} to tag.`;
     writeStatusMessageType.value = "success";
-  } catch (error) {
-    console.error("Error writing SIN data to tag:", error);
-    writeStatusMessage.value = `Error writing SIN data: ${error}`;
+  } catch (error: any) {
+    console.error("Error writing compressed SIN data to tag:", error);
+    writeStatusMessage.value = `Error writing SIN data: ${error.message || error}`;
     writeStatusMessageType.value = "error";
   } finally {
     isWriting.value = false;
