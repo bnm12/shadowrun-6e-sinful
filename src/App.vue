@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-container">
-    <FancyBackground :count="25" />
+    <FancyBackground :count="45" />
     <!-- Readme Info Modal and its Trigger Button -->
     <ReadmeInfoModal />
 
