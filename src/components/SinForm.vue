@@ -307,11 +307,14 @@ const emit = defineEmits(["submitSinData"]);
 
 const submitForm = () => {
   // Basic validation can be added here if needed
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_1) {
+  if (formData.sinQuality > SinQuality.SIN_QUALITY_UNSPECIFIED) {
+    // 1+
   }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_2) {
+  if (formData.sinQuality > SinQuality.SIN_QUALITY_LEVEL_1) {
+    // 2+
   }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {
+  if (formData.sinQuality > SinQuality.SIN_QUALITY_LEVEL_2) {
+    // 3+
     formData.physical = {
       height: 0,
       weight: 0,
@@ -322,7 +325,8 @@ const submitForm = () => {
       ...formData.physical,
     };
   }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_4) {
+  if (formData.sinQuality > SinQuality.SIN_QUALITY_LEVEL_3) {
+    // 4+
     formData.medical = {
       bloodType: "N/A",
       eyeScan: "N/A",
@@ -330,7 +334,8 @@ const submitForm = () => {
       ...formData.medical,
     };
   }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_5) {
+  if (formData.sinQuality > SinQuality.SIN_QUALITY_LEVEL_4) {
+    // 5+
     formData.employment = {
       profession: "N/A",
       employer: "N/A",
@@ -339,7 +344,8 @@ const submitForm = () => {
       ...formData.employment,
     };
   }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_6) {
+  if (formData.sinQuality > SinQuality.SIN_QUALITY_LEVEL_5) {
+    // 6+
     formData.genetic = {
       seed: Date.now(),
       ...formData.genetic,
