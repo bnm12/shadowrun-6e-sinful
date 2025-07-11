@@ -364,64 +364,110 @@ onBeforeUnmount(() => {
 }
 
 .glitch-text::before {
-  color: rgba(202, 25, 115, 0.6);
-  background: rgba(202, 25, 115, 0.3);
+  color: rgba(255, 0, 0, 0.8);
+  background: rgba(255, 0, 0, 0.4);
   background-clip: text;
   -webkit-background-clip: text;
-  animation: subtle-glitch 4s infinite;
+  animation: enhanced-glitch-1 20s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
 }
 
 .glitch-text::after {
-  color: rgba(138, 43, 226, 0.4);
-  background: rgba(138, 43, 226, 0.2);
+  color: rgba(0, 255, 255, 0.8);
+  background: rgba(0, 255, 255, 0.4);
   background-clip: text;
   -webkit-background-clip: text;
-  animation: subtle-glitch-2 4s infinite;
+  animation: enhanced-glitch-2 20s infinite;
+  clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
 }
 
-@keyframes subtle-glitch {
-  0%,
-  85%,
-  100% {
+@keyframes enhanced-glitch-1 {
+  0%, 98%, 100% {
     transform: translate(0);
-  }
-  5% {
-    transform: translate(-3px, 1px);
+    opacity: 0;
   }
   10% {
-    transform: translate(2px, -2px);
+    transform: translate(-8px, 2px);
+    opacity: 0.9;
   }
-  15% {
+  10.5% {
+    transform: translate(-6px, -3px);
+    opacity: 0.8;
+  }
+  11% {
     transform: translate(0);
+    opacity: 0;
   }
-  20% {
-    transform: translate(-2px, 1px);
-  }
-  25% {
+  60% {
     transform: translate(0);
+    opacity: 0;
+  }
+  60.5% {
+    transform: translate(-7px, 3px);
+    opacity: 1;
+  }
+  61% {
+    transform: translate(0);
+    opacity: 0;
   }
 }
 
-@keyframes subtle-glitch-2 {
-  0%,
-  85%,
-  100% {
+@keyframes enhanced-glitch-2 {
+  0%, 98%, 100% {
     transform: translate(0);
+    opacity: 0;
   }
-  7% {
-    transform: translate(3px, -1px);
+  10.2% {
+    transform: translate(6px, -2px);
+    opacity: 0.9;
   }
-  12% {
-    transform: translate(-2px, 2px);
+  10.7% {
+    transform: translate(8px, 4px);
+    opacity: 0.7;
   }
-  17% {
+  11.2% {
     transform: translate(0);
+    opacity: 0;
   }
-  22% {
-    transform: translate(2px, -1px);
-  }
-  27% {
+  60.2% {
     transform: translate(0);
+    opacity: 0;
+  }
+  60.7% {
+    transform: translate(7px, -1px);
+    opacity: 1;
+  }
+  61.2% {
+    transform: translate(0);
+    opacity: 0;
+  }
+}
+
+/* Add a subtle screen-tear effect for extra cyberpunk feel */
+@media (prefers-reduced-motion: no-preference) {
+  .glitch-text {
+    animation: screen-tear 20s infinite;
+  }
+  
+  @keyframes screen-tear {
+    0%, 99%, 100% {
+      filter: none;
+    }
+    10.1% {
+      filter: blur(0.5px) brightness(1.2);
+    }
+    10.3% {
+      filter: none;
+    }
+    60.1% {
+      filter: none;
+    }
+    60.3% {
+      filter: blur(0.3px) contrast(1.1);
+    }
+    60.5% {
+      filter: none;
+    }
   }
 }
 
