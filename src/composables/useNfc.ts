@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { ProfileData } from "../@types/profile";
+import type { ProfileData } from "../proto/profile.pb";
 import { gzipSync, strToU8, gunzipSync } from "fflate";
 
 export type ScanStatus = "idle" | "scanning" | "success" | "error";
@@ -29,7 +29,8 @@ export function useNfc() {
       const ndef = new NDEFReader();
       await ndef.scan();
       currentScanStatus.value = "scanning";
-      currentScanResultMessage.value = "Bring a tag closer to read. Scanning...";
+      currentScanResultMessage.value =
+        "Bring a tag closer to read. Scanning...";
 
       ndef.onreading = (event: any) => {
         let sinDataFound = false;
@@ -47,7 +48,10 @@ export function useNfc() {
                 currentScanResultMessage.value =
                   "Decompressed (auto-detect format) and processing SIN data...";
               } else {
-                console.log("Skipping record with mediaType:", record.mediaType);
+                console.log(
+                  "Skipping record with mediaType:",
+                  record.mediaType
+                );
                 continue;
               }
 
@@ -123,7 +127,7 @@ export function useNfc() {
           },
         ],
       });
-      writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataFromForm.Basic.name} to tag.`;
+      writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataFromForm.basic.name} to tag.`;
       writeStatusMessageType.value = "success";
     } catch (error: any) {
       console.error("Error writing compressed SIN data to tag:", error);

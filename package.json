@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "npx protoscript && vue-tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@types/marked": "^5.0.2",
     "fflate": "*",
     "marked": "^16.0.0",
+    "protoscript": "^0.0.23",
     "rand-seed": "^3.0.0",
     "uuid": "^11.1.0",
     "vue": "^3.5.17"
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0",
+    "protolint": "^0.55.6",
     "typescript": "~5.8.3",
     "vite": "^7.0.3",
     "vite-plugin-mkcert": "^1.17.8",
