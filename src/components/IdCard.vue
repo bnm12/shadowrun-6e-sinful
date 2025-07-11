@@ -4,21 +4,19 @@
     <div class="card-header">
       <div class="header-tabs">
         <div class="quality-tabs">
-          <div
-            v-for="[quality, qualityTabName] in Object.entries(
-              SinQualityTitleMap
-            )"
-            :key="`quality-tab-${quality}`"
-            v-if="internalProfileData.sinQuality >= quality"
-            :class="[
-              'tab',
-              'quality-tab-item',
-              { active: activeTab === quality },
-            ]"
-            @click="selectTab(quality as SinQuality)"
-          >
-            {{ qualityTabName }}
-          </div>
+          <template v-for="[quality, qualityTabName] in Object.entries(SinQualityTitleMap)" :key="`quality-tab-${quality}`">
+            <div
+              v-if="internalProfileData.sinQuality >= quality"
+              :class="[
+                'tab',
+                'quality-tab-item',
+                { active: activeTab === quality },
+              ]"
+              @click="selectTab(quality as SinQuality)"
+            >
+              {{ qualityTabName }}
+            </div>
+          </template>
         </div>
         <div
           class="tab licenses-tab"
