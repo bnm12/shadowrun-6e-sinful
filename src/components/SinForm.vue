@@ -10,11 +10,11 @@
         <label for="gender">Gender:</label>
         <select id="gender" v-model="formData.basic.gender" required>
           <option
-            v-for="option in genderOptions"
-            :key="option.value"
-            :value="option.value"
+            v-for="[key, value] in Object.entries(GenderDisplayMap)"
+            :key="key"
+            :value="key"
           >
-            {{ option.text }}
+            {{ value }}
           </option>
         </select>
       </div>
@@ -229,21 +229,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue"; // Import computed
-import {
-  ShadowrunNationality,
-  getAllNationalities,
-  // type ShadowrunNationalityType, // Unused
-} from "./shadowrun-flags";
-import {
-  ShadowrunMetatype,
-  getAllMetatypes,
-  // type ShadowrunMetatypeType, // Unused
-} from "./shadowrun-metatypes";
-import { Gender, SinQuality, type ProfileData, GenderJSON } from "../proto/profile.pb"; // Import ProfileData, ProfileBasic is unused, Import GenderJSON
+import { reactive } from "vue"; // Import computed
+import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
+import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
+import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb"; // Import ProfileData, ProfileBasic is unused, Import GenderJSON
 import { v4 as uuidv4 } from "uuid";
 import { useLicenseManagement } from "../composables/useLicenseManagement";
-import { SinQualityFlairMap } from "./sin-quality";
+import { SinQualityFlairMap } from "../utils/sin-quality";
+import { GenderDisplayMap } from "../utils/profile";
 
 // Props received from App.vue
 const props = defineProps<{
@@ -254,28 +247,6 @@ const props = defineProps<{
 
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
-
-// Computed property for gender options
-const genderOptions = computed(() => {
-  return (Object.keys(GenderJSON) as Array<keyof typeof GenderJSON>)
-    // No need to filter _fromInt, _toInt as GenderJSON does not have them directly
-    // However, ensuring we only map actual gender string keys if other properties were present
-    .filter(key => typeof GenderJSON[key] === 'string' && key.startsWith("GENDER_"))
-    .map(key => {
-      const genderValue = GenderJSON[key] as Gender; // Value will be like "GENDER_MALE"
-      // Create a more readable text version
-      let text = key.replace("GENDER_", "").replace(/_/g, " ").toLowerCase();
-      // Capitalize first letter of each word
-      text = text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-      if (key === 'GENDER_NA') text = "N/A"; // Specific case for N/A
-      if (key === 'GENDER_UNSPECIFIED') text = "Unspecified";
-
-      return {
-        text: text,
-        value: genderValue
-      };
-    });
-});
 
 // Initialize formData with the full ProfileData structure
 const formData = reactive<ProfileData>({

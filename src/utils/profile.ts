@@ -10,7 +10,7 @@ export const getDefaultProfileData = (): ProfileData => ({
   licenses: {},
   basic: {
     name: "Jane Doe",
-    gender: Gender.GENDER_NA,
+    gender: Gender.GENDER_UNSPECIFIED,
     nationality: ShadowrunNationality.UNKNOWN,
     metatype: "N/A",
     photo: "/blank-profile-picture.svg",
@@ -44,3 +44,10 @@ export const getDefaultProfileData = (): ProfileData => ({
     seed: 0,
   },
 });
+
+export const GenderDisplayMap: Record<Gender, string> = {
+  [Gender.GENDER_UNSPECIFIED]: "Unspecified",
+  [Gender.GENDER_MALE]: "Male",
+  [Gender.GENDER_FEMALE]: "Female",
+  [Gender.GENDER_DIVERSE]: "Diverse",
+};

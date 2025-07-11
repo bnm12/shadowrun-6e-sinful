@@ -4,7 +4,12 @@
     <div class="card-header">
       <div class="header-tabs">
         <div class="quality-tabs">
-          <template v-for="[quality, qualityTabName] in Object.entries(SinQualityTitleMap)" :key="`quality-tab-${quality}`">
+          <template
+            v-for="[quality, qualityTabName] in Object.entries(
+              SinQualityTitleMap
+            )"
+            :key="`quality-tab-${quality}`"
+          >
             <div
               v-if="internalProfileData.sinQuality >= quality"
               :class="[
@@ -64,7 +69,10 @@
           <div class="photo-section">
             <div class="photo-container">
               <img
-                :src="internalProfileData.basic.photo"
+                :src="
+                  internalProfileData.basic.photo ??
+                  '/blank-profile-picture.svg'
+                "
                 :alt="internalProfileData.basic.name"
                 class="profile-photo"
               />
@@ -109,7 +117,7 @@
                 <span class="label">Gender</span>
                 <span class="label-colon">:</span>
                 <span class="value">{{
-                  internalProfileData.basic.gender
+                  GenderDisplayMap[internalProfileData.basic.gender]
                 }}</span>
               </div>
               <div class="detail-row">
@@ -319,8 +327,8 @@ import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
 import { SinQuality, type ProfileData } from "../proto/profile.pb";
-import { getDefaultProfileData } from "../utils/profile";
-import { SinQualityFlairMap, SinQualityTitleMap } from "./sin-quality";
+import { getDefaultProfileData, GenderDisplayMap } from "../utils/profile";
+import { SinQualityFlairMap, SinQualityTitleMap } from "../utils/sin-quality";
 
 type ScanStatus = "idle" | "scanning" | "success" | "error";
 

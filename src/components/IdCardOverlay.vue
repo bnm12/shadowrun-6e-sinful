@@ -9,15 +9,13 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-
 interface Props {
   message: string;
   visible: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
-  message: '',
+  message: "",
   visible: false,
 });
 </script>
@@ -42,7 +40,12 @@ withDefaults(defineProps<Props>(), {
 .overlay-content {
   text-align: center;
   padding: 20px;
-  background-color: rgba(26, 35, 50, 0.8); /* Darker, slightly transparent background for content */
+  background-color: rgba(
+    26,
+    35,
+    50,
+    0.8
+  ); /* Darker, slightly transparent background for content */
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
 }
@@ -50,7 +53,7 @@ withDefaults(defineProps<Props>(), {
 .overlay-message {
   color: #00ffff; /* Cyan text color */
   font-size: 1.5em; /* Larger font size */
-  font-family: 'Courier New', monospace; /* Consistent font */
+  font-family: "Courier New", monospace; /* Consistent font */
   margin: 0;
 }
 

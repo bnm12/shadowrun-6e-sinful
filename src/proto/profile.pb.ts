@@ -16,8 +16,7 @@ export type Gender =
   | "GENDER_UNSPECIFIED"
   | "GENDER_MALE"
   | "GENDER_FEMALE"
-  | "GENDER_DIVERSE"
-  | "GENDER_NA";
+  | "GENDER_DIVERSE";
 
 /**
  * Enum for SIN quality levels
@@ -128,7 +127,6 @@ export const Gender = {
   GENDER_MALE: "GENDER_MALE",
   GENDER_FEMALE: "GENDER_FEMALE",
   GENDER_DIVERSE: "GENDER_DIVERSE",
-  GENDER_NA: "GENDER_NA",
   /**
    * @private
    */
@@ -145,9 +143,6 @@ export const Gender = {
       }
       case 3: {
         return "GENDER_DIVERSE";
-      }
-      case 4: {
-        return "GENDER_NA";
       }
       // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
       default: {
@@ -171,9 +166,6 @@ export const Gender = {
       }
       case "GENDER_DIVERSE": {
         return 3;
-      }
-      case "GENDER_NA": {
-        return 4;
       }
       // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
       default: {
@@ -1009,7 +1001,6 @@ export const GenderJSON = {
   GENDER_MALE: "GENDER_MALE",
   GENDER_FEMALE: "GENDER_FEMALE",
   GENDER_DIVERSE: "GENDER_DIVERSE",
-  GENDER_NA: "GENDER_NA",
   /**
    * @private
    */
@@ -1026,9 +1017,6 @@ export const GenderJSON = {
       }
       case 3: {
         return "GENDER_DIVERSE";
-      }
-      case 4: {
-        return "GENDER_NA";
       }
       // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
       default: {
@@ -1052,9 +1040,6 @@ export const GenderJSON = {
       }
       case "GENDER_DIVERSE": {
         return 3;
-      }
-      case "GENDER_NA": {
-        return 4;
       }
       // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
       default: {
