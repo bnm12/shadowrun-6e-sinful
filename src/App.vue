@@ -5,7 +5,7 @@ import SinForm from "./components/SinForm.vue";
 import ReadmeInfoModal from "./components/ReadmeInfoModal.vue"; // Import the new component
 import type { ProfileData } from "./proto/profile.pb";
 import { useNfc } from "./composables/useNfc";
-// import { useReadme } from "./composables/useReadme"; // No longer needed here
+import { useReadme } from "./composables/useReadme"; // Restore import
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 
@@ -20,11 +20,7 @@ const {
   writeTag,
 } = useNfc();
 
-// const {
-//   showReadmeModal,
-//   readmeHtmlContent,
-//   toggleReadmeModal,
-// } = useReadme(); // This instance is no longer used by App.vue template
+const { toggleReadmeModal } = useReadme(); // Restore for the button's click handler
 
 // Initialize currentProfileData as a minimal empty object.
 // IdCard.vue's withDefaults will handle showing its own default "standby" data.
@@ -142,10 +138,16 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Readme Info Modal and its Trigger Button -->
-    <ReadmeInfoModal :currentView="currentView" />
+    <ReadmeInfoModal />
 
     <!-- Landing View -->
     <div v-if="currentView === 'landing'" class="landing-view main-content">
+      <!-- Info Button for Landing View -->
+      <div class="info-button-container">
+        <div class="info-button" @click="toggleReadmeModal">
+          <span class="glitch-text" data-text="i">i</span>
+        </div>
+      </div>
       <h1 class="landing-headline glitch-text" data-text="SINful">SINful</h1>
       <div class="logo"></div>
       <div class="navigation-buttons">
@@ -344,6 +346,54 @@ onBeforeUnmount(() => {
 </style>
 
 <style scoped>
+.info-button-container {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 100; /* Ensure it's above other landing page content */
+}
+
+.info-button {
+  border: 1px solid #ff1493;
+  color: #ff1493;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  /* Torn/damaged edge effect */
+  clip-path: polygon(
+    0% 0%,
+    80% 0%,
+    100% 20%,
+    90% 40%,
+    100% 60%,
+    85% 80%,
+    100% 100%,
+    0% 100%,
+    10% 80%,
+    0% 60%,
+    15% 40%,
+    0% 20%
+  );
+}
+
+.info-button:hover {
+  background-color: #ff1493;
+  color: #10012c;
+  box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+  transform: scale(1.1);
+}
+
+.info-button > span {
+  font-family: monospace;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
