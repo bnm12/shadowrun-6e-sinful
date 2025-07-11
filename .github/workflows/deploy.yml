@@ -24,11 +24,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            src/proto/**.proto
+
       - name: Install Protobuf Compiler
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
       - name: Build project
-        run: npm run build
+        run: |
+          if [[ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]]; then
+            npm run build
+          else
+            npm run non-proto-build
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
