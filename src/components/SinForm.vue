@@ -77,18 +77,18 @@
           <input
             type="text"
             id="address"
-            v-model="formData.identity?.address"
+            v-model="formData.identity!.address"
           />
         </div>
         <div class="form-group">
           <label for="city">City:</label>
-          <input type="text" id="city" v-model="formData.identity?.city" />
+          <input type="text" id="city" v-model="formData.identity!.city" />
         </div>
         <div class="form-group">
           <label for="country">Country:</label>
           <select
             id="nationality"
-            v-model="formData.identity?.country"
+            v-model="formData.identity!.country"
             required
           >
             <option
@@ -105,7 +105,7 @@
           <input
             type="date"
             id="birthdate"
-            v-model="formData.identity?.birthdate"
+            v-model="formData.identity!.birthdate"
           />
         </div>
       </div>
@@ -122,7 +122,7 @@
           <input
             type="number"
             id="height"
-            v-model="formData.physical?.height"
+            v-model="formData.physical!.height"
           />
         </div>
         <div class="form-group">
@@ -130,20 +130,20 @@
           <input
             type="number"
             id="weight"
-            v-model="formData.physical?.weight"
+            v-model="formData.physical!.weight"
           />
         </div>
         <div class="form-group">
           <label for="skin">Skin color:</label>
-          <input type="text" id="skin" v-model="formData.physical?.skin" />
+          <input type="text" id="skin" v-model="formData.physical!.skin" />
         </div>
         <div class="form-group">
           <label for="hair">Hair color:</label>
-          <input type="text" id="hair" v-model="formData.physical?.hair" />
+          <input type="text" id="hair" v-model="formData.physical!.hair" />
         </div>
         <div class="form-group">
           <label for="eyes">Eye color:</label>
-          <input type="text" id="eyes" v-model="formData.physical?.eyes" />
+          <input type="text" id="eyes" v-model="formData.physical!.eyes" />
         </div>
       </div>
       <!-- End Physical Details Section -->
@@ -264,11 +264,34 @@ const formData = reactive<ProfileData>({
     metatype: ShadowrunMetatype.HUMAN, // Default metatype
     photo: "", // imageUrl maps to photo
   },
-  /*identity: {}, // Initialize other sections as empty.
-  physical: {}, // Form could be expanded to include these.
-  medical: {},
-  employment: {},
-  genetic: {},*/
+  identity: {
+    address: "",
+    city: "",
+    country: "",
+    birthdate: "",
+  },
+  physical: {
+    height: 0,
+    weight: 0,
+    skin: "",
+    hair: "",
+    eyes: "",
+    seed: 0,
+  },
+  medical: {
+    bloodType: "",
+    eyeScan: "",
+    seed: 0,
+  },
+  employment: {
+    profession: "",
+    employer: "",
+    employerAddress: "",
+    seed: 0,
+  },
+  genetic: {
+    seed: 0,
+  },
 });
 
 const {
