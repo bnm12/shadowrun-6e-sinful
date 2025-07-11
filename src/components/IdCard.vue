@@ -9,6 +9,7 @@
               SinQualityTitleMap
             )"
             :key="`quality-tab-${quality}`"
+            v-if="internalProfileData.sinQuality >= quality"
             :class="[
               'tab',
               'quality-tab-item',
