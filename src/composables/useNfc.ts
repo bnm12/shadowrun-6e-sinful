@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import type { ProfileData } from "../proto/profile.pb";
-import { gzipSync, strToU8, gunzipSync } from "fflate";
+import { ProfileData } from "../proto/profile.pb";
+import { gzipSync, gunzipSync } from "fflate"; // Removed strToU8
 
 export type ScanStatus = "idle" | "scanning" | "success" | "error";
 
@@ -44,7 +44,7 @@ export function useNfc() {
                 if (!record.data) throw new Error("Record data is undefined.");
                 const compressedData = new Uint8Array(record.data.buffer);
                 const decompressedData = gunzipSync(compressedData);
-                jsonData = new TextDecoder().decode(decompressedData);
+                // jsonData = new TextDecoder().decode(decompressedData); // Removed
                 currentScanResultMessage.value =
                   "Decompressed (auto-detect format) and processing SIN data...";
               } else {
@@ -55,7 +55,8 @@ export function useNfc() {
                 continue;
               }
 
-              const parsedProfileData: ProfileData = JSON.parse(jsonData);
+              // const parsedProfileData: ProfileData = JSON.parse(jsonData); // Removed
+              const parsedProfileData = ProfileData.decode(decompressedData); // Used ProfileData.decode
               sinDataFound = true;
               currentScanStatus.value = "success";
               currentScanResultMessage.value = "SIN data found and parsed.";
@@ -108,8 +109,7 @@ export function useNfc() {
     try {
       // @ts-ignore
       const ndef = new NDEFReader();
-      const profileDataString = JSON.stringify(profileDataFromForm);
-      const encodedData = strToU8(profileDataString);
+      const encodedData = ProfileData.encode(profileDataFromForm);
       const compressedData = gzipSync(encodedData, { level: 9 });
 
       const readPageUrl = new URL(window.location.href);
