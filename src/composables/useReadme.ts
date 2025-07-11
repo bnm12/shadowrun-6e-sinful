@@ -1,10 +1,11 @@
 import { ref } from "vue";
 import { marked } from "marked";
 
-export function useReadme() {
-  const showReadmeModal = ref(false);
-  const readmeHtmlContent = ref("");
+// Module-scoped reactive state (singleton)
+const showReadmeModal = ref(false);
+const readmeHtmlContent = ref("");
 
+export function useReadme() {
   const loadReadme = async () => {
     if (readmeHtmlContent.value) return; // Already loaded
 
