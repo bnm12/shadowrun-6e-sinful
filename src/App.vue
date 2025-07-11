@@ -60,30 +60,10 @@ const handleHashChange = () => {
   }
 };
 
-const initializeBackground = () => {
-  // Add subtle mouse movement effect
-  const handleMouseMove = (e: MouseEvent) => {
-    const mouseX = e.clientX / window.innerWidth;
-    const mouseY = e.clientY / window.innerHeight;
-
-    const glow = document.querySelector(".glow-effect") as HTMLElement;
-    if (glow) {
-      glow.style.transform = `translate(-50%, -50%) translate(${mouseX * 30}px, ${mouseY * 30}px)`;
-    }
-  };
-
-  document.addEventListener("mousemove", handleMouseMove);
-
-  // Store the cleanup function
-  return () => {
-    document.removeEventListener("mousemove", handleMouseMove);
-  };
-};
-
 onMounted(() => {
   handleHashChange();
   window.addEventListener("hashchange", handleHashChange);
-  initializeBackground();
+  // initializeBackground(); // Logic moved to FancyBackground.vue
   // Initial README load can be triggered here if desired, or on first click via toggleReadmeModal
 });
 

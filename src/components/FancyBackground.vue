@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
+import { defineProps, computed, onMounted, onBeforeUnmount } from 'vue';
 
 const props = defineProps<{
   count: number;
@@ -50,6 +50,41 @@ const particles = computed(() => {
 });
 
 // TODO: Move mousemove logic here if it's tightly coupled with the background
+
+let cleanupMouseMove: (() => void) | null = null;
+
+const initializeBackground = () => {
+  // Add subtle mouse movement effect
+  const handleMouseMove = (e: MouseEvent) => {
+    const mouseX = e.clientX / window.innerWidth;
+    const mouseY = e.clientY / window.innerHeight;
+
+    // Query within the component's scope if possible, or ensure it runs after DOM is ready.
+    // Since this is in FancyBackground's script setup, document.querySelector should be fine
+    // once the component is mounted.
+    const glow = document.querySelector(".glow-effect") as HTMLElement;
+    if (glow) {
+      glow.style.transform = `translate(-50%, -50%) translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+    }
+  };
+
+  document.addEventListener("mousemove", handleMouseMove);
+
+  // Store the cleanup function
+  cleanupMouseMove = () => {
+    document.removeEventListener("mousemove", handleMouseMove);
+  };
+};
+
+onMounted(() => {
+  initializeBackground();
+});
+
+onBeforeUnmount(() => {
+  if (cleanupMouseMove) {
+    cleanupMouseMove();
+  }
+});
 </script>
 
 <style scoped>
