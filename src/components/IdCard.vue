@@ -13,11 +13,11 @@
             :class="[
               'tab',
               'quality-tab-item',
-              { active: activeTab === quality },
+              { active: activeTab === qualityTab.value },
             ]"
-            @click="selectTab(quality as SinQuality)"
+            @click="selectTab(qualityTab.value)"
           >
-            {{ qualityTabName }}
+            {{ qualityTab.title }}
           </div>
         </div>
         <div
@@ -39,21 +39,15 @@
         <h4>Licenses on Record</h4>
         <ul
           v-if="
-            internalProfileData.licenses &&
-            Object.keys(internalProfileData.licenses).length > 0
+            profileData.licenses && Object.keys(profileData.licenses).length > 0
           "
           class="licenses-list-display"
         >
-          <li
-            v-for="[name, quality] in Object.entries(
-              internalProfileData.licenses
-            )"
-            :key="name"
-          >
+          <li v-for="(quality, name) in profileData.licenses" :key="name">
             <span class="license-name">{{ name }}</span
             >:
             <span class="license-quality">{{
-              SinQualityFlairMap[quality ?? SinQuality.SIN_QUALITY_UNSPECIFIED]
+              getSinQualityTextById(quality)
             }}</span>
           </li>
         </ul>
@@ -61,20 +55,23 @@
       </div>
 
       <!-- Basic Info (Original Content) -->
-      <template v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_1">
+      <template v-if="activeTab === SinQuality.LEVEL_1">
         <div class="left-section tab-content-section">
           <div class="photo-section">
             <div class="photo-container">
               <img
-                :src="internalProfileData.basic.photo"
-                :alt="internalProfileData.basic.name"
+                :src="internalProfileData.Basic.photo"
+                :alt="internalProfileData.Basic.name"
                 class="profile-photo"
               />
             </div>
           </div>
         </div>
 
-        <div class="right-section tab-content-section">
+        <div
+          class="right-section tab-content-section"
+          v-if="activeTab === SinQuality.LEVEL_1"
+        >
           <div class="top-right-section">
             <div class="barcode">
               <div class="barcode-lines">
@@ -92,33 +89,33 @@
             <div class="flag-container">
               <div class="flag" :style="{ background: getFlagColors() }"></div>
               <div class="flag-nationality">
-                {{ internalProfileData.basic.nationality }}
+                {{ internalProfileData.Basic.nationality }}
               </div>
             </div>
           </div>
 
           <div class="info-section">
-            <span class="name">{{ internalProfileData.basic.name }}</span>
+            <span class="name">{{ internalProfileData.Basic.name }}</span>
             <div class="details">
               <div class="detail-row">
                 <span class="label">Nationality</span>
                 <span class="label-colon">:</span>
                 <span class="value">{{
-                  internalProfileData.basic.nationality
+                  internalProfileData.Basic.nationality
                 }}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Gender</span>
                 <span class="label-colon">:</span>
                 <span class="value">{{
-                  internalProfileData.basic.gender
+                  internalProfileData.Basic.gender
                 }}</span>
               </div>
               <div class="detail-row">
                 <span class="label">Metatype</span>
                 <span class="label-colon">:</span>
                 <span class="value">{{
-                  internalProfileData.basic.metatype
+                  internalProfileData.Basic.metatype
                 }}</span>
               </div>
             </div>
@@ -127,152 +124,140 @@
       </template>
 
       <!-- Identity Info (SIN Quality 2) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_2"
-        class="tab-content-section"
-      >
+      <div v-if="activeTab === SinQuality.LEVEL_2" class="tab-content-section">
         <h4>Identity Information</h4>
         <div class="details">
           <div class="detail-row">
             <span class="label">Address</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.identity?.address || "N/A"
+              internalProfileData.Identity.address || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">City</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.identity?.city || "N/A"
+              internalProfileData.Identity.city || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Country</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.identity?.country || "N/A"
+              internalProfileData.Identity.country || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Birthdate</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.identity?.birthdate || "N/A"
+              internalProfileData.Identity.birthdate || "N/A"
             }}</span>
           </div>
         </div>
       </div>
 
       <!-- Physical Info (SIN Quality 3) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_3"
-        class="tab-content-section"
-      >
+      <div v-if="activeTab === SinQuality.LEVEL_3" class="tab-content-section">
         <h4>Physical Characteristics</h4>
         <div class="details">
           <div class="detail-row">
             <span class="label">Height (cm)</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.physical?.height || "N/A"
+              internalProfileData.Physical.height || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Weight (kg)</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.physical?.weight || "N/A"
+              internalProfileData.Physical.weight || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Skin color</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.physical?.skin || "N/A"
+              internalProfileData.Physical.skin || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Hair color</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.physical?.hair || "N/A"
+              internalProfileData.Physical.hair || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Eye color</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.physical?.eyes || "N/A"
+              internalProfileData.Physical.eyes || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Fingerprints</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.physical?.seed || "N/A"
+              internalProfileData.Physical.seed || "N/A"
             }}</span>
           </div>
         </div>
       </div>
 
       <!-- Medical Info (SIN Quality 4) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_4"
-        class="tab-content-section"
-      >
+      <div v-if="activeTab === SinQuality.LEVEL_4" class="tab-content-section">
         <h4>Medical Records</h4>
         <div class="details">
           <div class="detail-row">
             <span class="label">Blood Type</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.medical?.bloodType || "N/A"
+              internalProfileData.Medical.bloodType || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Eye Scan</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.medical?.eyeScan || "N/A"
+              internalProfileData.Medical.eyeScan || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Medical Record</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.medical?.seed ?? "N/A"
+              internalProfileData.Medical.seed ?? "N/A"
             }}</span>
           </div>
         </div>
       </div>
 
       <!-- Employment Info (SIN Quality 5) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_5"
-        class="tab-content-section"
-      >
+      <div v-if="activeTab === SinQuality.LEVEL_5" class="tab-content-section">
         <h4>Employment History</h4>
         <div class="details">
           <div class="detail-row">
             <span class="label">Profession</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.employment?.profession || "N/A"
+              internalProfileData.Employment.profession || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Employer</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.employment?.employer || "N/A"
+              internalProfileData.Employment.employer || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Employer Address</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.employment?.employerAddress || "N/A"
+              internalProfileData.Employment.employerAddress || "N/A"
             }}</span>
           </div>
           <div class="detail-row">
@@ -288,13 +273,10 @@
       </div>
 
       <!-- Genetic Info (SIN Quality 6) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_6"
-        class="tab-content-section"
-      >
+      <div v-if="activeTab === SinQuality.LEVEL_6" class="tab-content-section">
         <h4>Genetic Markers</h4>
         <DnaFingerprint
-          :seed="internalProfileData.sinId + internalProfileData.genetic?.seed"
+          :seed="internalProfileData.sinId + internalProfileData.Genetic.seed"
           :lanes="12"
           :animated="true"
         />
@@ -320,9 +302,13 @@ import DnaFingerprint from "./DnaFingerprint.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
-import { SinQuality, type ProfileData } from "../proto/profile.pb";
+import {
+  SinQuality,
+  getAllSinQualities,
+  type SinQualityValue,
+} from "./sin-quality";
+import type { ProfileData } from "../@types/profile";
 import { getDefaultProfileData } from "../utils/profile";
-import { SinQualityFlairMap, SinQualityTitleMap } from "./sin-quality";
 
 type ScanStatus = "idle" | "scanning" | "success" | "error";
 
@@ -409,7 +395,7 @@ const internalProfileData = computed(() => {
       ...defaultData, // Spread all default fields
       // Compute flagColors based on the default nationality
       flagColors: getFlagCSS(
-        defaultData.basic.nationality || ShadowrunNationality.UNKNOWN
+        defaultData.Basic.nationality || ShadowrunNationality.UNKNOWN
       ),
     };
   }
@@ -421,7 +407,7 @@ const internalProfileData = computed(() => {
     // Compute flagColors based on the actual nationality
     // Ensure Basic object and nationality exist, otherwise default to UNKNOWN
     flagColors: getFlagCSS(
-      props.profileData.basic?.nationality || ShadowrunNationality.UNKNOWN
+      props.profileData.Basic?.nationality || ShadowrunNationality.UNKNOWN
     ),
   };
 });
@@ -429,9 +415,22 @@ const internalProfileData = computed(() => {
 const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);
 const { barcodeWidths } = useIdCardBarcode(internalProfileData);
 
-const activeTab = ref<SinQuality | "licenses">(SinQuality.SIN_QUALITY_LEVEL_1);
+const activeTab = ref<SinQualityValue | "licenses">(SinQuality.LEVEL_1);
+const sinQualitiesList = getAllSinQualities();
 
-const selectTab = (tabIdentifier: SinQuality | "licenses") => {
+const filteredSinQualitiesList = computed(() =>
+  sinQualitiesList.filter(
+    (sq) => sq.value <= (props.profileData?.sinQuality ?? SinQuality.LEVEL_1)
+  )
+);
+
+// The function `getSinQualityTextById` is used in the template to get the flair text.
+const getSinQualityTextById = (qualityValue: SinQualityValue): string => {
+  const quality = sinQualitiesList.find((q) => q.value === qualityValue);
+  return quality ? quality.text : "Unknown Quality";
+};
+
+const selectTab = (tabIdentifier: SinQualityValue | "licenses") => {
   activeTab.value = tabIdentifier;
 };
 
@@ -448,7 +447,7 @@ const getFlagColors = (): string => {
 
   // Otherwise, look up by nationality from the Basic profile data
   return getFlagCSS(
-    internalProfileData.value.basic?.nationality || ShadowrunNationality.UNKNOWN
+    internalProfileData.value.Basic?.nationality || ShadowrunNationality.UNKNOWN
   );
 };
 </script>
@@ -531,9 +530,7 @@ const getFlagColors = (): string => {
   cursor: pointer;
   white-space: nowrap;
   border-bottom: 2px solid transparent; /* For active state indication */
-  transition:
-    background-color 0.3s,
-    border-color 0.3s;
+  transition: background-color 0.3s, border-color 0.3s;
   max-width: 16%;
 }
 

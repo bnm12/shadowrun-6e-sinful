@@ -94,7 +94,7 @@ export type ShadowrunNationalityType =
   (typeof ShadowrunNationality)[keyof typeof ShadowrunNationality];
 
 // Shadowrun 6E Flag Definitions
-export const SHADOWRUN_FLAGS: Record<string, string> = {
+export const SHADOWRUN_FLAGS: Record<ShadowrunNationalityType, string> = {
   // North America
   UCAS: "linear-gradient(to bottom, #ff0000 33%, #ffffff 33%, #ffffff 66%, #0000ff 66%)",
   CAS: "linear-gradient(to bottom, #ff0000 20%, #ffffff 20%, #ffffff 40%, #ff0000 40%, #ffffff 60%, #ff0000 60%, #ffffff 80%, #ff0000 80%)",
@@ -225,11 +225,11 @@ export const SHADOWRUN_FLAGS: Record<string, string> = {
 };
 
 // Helper function to get flag CSS for a nationality
-export function getFlagCSS(nationality: string): string {
+export function getFlagCSS(nationality: ShadowrunNationalityType): string {
   return SHADOWRUN_FLAGS[nationality] || SHADOWRUN_FLAGS["Unknown"];
 }
 
 // Helper function to get all available nationalities
-export function getAllNationalities(): string[] {
+export function getAllNationalities(): ShadowrunNationalityType[] {
   return Object.values(ShadowrunNationality);
 }
