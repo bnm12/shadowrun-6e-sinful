@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import type { ProfileData } from "../proto/profile.pb";
-import { gzipSync, strToU8, gunzipSync } from "fflate";
+import { ProfileData } from "../proto/profile.pb";
+import { gzipSync, gunzipSync } from "fflate"; // Removed strToU8
 
 export type ScanStatus = "idle" | "scanning" | "success" | "error";
 
@@ -37,36 +37,32 @@ export function useNfc() {
         currentScanResultMessage.value = "Tag detected! Processing...";
 
         for (const record of event.message.records) {
-          if (record.recordType === "mime") {
-            let jsonData = "";
+          if (record.recordType === "mime" && record.mediaType === "application/vnd.shadowrun.sin+gzip") {
             try {
-              if (record.mediaType === "application/vnd.shadowrun.sin+gzip") {
-                if (!record.data) throw new Error("Record data is undefined.");
-                const compressedData = new Uint8Array(record.data.buffer);
-                const decompressedData = gunzipSync(compressedData);
-                jsonData = new TextDecoder().decode(decompressedData);
-                currentScanResultMessage.value =
-                  "Decompressed (auto-detect format) and processing SIN data...";
-              } else {
-                console.log(
-                  "Skipping record with mediaType:",
-                  record.mediaType
-                );
-                continue;
-              }
+              if (!record.data) throw new Error("Record data is undefined.");
+              const compressedData = new Uint8Array(record.data.buffer);
+              const decompressedData = gunzipSync(compressedData);
+              currentScanResultMessage.value =
+                "Decompressed (auto-detect format) and processing SIN data...";
 
-              const parsedProfileData: ProfileData = JSON.parse(jsonData);
+              const parsedProfileData = ProfileData.decode(decompressedData);
               sinDataFound = true;
               currentScanStatus.value = "success";
               currentScanResultMessage.value = "SIN data found and parsed.";
               scannedProfileData.value = parsedProfileData;
-              break;
+              break; // Found and processed the SIN data, so exit the loop
             } catch (e: any) {
               currentScanStatus.value = "error";
               currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
               console.error("Error processing SIN data:", e);
-              break;
+              break; // Error processing, exit the loop
             }
+          } else if (record.recordType === "mime") {
+            // Log other mime types but don't try to process them as SIN data
+            console.log(
+              "Skipping record with mediaType:",
+              record.mediaType
+            );
           }
         }
         if (!sinDataFound && currentScanStatus.value !== "error") {
@@ -108,8 +104,7 @@ export function useNfc() {
     try {
       // @ts-ignore
       const ndef = new NDEFReader();
-      const profileDataString = JSON.stringify(profileDataFromForm);
-      const encodedData = strToU8(profileDataString);
+      const encodedData = ProfileData.encode(profileDataFromForm);
       const compressedData = gzipSync(encodedData, { level: 9 });
 
       const readPageUrl = new URL(window.location.href);
