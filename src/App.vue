@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
-import type { ProfileData } from "./proto/profile.pb";
+import type { ProfileData } from "./@types/profile";
 import { useNfc } from "./composables/useNfc";
 import { useReadme } from "./composables/useReadme";
 

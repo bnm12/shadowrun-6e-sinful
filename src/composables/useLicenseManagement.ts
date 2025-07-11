@@ -1,9 +1,10 @@
 import { ref } from "vue";
-import { SinQuality, type ProfileData } from "../proto/profile.pb";
+import type { ProfileData } from "../@types/profile";
+import { SinQuality, type SinQualityValue } from "../components/sin-quality";
 
 export function useLicenseManagement(formData: ProfileData) {
   const currentLicenseName = ref("");
-  const currentLicenseQuality = ref<SinQuality>(SinQuality.SIN_QUALITY_LEVEL_1);
+  const currentLicenseQuality = ref<SinQualityValue>(SinQuality.LEVEL_1);
   const editingLicenseKey = ref<string | null>(null);
 
   const addOrUpdateLicense = () => {
@@ -20,15 +21,14 @@ export function useLicenseManagement(formData: ProfileData) {
     }
     formData.licenses[name] = currentLicenseQuality.value;
     currentLicenseName.value = "";
-    currentLicenseQuality.value = SinQuality.SIN_QUALITY_LEVEL_1;
+    currentLicenseQuality.value = SinQuality.LEVEL_1;
     editingLicenseKey.value = null;
   };
 
   const editLicense = (licenseName: string) => {
     if (!formData.licenses) return;
     currentLicenseName.value = licenseName;
-    currentLicenseQuality.value =
-      formData.licenses[licenseName] ?? SinQuality.SIN_QUALITY_UNSPECIFIED;
+    currentLicenseQuality.value = formData.licenses[licenseName];
     editingLicenseKey.value = licenseName;
   };
 
@@ -38,7 +38,7 @@ export function useLicenseManagement(formData: ProfileData) {
       delete formData.licenses[licenseName];
       if (editingLicenseKey.value === licenseName) {
         currentLicenseName.value = "";
-        currentLicenseQuality.value = SinQuality.SIN_QUALITY_LEVEL_1;
+        currentLicenseQuality.value = SinQuality.LEVEL_1;
         editingLicenseKey.value = null;
       }
     }

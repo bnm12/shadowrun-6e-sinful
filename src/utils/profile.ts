@@ -1,27 +1,28 @@
-import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb";
+import type { ProfileData } from "../@types/profile";
 import { ShadowrunNationality } from "../components/shadowrun-flags";
+import { SinQuality } from "../components/sin-quality";
 
 export const INITIAL_SIN_ID_MODULE = "00000000-0000-0000-0000-000000000000";
 
 export const getDefaultProfileData = (): ProfileData => ({
   sinId: INITIAL_SIN_ID_MODULE,
   active: false,
-  sinQuality: SinQuality.SIN_QUALITY_LEVEL_3,
+  sinQuality: SinQuality.LEVEL_1,
   licenses: {},
-  basic: {
+  Basic: {
     name: "Jane Doe",
-    gender: Gender.GENDER_NA,
+    gender: "N/A",
     nationality: ShadowrunNationality.UNKNOWN,
     metatype: "N/A",
     photo: "/blank-profile-picture.svg",
   },
-  identity: {
+  Identity: {
     address: "N/A",
     city: "N/A",
     country: "N/A",
     birthdate: "N/A",
   },
-  physical: {
+  Physical: {
     height: 0,
     weight: 0,
     skin: "N/A",
@@ -29,18 +30,18 @@ export const getDefaultProfileData = (): ProfileData => ({
     eyes: "N/A",
     seed: 0,
   },
-  medical: {
+  Medical: {
     bloodType: "N/A",
     eyeScan: "N/A",
     seed: 0,
   },
-  employment: {
+  Employment: {
     profession: "N/A",
     employer: "N/A",
     employerAddress: "N/A",
     seed: 0,
   },
-  genetic: {
+  Genetic: {
     seed: 0,
   },
 });
