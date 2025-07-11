@@ -9,9 +9,13 @@
       <div class="form-group">
         <label for="gender">Gender:</label>
         <select id="gender" v-model="formData.basic.gender" required>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Diverse">Diverse</option>
+          <option
+            v-for="gen in Gender"
+            :key="gen"
+            :value="gen"
+          >
+            {{ gen }}
+          </option>
         </select>
       </div>
 
