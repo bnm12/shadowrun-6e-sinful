@@ -776,8 +776,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  height: 100dvh; /* Full viewport height */
-  width: 100dvw; /* Full viewport width */
+  height: 100svh; /* Full viewport height */
+  width: 100svw; /* Full viewport width */
   background: linear-gradient(135deg, #0a0a2e, #1a2332, #16213e);
   color: #00ffff; /* Default text color */
   overflow-y: auto;
@@ -1046,7 +1046,7 @@ onBeforeUnmount(() => {
   background-size: contain;
   background-repeat: no-repeat;
   width: 100%;
-  height: 50dvh;
+  height: 50svh;
   flex-grow: 1;
 }
 
@@ -1056,7 +1056,7 @@ onBeforeUnmount(() => {
   gap: 20px;
   justify-content: center;
   width: 100%;
-  height: 5dvh;
+  height: 5svh;
 }
 
 .navigation-buttons .navigation-button {
@@ -1095,7 +1095,7 @@ onBeforeUnmount(() => {
 
 @media (orientation: portrait) {
   .sin-check-view .id-card-container {
-    height: calc(95dvh - 5dvh - 10px * 2);
+    height: calc(95svh - 5svh - 10px * 2);
     max-width: 100%;
   }
 }

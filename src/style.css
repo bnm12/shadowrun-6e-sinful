@@ -76,8 +76,8 @@ button:focus-visible {
 #app {
   margin: 0 auto;
   text-align: center;
-  width: 100dvw;
-  min-height: 100dvh;
+  width: 100svw;
+  min-height: 100svh;
 }
 
 @media (prefers-color-scheme: light) {

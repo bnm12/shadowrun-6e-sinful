@@ -486,8 +486,8 @@ const getFlagColors = (): string => {
   .id-card {
     transform: rotate(90deg);
     transform-origin: center center;
-    height: calc(100dvw - 10px * 2);
-    max-width: calc(95dvh - 5dvh - 10px * 2);
+    height: calc(100svw - 10px * 2);
+    max-width: calc(95svh - 5svh - 10px * 2);
   }
 }
 
@@ -593,7 +593,7 @@ const getFlagColors = (): string => {
 }
 
 .placeholder-content p {
-  font-size: clamp(0.7em, 2dvh, 1em);
+  font-size: clamp(0.7em, 2svh, 1em);
   line-height: 1.6;
   margin-bottom: 8px;
 }
@@ -601,13 +601,13 @@ const getFlagColors = (): string => {
 .licenses-display-section h4 {
   color: #4a9eff;
   margin-bottom: 10px;
-  font-size: clamp(0.8em, 2.5dvh, 1.2em);
+  font-size: clamp(0.8em, 2.5svh, 1.2em);
 }
 
 .licenses-list-display {
   list-style-type: none;
   padding: 0;
-  font-size: clamp(0.7em, 2dvh, 1em);
+  font-size: clamp(0.7em, 2svh, 1em);
 }
 
 .licenses-list-display li {
@@ -628,7 +628,7 @@ const getFlagColors = (): string => {
 .no-licenses-message {
   font-style: italic;
   color: #88ddff;
-  font-size: clamp(0.7em, 2dvh, 1em);
+  font-size: clamp(0.7em, 2svh, 1em);
 }
 
 .left-section {
@@ -758,7 +758,7 @@ const getFlagColors = (): string => {
 }
 
 .name {
-  font-size: clamp(1em, 4dvh, 2em); /* Responsive font size */
+  font-size: clamp(1em, 4svh, 2em); /* Responsive font size */
   font-weight: bold;
   color: #00ffff;
   text-align: left;
@@ -768,14 +768,14 @@ const getFlagColors = (): string => {
 .details {
   display: flex;
   flex-direction: column;
-  gap: 0.5dvh; /* Relative gap */
+  gap: 0.5svh; /* Relative gap */
 }
 
 .detail-row {
   display: flex;
   flex-direction: row;
   justify-content: start;
-  font-size: clamp(0.6em, 2dvh, 1em); /* Responsive font size */
+  font-size: clamp(0.6em, 2svh, 1em); /* Responsive font size */
   gap: 1%;
 }
 
@@ -801,7 +801,7 @@ const getFlagColors = (): string => {
   background: rgba(0, 255, 255, 0.1);
   padding: 10px; /* Relative padding */
   border-top: 1px solid #4a9eff;
-  font-size: clamp(0.5em, 1.8dvh, 0.8em); /* Responsive font size */
+  font-size: clamp(0.5em, 1.8svh, 0.8em); /* Responsive font size */
 }
 
 .system-title {
@@ -814,12 +814,12 @@ const getFlagColors = (): string => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 0.3dvh;
+  gap: 0.3svh;
 }
 
 .code-line {
   color: #4a9eff;
-  font-size: clamp(0.4em, 1.5dvh, 0.7em); /* Responsive font size */
+  font-size: clamp(0.4em, 1.5svh, 0.7em); /* Responsive font size */
   font-family: "Courier New", monospace;
 }
 
