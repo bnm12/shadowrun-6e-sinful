@@ -1,8 +1,10 @@
 import { computed, type ComputedRef } from "vue";
 import Rand from "rand-seed";
-import type { ProfileData } from "../@types/profile";
+import type { ProfileData } from "../proto/profile.pb";
 
-export function useIdCardBarcode(internalProfileData: ComputedRef<ProfileData>) {
+export function useIdCardBarcode(
+  internalProfileData: ComputedRef<ProfileData>
+) {
   const barcodeWidths = computed(() => {
     const barcodeRand = new Rand(internalProfileData.value.sinId);
     const max = 9;
