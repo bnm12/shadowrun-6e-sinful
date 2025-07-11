@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch, computed } from "vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import type { ProfileData } from "./proto/profile.pb";
@@ -63,9 +63,54 @@ const handleHashChange = () => {
   }
 };
 
+const particles = computed(() => {
+  const particleCount = 25;
+  const generatedParticles: {
+    size: number;
+    left: number;
+    top: number;
+    animationDuration: number;
+  }[] = [];
+  for (let i = 0; i < particleCount; i++) {
+    generatedParticles.push({
+      // Random size between 2-8px
+      size: Math.random() * 6 + 2,
+
+      // Random position
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+
+      // Random animation duration
+      animationDuration: Math.random() * 4 + 5,
+    });
+  }
+  return generatedParticles;
+});
+
+const initializeBackground = () => {
+  // Add subtle mouse movement effect
+  const handleMouseMove = (e: MouseEvent) => {
+    const mouseX = e.clientX / window.innerWidth;
+    const mouseY = e.clientY / window.innerHeight;
+
+    const glow = document.querySelector(".glow-effect") as HTMLElement;
+    if (glow) {
+      glow.style.transform = `translate(-50%, -50%) translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+    }
+  };
+
+  document.addEventListener("mousemove", handleMouseMove);
+
+  // Store the cleanup function
+  return () => {
+    document.removeEventListener("mousemove", handleMouseMove);
+  };
+};
+
 onMounted(() => {
   handleHashChange();
   window.addEventListener("hashchange", handleHashChange);
+  initializeBackground();
   // Initial README load can be triggered here if desired, or on first click via toggleReadmeModal
 });
 
@@ -76,15 +121,31 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-container">
+    <!-- Animated Background -->
+    <div class="background-container">
+      <div class="floating-particles">
+        <template v-for="particle in particles">
+          <div
+            class="particle"
+            :style="{
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              animationDuration: `${particle.animationDuration}s`,
+            }"
+          ></div>
+        </template>
+      </div>
+      <div class="grid-overlay"></div>
+      <div class="glow-effect"></div>
+    </div>
+
     <!-- Info Button for Landing View -->
     <div v-if="currentView === 'landing'" class="info-button-container">
-      <button
-        @click="toggleReadmeModal"
-        class="info-button glitch-text"
-        data-text="(i)"
-      >
-        (i)
-      </button>
+      <div class="info-button" @click="toggleReadmeModal">
+        <span class="glitch-text" data-text="i">i</span>
+      </div>
     </div>
 
     <!-- Landing View -->
@@ -150,14 +211,14 @@ onBeforeUnmount(() => {
       @click.self="toggleReadmeModal"
     >
       <div class="readme-modal-content">
-        <button
-          @click="toggleReadmeModal"
-          class="close-readme-button glitch-text"
-          data-text="X"
-        >
-          X
-        </button>
-        <div v-html="readmeHtmlContent" class="readme-html-container"></div>
+        <div class="readme-modal-header">
+          <div class="close-readme-button" @click="toggleReadmeModal">
+            <span class="glitch-text" data-text="X">X</span>
+          </div>
+        </div>
+        <div class="readme-modal-body">
+          <div v-html="readmeHtmlContent" class="readme-html-container"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -166,26 +227,50 @@ onBeforeUnmount(() => {
 <style scoped>
 .info-button-container {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 5px;
+  right: 5px;
   z-index: 100; /* Ensure it's above other landing page content */
 }
 
 .info-button {
-  background-color: #10012c;
   border: 1px solid #ff1493;
   color: #ff1493;
-  padding: 10px 15px;
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 1.2em;
+  font-size: 14px;
   font-weight: bold;
-  /* Inherit glitch-text styles if needed, or apply specific ones */
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  /* Torn/damaged edge effect */
+  clip-path: polygon(
+    0% 0%,
+    80% 0%,
+    100% 20%,
+    90% 40%,
+    100% 60%,
+    85% 80%,
+    100% 100%,
+    0% 100%,
+    10% 80%,
+    0% 60%,
+    15% 40%,
+    0% 20%
+  );
 }
 
 .info-button:hover {
   background-color: #ff1493;
   color: #10012c;
+  box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+  transform: scale(1.1);
+}
+
+.info-button > span {
+  font-family: monospace;
 }
 
 .readme-modal-overlay {
@@ -194,49 +279,108 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; /* High z-index to be on top */
+  z-index: 1000;
 }
 
 .readme-modal-content {
-  background-color: #1a2332;
+  padding: 5px;
+  background-color: #10012c;
   color: #00ffff;
-  padding: 30px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 800px;
-  height: 80%;
+  border-radius: 3px;
+  width: 85%;
+  max-width: 900px;
+  height: 85%;
   max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
   border: 2px solid #ff1493;
-  box-shadow: 0 0 20px #ff1493;
+  box-shadow:
+    0 0 20px #ff1493,
+    inset 0 0 20px rgba(255, 20, 147, 0.1);
+
+  /* Add patchy texture like info button */
+  background-image:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(255, 20, 147, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(138, 43, 226, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(0, 255, 255, 0.05) 0%,
+      transparent 50%
+    );
+
+  /* Subtle scan lines */
+  background-size:
+    100% 2px,
+    100% 100%,
+    100% 100%;
+  background-repeat: repeat-y, no-repeat, no-repeat;
+
+  /* Use flexbox for layout */
+  display: flex;
+  flex-direction: column;
+}
+
+.readme-modal-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .close-readme-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
   border: 1px solid #ff1493;
   color: #ff1493;
-  font-size: 1.5em;
-  font-weight: bold;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 5px;
+  font-size: 1em;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  /* Torn/damaged edge effect */
+  clip-path: polygon(
+    0% 0%,
+    80% 0%,
+    100% 20%,
+    90% 40%,
+    100% 60%,
+    85% 80%,
+    100% 100%,
+    0% 100%,
+    10% 80%,
+    0% 60%,
+    15% 40%,
+    0% 20%
+  );
 }
 
 .close-readme-button:hover {
   background-color: #ff1493;
   color: #10012c;
+  box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+  transform: scale(1.1);
+}
+
+.readme-modal-body {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .readme-html-container {
-  margin-top: 20px; /* Space below the close button */
 }
 
 /* Basic styling for content generated by marked */
@@ -319,10 +463,112 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   height: 100dvh; /* Full viewport height */
   width: 100dvw; /* Full viewport width */
-  background-color: #1a2332; /* Consistent background */
+  background: linear-gradient(135deg, #0a0a2e, #1a2332, #16213e);
   color: #00ffff; /* Default text color */
   overflow-y: auto;
   padding: 10px;
+  position: relative;
+}
+
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.floating-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(255, 20, 147, 0.4);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.particle:nth-child(2n) {
+  background: rgba(106, 183, 255, 0.3);
+  animation-delay: -2s;
+}
+
+.particle:nth-child(3n) {
+  background: rgba(0, 255, 255, 0.2);
+  animation-delay: -4s;
+}
+
+.particle:nth-child(4n) {
+  background: rgba(138, 43, 226, 0.25);
+  animation-delay: -1s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(255, 20, 147, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 20, 147, 0.1) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  animation: gridMove 15s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(60px, 60px);
+  }
+}
+
+.glow-effect {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 20, 147, 0.08) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0.6;
+  }
 }
 
 .main-content {
@@ -334,6 +580,8 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   text-align: center; /* Center text elements like h1 */
+  position: relative;
+  z-index: 10;
 }
 
 .landing-view .landing-headline {
@@ -382,7 +630,9 @@ onBeforeUnmount(() => {
 }
 
 @keyframes enhanced-glitch-1 {
-  0%, 98%, 100% {
+  0%,
+  98%,
+  100% {
     transform: translate(0);
     opacity: 0;
   }
@@ -413,7 +663,9 @@ onBeforeUnmount(() => {
 }
 
 @keyframes enhanced-glitch-2 {
-  0%, 98%, 100% {
+  0%,
+  98%,
+  100% {
     transform: translate(0);
     opacity: 0;
   }
@@ -448,9 +700,11 @@ onBeforeUnmount(() => {
   .glitch-text {
     animation: screen-tear 20s infinite;
   }
-  
+
   @keyframes screen-tear {
-    0%, 99%, 100% {
+    0%,
+    99%,
+    100% {
       filter: none;
     }
     10.1% {
@@ -493,17 +747,19 @@ onBeforeUnmount(() => {
 .navigation-buttons .navigation-button {
   padding: 0px 10px;
   font-size: 1em;
-  background: #10012c;
+  background: rgba(16, 1, 44, 0.8);
   border: 1px solid #ff1493;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  backdrop-filter: blur(10px);
 }
 
 .navigation-buttons .navigation-button:hover {
-  background-color: #6ab7ff;
+  background-color: rgba(106, 183, 255, 0.8);
+  box-shadow: 0 0 15px rgba(106, 183, 255, 0.4);
 }
 
 /* SIN Check View Specific Styles */
@@ -544,5 +800,7 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   border: 1px solid #4a9eff;
   border-radius: 8px;
+  background: rgba(26, 35, 50, 0.7);
+  backdrop-filter: blur(10px);
 }
 </style>
