@@ -3,12 +3,12 @@
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="name">Name:</label>
-        <input type="text" id="name" v-model="formData.Basic.name" required />
+        <input type="text" id="name" v-model="formData.basic.name" required />
       </div>
 
       <div class="form-group">
         <label for="gender">Gender:</label>
-        <select id="gender" v-model="formData.Basic.gender" required>
+        <select id="gender" v-model="formData.basic.gender" required>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
           <option value="Diverse">Diverse</option>
@@ -17,7 +17,7 @@
 
       <div class="form-group">
         <label for="nationality">Nationality:</label>
-        <select id="nationality" v-model="formData.Basic.nationality" required>
+        <select id="nationality" v-model="formData.basic.nationality" required>
           <option
             v-for="nationality in nationalities"
             :key="nationality"
@@ -30,7 +30,7 @@
 
       <div class="form-group">
         <label for="metatype">Metatype:</label>
-        <select id="metatype" v-model="formData.Basic.metatype" required>
+        <select id="metatype" v-model="formData.basic.metatype" required>
           <option
             v-for="metatype in metatypes"
             :key="metatype"
@@ -46,41 +46,51 @@
         <select id="sinQuality" v-model="formData.sinQuality" required>
           <!-- sinQuality is top-level -->
           <option
-            v-for="quality in sinQualities"
-            :key="quality.value"
-            :value="quality.value"
+            v-for="[qualityName, qualityFlair] in Object.entries(
+              SinQualityFlairMap
+            )"
+            :key="qualityName"
+            :value="qualityName"
           >
-            {{ quality.text }}
+            {{ qualityFlair }}
           </option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="imageUrl">Image URL (for Basic Photo):</label>
-        <input type="url" id="imageUrl" v-model="formData.Basic.photo" />
+        <input type="url" id="imageUrl" v-model="formData.basic.photo" />
       </div>
 
-      <div v-if="formData.Basic.photo" class="image-preview">
-        <img :src="formData.Basic.photo" alt="Image Preview" />
+      <div v-if="formData.basic.photo" class="image-preview">
+        <img :src="formData.basic.photo" alt="Image Preview" />
       </div>
 
       <!-- Identity Details Section -->
       <div
-        v-if="formData.sinQuality >= SinQuality.LEVEL_2"
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_2"
         class="identity-details-section"
       >
         <h3>Identity Details</h3>
         <div class="form-group">
           <label for="address">Address:</label>
-          <input type="text" id="address" v-model="formData.Identity.address" />
+          <input
+            type="text"
+            id="address"
+            v-model="formData.identity!.address"
+          />
         </div>
         <div class="form-group">
           <label for="city">City:</label>
-          <input type="text" id="city" v-model="formData.Identity.city" />
+          <input type="text" id="city" v-model="formData.identity!.city" />
         </div>
         <div class="form-group">
           <label for="country">Country:</label>
-          <select id="nationality" v-model="formData.Identity.country" required>
+          <select
+            id="nationality"
+            v-model="formData.identity!.country"
+            required
+          >
             <option
               v-for="nationality in nationalities"
               :key="nationality"
@@ -95,7 +105,7 @@
           <input
             type="date"
             id="birthdate"
-            v-model="formData.Identity.birthdate"
+            v-model="formData.identity!.birthdate"
           />
         </div>
       </div>
@@ -103,29 +113,37 @@
 
       <!-- Physical Details Section -->
       <div
-        v-if="formData.sinQuality >= SinQuality.LEVEL_3"
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_3"
         class="physical-details-section"
       >
         <h3>Physical Details</h3>
         <div class="form-group">
           <label for="height">Height (cm):</label>
-          <input type="number" id="height" v-model="formData.Physical.height" />
+          <input
+            type="number"
+            id="height"
+            v-model="formData.physical!.height"
+          />
         </div>
         <div class="form-group">
           <label for="weight">Weight (kg):</label>
-          <input type="number" id="weight" v-model="formData.Physical.weight" />
+          <input
+            type="number"
+            id="weight"
+            v-model="formData.physical!.weight"
+          />
         </div>
         <div class="form-group">
           <label for="skin">Skin color:</label>
-          <input type="text" id="skin" v-model="formData.Physical.skin" />
+          <input type="text" id="skin" v-model="formData.physical!.skin" />
         </div>
         <div class="form-group">
           <label for="hair">Hair color:</label>
-          <input type="text" id="hair" v-model="formData.Physical.hair" />
+          <input type="text" id="hair" v-model="formData.physical!.hair" />
         </div>
         <div class="form-group">
           <label for="eyes">Eye color:</label>
-          <input type="text" id="eyes" v-model="formData.Physical.eyes" />
+          <input type="text" id="eyes" v-model="formData.physical!.eyes" />
         </div>
       </div>
       <!-- End Physical Details Section -->
@@ -141,11 +159,11 @@
           <label for="licenseQuality">License Quality:</label>
           <select id="licenseQuality" v-model="currentLicenseQuality">
             <option
-              v-for="quality in sinQualities"
-              :key="quality.value"
-              :value="quality.value"
+              v-for="[key, value] in Object.entries(SinQualityFlairMap)"
+              :key="key"
+              :value="key"
             >
-              {{ quality.text }}
+              {{ value }}
             </option>
           </select>
         </div>
@@ -154,23 +172,32 @@
         </button>
 
         <div
-          v-if="Object.keys(formData.licenses || {}).length > 0"
+          v-if="Object.keys(formData.licenses).length > 0"
           class="licenses-list"
         >
           <h4>Current Licenses:</h4>
           <ul>
-            <li v-for="(quality, name) in formData.licenses!" :key="name">
-              {{ name }} ({{ getSinQualityText(quality) }})
+            <li
+              v-for="([licenseName, qualityValue], index) in Object.entries(
+                formData.licenses
+              )"
+              :key="index"
+            >
+              {{ licenseName }} ({{
+                SinQualityFlairMap[
+                  qualityValue ?? SinQuality.SIN_QUALITY_UNSPECIFIED
+                ]
+              }})
               <button
                 type="button"
-                @click="editLicense(name)"
+                @click="editLicense(licenseName)"
                 class="edit-button small-button"
               >
                 Edit
               </button>
               <button
                 type="button"
-                @click="deleteLicense(name)"
+                @click="deleteLicense(licenseName)"
                 class="delete-button small-button"
               >
                 Delete
@@ -209,14 +236,10 @@ import {
   getAllMetatypes,
   // type ShadowrunMetatypeType, // Unused
 } from "./shadowrun-metatypes";
-import {
-  SinQuality,
-  getAllSinQualities,
-  type SinQualityValue,
-} from "./sin-quality";
-import type { ProfileData } from "../@types/profile"; // Import ProfileData, ProfileBasic is unused
+import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb"; // Import ProfileData, ProfileBasic is unused
 import { v4 as uuidv4 } from "uuid";
 import { useLicenseManagement } from "../composables/useLicenseManagement";
+import { SinQualityFlairMap } from "./sin-quality";
 
 // Props received from App.vue
 const props = defineProps<{
@@ -227,26 +250,48 @@ const props = defineProps<{
 
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
-const sinQualities = getAllSinQualities();
 
 // Initialize formData with the full ProfileData structure
 const formData = reactive<ProfileData>({
   sinId: uuidv4(), // Will be set in App.vue before writing
   active: true,
-  sinQuality: SinQuality.LEVEL_3, // Default SIN quality for new SINs
+  sinQuality: SinQuality.SIN_QUALITY_LEVEL_3, // Default SIN quality for new SINs
   licenses: {}, // Initialize licenses as an empty object
-  Basic: {
+  basic: {
     name: "",
-    gender: "Male",
+    gender: Gender.GENDER_MALE,
     nationality: ShadowrunNationality.UCAS, // Default nationality
     metatype: ShadowrunMetatype.HUMAN, // Default metatype
     photo: "", // imageUrl maps to photo
   },
-  Identity: {}, // Initialize other sections as empty.
-  Physical: {}, // Form could be expanded to include these.
-  Medical: {},
-  Employment: {},
-  Genetic: {},
+  identity: {
+    address: "",
+    city: "",
+    country: "",
+    birthdate: "",
+  },
+  physical: {
+    height: 0,
+    weight: 0,
+    skin: "",
+    hair: "",
+    eyes: "",
+    seed: 0,
+  },
+  medical: {
+    bloodType: "",
+    eyeScan: "",
+    seed: 0,
+  },
+  employment: {
+    profession: "",
+    employer: "",
+    employerAddress: "",
+    seed: 0,
+  },
+  genetic: {
+    seed: 0,
+  },
 });
 
 const {
@@ -260,37 +305,45 @@ const {
 
 const emit = defineEmits(["submitSinData"]);
 
-const getSinQualityText = (qualityValue: SinQualityValue): string => {
-  const quality = sinQualities.find((q) => q.value === qualityValue);
-  return quality ? quality.text : "Unknown Quality";
-};
-
 const submitForm = () => {
   // Basic validation can be added here if needed
-  if (formData.sinQuality > 0) {
+  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_1) {
   }
-  if (formData.sinQuality > 1) {
+  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_2) {
   }
-  if (formData.sinQuality > 2) {
-    formData.Physical.seed = formData.Physical.seed ?? Date.now();
+  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {
+    formData.physical = {
+      height: 0,
+      weight: 0,
+      skin: "N/A",
+      hair: "N/A",
+      eyes: "N/A",
+      seed: Date.now(),
+      ...formData.physical,
+    };
   }
-  if (formData.sinQuality > 3) {
-    formData.Medical.seed = formData.Medical.seed ?? Date.now();
+  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_4) {
+    formData.medical = {
+      bloodType: "N/A",
+      eyeScan: "N/A",
+      seed: Date.now(),
+      ...formData.medical,
+    };
   }
-  if (formData.sinQuality > 4) {
-    formData.Employment.seed = formData.Employment.seed ?? Date.now();
+  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_5) {
+    formData.employment = {
+      profession: "N/A",
+      employer: "N/A",
+      employerAddress: "N/A",
+      seed: Date.now(),
+      ...formData.employment,
+    };
   }
-  if (formData.sinQuality > 5) {
-    formData.Genetic.seed = formData.Genetic.seed ?? Date.now();
-  }
-
-  switch (formData.sinQuality) {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
+  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_6) {
+    formData.genetic = {
+      seed: Date.now(),
+      ...formData.genetic,
+    };
   }
   emit("submitSinData", formData);
 };
