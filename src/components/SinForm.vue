@@ -294,27 +294,31 @@
       <div class="form-actions">
         <button
           type="button"
-          @click="scanNfc"
-          :disabled="props.isScanning"
+          @click="readTag(false)"
+          :disabled="currentScanStatus === 'scanning'"
           class="cyber-button"
         >
-          <span v-if="props.isScanning">SCANNING...</span>
+          <span v-if="currentScanStatus === 'scanning'">SCANNING...</span>
           <span v-else>SCAN CARD</span>
         </button>
         <button
           type="submit"
-          :disabled="props.isWriting"
+          :disabled="isWriting"
           class="cyber-button cyber-button-primary"
         >
-          <span v-if="props.isWriting">WAITING FOR TAG...</span>
+          <span v-if="isWriting">WAITING FOR TAG...</span>
           <span v-else>WRITE TO TAG</span>
         </button>
 
         <div
-          v-if="props.writeStatusMessage"
-          :class="['status-message', props.writeStatusMessageType]"
+          v-if="writeStatusMessage || currentScanResultMessage"
+          :class="[
+            'status-message',
+            writeStatusMessageType ||
+              (currentScanStatus === 'error' ? 'error' : 'success'),
+          ]"
         >
-          {{ props.writeStatusMessage }}
+          {{ writeStatusMessage || currentScanResultMessage }}
         </div>
       </div>
     </form>
@@ -322,7 +326,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
 import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb";
@@ -330,21 +334,24 @@ import { v4 as uuidv4 } from "uuid";
 import { useLicenseManagement } from "../composables/useLicenseManagement";
 import { SinQualityFlairMap } from "../utils/sin-quality";
 import { GenderDisplayMap } from "../utils/profile";
+import { useNfc } from "../composables/useNfc";
 
-import { watch } from "vue";
-
-const props = defineProps<{
-  isWriting: boolean;
-  isScanning: boolean;
-  writeStatusMessage: string;
-  writeStatusMessageType: "success" | "error" | "";
-  scannedProfileData?: ProfileData;
-}>();
+const {
+  isWriting,
+  writeStatusMessage,
+  writeStatusMessageType,
+  currentScanStatus,
+  currentScanResultMessage,
+  scannedProfileData,
+  readTag,
+  writeTag,
+} = useNfc();
 
 watch(
-  () => props.scannedProfileData,
+  scannedProfileData,
   (newData) => {
-    if (newData) {
+    if (newData && newData.sinId) {
+      // Logic to merge newData into formData without losing reactivity
       Object.assign(formData, newData);
     }
   },
@@ -404,12 +411,6 @@ const {
   deleteLicense,
 } = useLicenseManagement(formData);
 
-const emit = defineEmits(["submitSinData", "scanNfc"]);
-
-const scanNfc = () => {
-  emit("scanNfc");
-};
-
 const submitForm = () => {
   if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {
     formData.physical = {
@@ -444,7 +445,7 @@ const submitForm = () => {
       ...formData.genetic,
     };
   }
-  emit("submitSinData", formData);
+  writeTag(formData);
 };
 </script>
 
