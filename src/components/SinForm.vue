@@ -1,98 +1,32 @@
 <template>
   <div class="sin-form-container">
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" id="name" v-model="formData.basic.name" required />
-      </div>
-
-      <div class="form-group">
-        <label for="gender">Gender:</label>
-        <select id="gender" v-model="formData.basic.gender" required>
-          <option
-            v-for="[key, value] in Object.entries(GenderDisplayMap)"
-            :key="key"
-            :value="key"
-          >
-            {{ value }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="nationality">Nationality:</label>
-        <select id="nationality" v-model="formData.basic.nationality" required>
-          <option
-            v-for="nationality in nationalities"
-            :key="nationality"
-            :value="nationality"
-          >
-            {{ nationality }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="metatype">Metatype:</label>
-        <select id="metatype" v-model="formData.basic.metatype" required>
-          <option
-            v-for="metatype in metatypes"
-            :key="metatype"
-            :value="metatype"
-          >
-            {{ metatype }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="sinQuality">SIN Quality:</label>
-        <select id="sinQuality" v-model="formData.sinQuality" required>
-          <!-- sinQuality is top-level -->
-          <option
-            v-for="[qualityName, qualityFlair] in Object.entries(
-              SinQualityFlairMap
-            )"
-            :key="qualityName"
-            :value="qualityName"
-          >
-            {{ qualityFlair }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="imageUrl">Image URL (for Basic Photo):</label>
-        <input type="url" id="imageUrl" v-model="formData.basic.photo" />
-      </div>
-
-      <div v-if="formData.basic.photo" class="image-preview">
-        <img :src="formData.basic.photo" alt="Image Preview" />
-      </div>
-
-      <!-- Identity Details Section -->
-      <div
-        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_2"
-        class="identity-details-section"
-      >
-        <h3>Identity Details</h3>
-        <div class="form-group">
-          <label for="address">Address:</label>
-          <input
-            type="text"
-            id="address"
-            v-model="formData.identity!.address"
-          />
+    <form @submit.prevent="submitForm" class="sin-form">
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Basic Details</h3>
+        <div class="form-field">
+          <label for="name">Name:</label>
+          <input type="text" id="name" v-model="formData.basic.name" required />
         </div>
-        <div class="form-group">
-          <label for="city">City:</label>
-          <input type="text" id="city" v-model="formData.identity!.city" />
+
+        <div class="form-field">
+          <label for="gender">Gender:</label>
+          <select id="gender" v-model="formData.basic.gender" required>
+            <option
+              v-for="[key, value] in Object.entries(GenderDisplayMap)"
+              :key="key"
+              :value="key"
+            >
+              {{ value }}
+            </option>
+          </select>
         </div>
-        <div class="form-group">
-          <label for="country">Country:</label>
+
+        <div class="form-field">
+          <label for="nationality">Nationality:</label>
           <select
             id="nationality"
-            v-model="formData.identity!.country"
+            v-model="formData.basic.nationality"
             required
           >
             <option
@@ -104,7 +38,80 @@
             </option>
           </select>
         </div>
-        <div class="form-group">
+
+        <div class="form-field">
+          <label for="metatype">Metatype:</label>
+          <select id="metatype" v-model="formData.basic.metatype" required>
+            <option
+              v-for="metatype in metatypes"
+              :key="metatype"
+              :value="metatype"
+            >
+              {{ metatype }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="sinQuality">SIN Quality:</label>
+          <select id="sinQuality" v-model="formData.sinQuality" required>
+            <option
+              v-for="[qualityName, qualityFlair] in Object.entries(
+                SinQualityFlairMap
+              )"
+              :key="qualityName"
+              :value="qualityName"
+            >
+              {{ qualityFlair }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="imageUrl">Image URL (for Basic Photo):</label>
+          <input type="url" id="imageUrl" v-model="formData.basic.photo" />
+        </div>
+
+        <div v-if="formData.basic.photo" class="image-preview">
+          <img :src="formData.basic.photo" alt="Profile Preview" />
+        </div>
+      </div>
+
+      <!-- Identity Details Section -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_2"
+        class="form-section"
+      >
+        <h3 class="section-title">Identity Details</h3>
+
+        <div class="form-field">
+          <label for="address">Address:</label>
+          <input
+            type="text"
+            id="address"
+            v-model="formData.identity!.address"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="city">City:</label>
+          <input type="text" id="city" v-model="formData.identity!.city" />
+        </div>
+
+        <div class="form-field">
+          <label for="country">Country:</label>
+          <select id="country" v-model="formData.identity!.country">
+            <option
+              v-for="nationality in nationalities"
+              :key="nationality"
+              :value="nationality"
+            >
+              {{ nationality }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-field">
           <label for="birthdate">Birthdate:</label>
           <input
             type="date"
@@ -113,15 +120,15 @@
           />
         </div>
       </div>
-      <!-- End Identity Details Section -->
 
       <!-- Physical Details Section -->
       <div
         v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_3"
-        class="physical-details-section"
+        class="form-section"
       >
-        <h3>Physical Details</h3>
-        <div class="form-group">
+        <h3 class="section-title">Physical Details</h3>
+
+        <div class="form-field">
           <label for="height">Height (cm):</label>
           <input
             type="number"
@@ -129,7 +136,8 @@
             v-model="formData.physical!.height"
           />
         </div>
-        <div class="form-group">
+
+        <div class="form-field">
           <label for="weight">Weight (kg):</label>
           <input
             type="number"
@@ -137,29 +145,33 @@
             v-model="formData.physical!.weight"
           />
         </div>
-        <div class="form-group">
+
+        <div class="form-field">
           <label for="skin">Skin color:</label>
           <input type="text" id="skin" v-model="formData.physical!.skin" />
         </div>
-        <div class="form-group">
+
+        <div class="form-field">
           <label for="hair">Hair color:</label>
           <input type="text" id="hair" v-model="formData.physical!.hair" />
         </div>
-        <div class="form-group">
+
+        <div class="form-field">
           <label for="eyes">Eye color:</label>
           <input type="text" id="eyes" v-model="formData.physical!.eyes" />
         </div>
       </div>
-      <!-- End Physical Details Section -->
 
       <!-- Licenses Section -->
-      <div class="licenses-section">
-        <h3>Manage Licenses</h3>
-        <div class="form-group">
+      <div class="form-section">
+        <h3 class="section-title">Manage Licenses</h3>
+
+        <div class="form-field">
           <label for="licenseName">License Name:</label>
           <input type="text" id="licenseName" v-model="currentLicenseName" />
         </div>
-        <div class="form-group">
+
+        <div class="form-field">
           <label for="licenseQuality">License Quality:</label>
           <select id="licenseQuality" v-model="currentLicenseQuality">
             <option
@@ -171,74 +183,84 @@
             </option>
           </select>
         </div>
-        <button type="button" @click="addOrUpdateLicense" class="action-button">
-          {{ editingLicenseKey ? "Update License" : "Add License" }}
+
+        <button type="button" @click="addOrUpdateLicense" class="cyber-button">
+          {{ editingLicenseKey ? "UPDATE LICENSE" : "ADD LICENSE" }}
         </button>
 
         <div
           v-if="Object.keys(formData.licenses).length > 0"
-          class="licenses-list"
+          class="licenses-display"
         >
-          <h4>Current Licenses:</h4>
-          <ul>
-            <li
-              v-for="([licenseName, qualityValue], index) in Object.entries(
-                formData.licenses
-              )"
-              :key="index"
-            >
-              {{ licenseName }} ({{
-                SinQualityFlairMap[
-                  qualityValue ?? SinQuality.SIN_QUALITY_UNSPECIFIED
-                ]
-              }})
+          <div
+            v-for="([licenseName, qualityValue], index) in Object.entries(
+              formData.licenses
+            )"
+            :key="index"
+            class="license-item"
+          >
+            <div class="license-info">
+              <span class="license-name">{{ licenseName }}</span>
+              <span class="license-quality">
+                ({{
+                  SinQualityFlairMap[
+                    qualityValue ?? SinQuality.SIN_QUALITY_UNSPECIFIED
+                  ]
+                }})
+              </span>
+            </div>
+            <div class="license-actions">
               <button
                 type="button"
                 @click="editLicense(licenseName)"
-                class="edit-button small-button"
+                class="cyber-button cyber-button-small"
               >
-                Edit
+                EDIT
               </button>
               <button
                 type="button"
                 @click="deleteLicense(licenseName)"
-                class="delete-button small-button"
+                class="cyber-button cyber-button-small cyber-button-danger"
               >
-                Delete
+                DELETE
               </button>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
-      <!-- End Licenses Section -->
 
-      <div class="form-submission-area">
-        <button type="submit" :disabled="props.isWriting">
-          <span v-if="props.isWriting">Waiting for tag...</span>
-          <span v-else>Write to Tag</span>
+      <!-- Submit Section -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          :disabled="props.isWriting"
+          class="cyber-button cyber-button-primary"
+        >
+          <span v-if="props.isWriting">WAITING FOR TAG...</span>
+          <span v-else>WRITE TO TAG</span>
         </button>
-        <p
+
+        <div
           v-if="props.writeStatusMessage"
           :class="['status-message', props.writeStatusMessageType]"
         >
           {{ props.writeStatusMessage }}
-        </p>
+        </div>
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue"; // Import computed
+import { reactive } from "vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
-import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb"; // Import ProfileData, ProfileBasic is unused, Import GenderJSON
+import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb";
 import { v4 as uuidv4 } from "uuid";
 import { useLicenseManagement } from "../composables/useLicenseManagement";
 import { SinQualityFlairMap } from "../utils/sin-quality";
 import { GenderDisplayMap } from "../utils/profile";
 
-// Props received from App.vue
 const props = defineProps<{
   isWriting: boolean;
   writeStatusMessage: string;
@@ -248,18 +270,17 @@ const props = defineProps<{
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
 
-// Initialize formData with the full ProfileData structure
 const formData = reactive<ProfileData>({
-  sinId: uuidv4(), // Will be set in App.vue before writing
+  sinId: uuidv4(),
   active: true,
-  sinQuality: SinQuality.SIN_QUALITY_LEVEL_3, // Default SIN quality for new SINs
-  licenses: {}, // Initialize licenses as an empty object
+  sinQuality: SinQuality.SIN_QUALITY_LEVEL_3,
+  licenses: {},
   basic: {
     name: "",
     gender: Gender.GENDER_MALE,
-    nationality: ShadowrunNationality.UCAS, // Default nationality
-    metatype: ShadowrunMetatype.HUMAN, // Default metatype
-    photo: "", // imageUrl maps to photo
+    nationality: ShadowrunNationality.UCAS,
+    metatype: ShadowrunMetatype.HUMAN,
+    photo: "",
   },
   identity: {
     address: "",
@@ -303,11 +324,6 @@ const {
 const emit = defineEmits(["submitSinData"]);
 
 const submitForm = () => {
-  // Basic validation can be added here if needed
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_1) {
-  }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_2) {
-  }
   if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {
     formData.physical = {
       height: 0,
@@ -348,176 +364,272 @@ const submitForm = () => {
 
 <style scoped>
 .sin-form-container {
+  min-height: 100vh;
   padding: 20px;
   color: #00ffff;
+  position: relative;
+  overflow-x: hidden;
 }
 
-.form-group {
-  margin-bottom: 15px;
+.sin-form {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
-.form-group label {
+.form-section {
+  margin-bottom: 30px;
+}
+
+.form-section::after {
+  content: "";
   display: block;
-  margin-bottom: 5px;
-  color: #4a9eff;
-  justify-self: flex-start;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ffff, transparent);
+  margin: 30px 0 20px 0;
 }
 
-.form-group input[type="text"],
-.form-group input[type="date"],
-.form-group input[type="number"],
-.form-group input[type="url"],
-.form-group select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #00ffff;
-  border-radius: 4px;
-  background-color: #2a3847;
+.section-title {
+  font-size: 1.5rem;
   color: #00ffff;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #00ffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #00ffff;
+  border-radius: 0;
+  background: rgba(26, 26, 46, 0.8);
+  color: #00ffff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
   box-sizing: border-box;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #ff00ff;
+  box-shadow:
+    0 0 0 2px rgba(255, 0, 255, 0.3),
+    inset 0 0 10px rgba(255, 0, 255, 0.1);
+  background: rgba(26, 26, 46, 0.9);
+}
+
+.form-field input::placeholder {
+  color: rgba(0, 255, 255, 0.5);
 }
 
 .image-preview {
   margin-top: 15px;
-  margin-bottom: 15px;
   text-align: center;
+  border: 2px dashed #00ffff;
+  padding: 20px;
+  background: rgba(26, 26, 46, 0.5);
 }
 
 .image-preview img {
-  max-width: 100%;
+  max-width: 200px;
   max-height: 200px;
-  border: 1px solid #00ffff;
-  border-radius: 4px;
+  border: 2px solid #00ffff;
+  filter: drop-shadow(0 0 10px #00ffff);
 }
 
-button[type="submit"] {
-  padding: 10px 15px;
-  background-color: #4a9eff;
-  color: #1a2332;
-  border: none;
-  border-radius: 4px;
+.cyber-button {
+  background: linear-gradient(45deg, #ff00ff, #8000ff);
+  color: #ffffff;
+  border: 2px solid #ff00ff;
+  padding: 12px 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   cursor: pointer;
-  font-weight: bold;
-}
-
-button[type="submit"]:hover {
-  background-color: #6ab7ff;
-}
-
-.licenses-section {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #4a9eff;
-}
-
-.licenses-section h3,
-.identity-details-section h3,
-.physical-details-section h3 {
-  color: #4a9eff;
+  transition: all 0.3s ease;
+  margin-right: 10px;
   margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
-.identity-details-section,
-.physical-details-section {
+.cyber-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.cyber-button:hover::before {
+  left: 100%;
+}
+
+.cyber-button:hover {
+  background: linear-gradient(45deg, #ff3399, #9933ff);
+  box-shadow:
+    0 0 20px rgba(255, 0, 255, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.cyber-button:active {
+  transform: translateY(0);
+}
+
+.cyber-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cyber-button-primary {
+  font-size: 1.2rem;
+  padding: 16px 32px;
+  background: linear-gradient(45deg, #00ffff, #0099cc);
+  border-color: #00ffff;
+  color: #1a1a2e;
+}
+
+.cyber-button-primary:hover {
+  background: linear-gradient(45deg, #33ffff, #00ccff);
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.cyber-button-small {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.cyber-button-danger {
+  background: linear-gradient(45deg, #ff0066, #cc0033);
+  border-color: #ff0066;
+}
+
+.cyber-button-danger:hover {
+  background: linear-gradient(45deg, #ff3388, #ff0044);
+  box-shadow:
+    0 0 20px rgba(255, 0, 102, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.licenses-display {
   margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #4a9eff;
 }
 
-.licenses-section h4 {
-  color: #00ffff;
-  margin-top: 15px;
-  margin-bottom: 5px;
-}
-
-.licenses-list ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.licenses-list li {
-  background-color: #2a3847;
-  padding: 8px;
-  border: 1px solid #00ffff;
-  border-radius: 4px;
-  margin-bottom: 8px;
+.license-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: rgba(26, 26, 46, 0.8);
+  border: 1px solid #00ffff;
+  border-left: 4px solid #ff00ff;
+  transition: all 0.3s ease;
 }
 
-.action-button,
-.edit-button,
-.delete-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-right: 5px; /* For spacing between buttons */
+.license-item:hover {
+  background: rgba(26, 26, 46, 0.9);
+  border-color: #ff00ff;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
 }
 
-.action-button {
-  background-color: #00bfff; /* DeepSkyBlue */
-  color: #1a2332;
-  margin-bottom: 10px; /* Space below add/update button */
-}
-.action-button:hover {
-  background-color: #1edcff;
-}
-
-.small-button {
-  padding: 5px 8px;
-  font-size: 0.9em;
-}
-
-.edit-button {
-  background-color: #ffae42; /* Orange */
-  color: #1a2332;
-}
-.edit-button:hover {
-  background-color: #ffc069;
-}
-
-.delete-button {
-  background-color: #ff4242; /* Red */
-  color: #1a2332;
-}
-.delete-button:hover {
-  background-color: #ff6969;
-}
-
-.form-submission-area {
-  margin-top: 20px;
+.license-info {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 10px;
 }
 
-.form-submission-area button {
-  min-width: 150px; /* Give button a decent width */
+.license-name {
+  font-weight: 700;
+  color: #00ffff;
+}
+
+.license-quality {
+  color: #ff00ff;
+  font-size: 0.9rem;
+}
+
+.license-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 40px;
 }
 
 .status-message {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 4px;
-  text-align: center;
-  font-weight: bold;
-  width: 100%;
-  max-width: 400px; /* Or adjust as needed */
-  box-sizing: border-box;
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px solid;
+  background: rgba(26, 26, 46, 0.9);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .status-message.success {
-  background-color: #28a745; /* Green background */
-  color: #ffffff; /* White text */
-  border: 1px solid #1e7e34;
+  border-color: #00ff00;
+  color: #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 .status-message.error {
-  background-color: #dc3545; /* Red background */
-  color: #ffffff; /* White text */
-  border: 1px solid #b21f2d;
+  border-color: #ff0000;
+  color: #ff0000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .form-title {
+    font-size: 2rem;
+  }
+
+  .sin-form {
+    max-width: 100%;
+  }
+
+  .license-item {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .license-actions {
+    justify-content: center;
+  }
 }
 </style>

@@ -152,6 +152,7 @@ onBeforeUnmount(() => {
   font-family: "Doctor Glitch";
   position: relative;
   z-index: 3;
+  animation-delay: 5s;
 }
 
 .glitch-text::before,
@@ -163,6 +164,9 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   z-index: 1;
+  animation-delay: 5s;
+  transform: translate(0);
+  opacity: 0;
 }
 
 .glitch-text::before {
@@ -170,7 +174,7 @@ onBeforeUnmount(() => {
   background: rgba(255, 0, 0, 0.4);
   background-clip: text;
   -webkit-background-clip: text;
-  animation: enhanced-glitch-1 20s infinite;
+  animation: enhanced-glitch-1 20s infinite 5s;
   clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
 }
 
@@ -179,7 +183,7 @@ onBeforeUnmount(() => {
   background: rgba(0, 255, 255, 0.4);
   background-clip: text;
   -webkit-background-clip: text;
-  animation: enhanced-glitch-2 20s infinite;
+  animation: enhanced-glitch-2 20s infinite 5s;
   clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
 }
 
@@ -252,7 +256,7 @@ onBeforeUnmount(() => {
 /* Add a subtle screen-tear effect for extra cyberpunk feel */
 @media (prefers-reduced-motion: no-preference) {
   .glitch-text {
-    animation: screen-tear 20s infinite;
+    animation: screen-tear 20s infinite 5s;
   }
 
   @keyframes screen-tear {
@@ -283,8 +287,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .info-button-container {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 0;
+  right: 0;
   z-index: 100; /* Ensure it's above other landing page content */
 }
 
