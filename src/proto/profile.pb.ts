@@ -31,6 +31,20 @@ export type SinQuality =
   | "SIN_QUALITY_LEVEL_6";
 
 /**
+ * Enum for blood types
+ */
+export type BloodType =
+  | "BLOOD_TYPE_UNSPECIFIED"
+  | "BLOOD_TYPE_A_POSITIVE"
+  | "BLOOD_TYPE_A_NEGATIVE"
+  | "BLOOD_TYPE_B_POSITIVE"
+  | "BLOOD_TYPE_B_NEGATIVE"
+  | "BLOOD_TYPE_AB_POSITIVE"
+  | "BLOOD_TYPE_AB_NEGATIVE"
+  | "BLOOD_TYPE_O_POSITIVE"
+  | "BLOOD_TYPE_O_NEGATIVE";
+
+/**
  * Basic profile information (Level 1)
  */
 export interface ProfileBasic {
@@ -67,7 +81,7 @@ export interface ProfilePhysical {
  * Medical information (Level 4)
  */
 export interface ProfileMedical {
-  bloodType: string;
+  bloodType: BloodType;
   seed: number;
 }
 
@@ -239,6 +253,94 @@ export const SinQuality = {
       }
       case "SIN_QUALITY_LEVEL_6": {
         return 6;
+      }
+      // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
+      default: {
+        return i as unknown as number;
+      }
+    }
+  },
+} as const;
+
+export const BloodType = {
+  BLOOD_TYPE_UNSPECIFIED: "BLOOD_TYPE_UNSPECIFIED",
+  BLOOD_TYPE_A_POSITIVE: "BLOOD_TYPE_A_POSITIVE",
+  BLOOD_TYPE_A_NEGATIVE: "BLOOD_TYPE_A_NEGATIVE",
+  BLOOD_TYPE_B_POSITIVE: "BLOOD_TYPE_B_POSITIVE",
+  BLOOD_TYPE_B_NEGATIVE: "BLOOD_TYPE_B_NEGATIVE",
+  BLOOD_TYPE_AB_POSITIVE: "BLOOD_TYPE_AB_POSITIVE",
+  BLOOD_TYPE_AB_NEGATIVE: "BLOOD_TYPE_AB_NEGATIVE",
+  BLOOD_TYPE_O_POSITIVE: "BLOOD_TYPE_O_POSITIVE",
+  BLOOD_TYPE_O_NEGATIVE: "BLOOD_TYPE_O_NEGATIVE",
+  /**
+   * @private
+   */
+  _fromInt: function (i: number): BloodType {
+    switch (i) {
+      case 0: {
+        return "BLOOD_TYPE_UNSPECIFIED";
+      }
+      case 1: {
+        return "BLOOD_TYPE_A_POSITIVE";
+      }
+      case 2: {
+        return "BLOOD_TYPE_A_NEGATIVE";
+      }
+      case 3: {
+        return "BLOOD_TYPE_B_POSITIVE";
+      }
+      case 4: {
+        return "BLOOD_TYPE_B_NEGATIVE";
+      }
+      case 5: {
+        return "BLOOD_TYPE_AB_POSITIVE";
+      }
+      case 6: {
+        return "BLOOD_TYPE_AB_NEGATIVE";
+      }
+      case 7: {
+        return "BLOOD_TYPE_O_POSITIVE";
+      }
+      case 8: {
+        return "BLOOD_TYPE_O_NEGATIVE";
+      }
+      // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
+      default: {
+        return i as unknown as BloodType;
+      }
+    }
+  },
+  /**
+   * @private
+   */
+  _toInt: function (i: BloodType): number {
+    switch (i) {
+      case "BLOOD_TYPE_UNSPECIFIED": {
+        return 0;
+      }
+      case "BLOOD_TYPE_A_POSITIVE": {
+        return 1;
+      }
+      case "BLOOD_TYPE_A_NEGATIVE": {
+        return 2;
+      }
+      case "BLOOD_TYPE_B_POSITIVE": {
+        return 3;
+      }
+      case "BLOOD_TYPE_B_NEGATIVE": {
+        return 4;
+      }
+      case "BLOOD_TYPE_AB_POSITIVE": {
+        return 5;
+      }
+      case "BLOOD_TYPE_AB_NEGATIVE": {
+        return 6;
+      }
+      case "BLOOD_TYPE_O_POSITIVE": {
+        return 7;
+      }
+      case "BLOOD_TYPE_O_NEGATIVE": {
+        return 8;
       }
       // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
       default: {
@@ -574,7 +676,7 @@ export const ProfileMedical = {
    */
   initialize: function (msg?: Partial<ProfileMedical>): ProfileMedical {
     return {
-      bloodType: "",
+      bloodType: BloodType._fromInt(0),
       seed: 0,
       ...msg,
     };
@@ -587,8 +689,8 @@ export const ProfileMedical = {
     msg: PartialDeep<ProfileMedical>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
-    if (msg.bloodType) {
-      writer.writeString(1, msg.bloodType);
+    if (msg.bloodType && BloodType._toInt(msg.bloodType)) {
+      writer.writeEnum(1, BloodType._toInt(msg.bloodType));
     }
     if (msg.seed) {
       writer.writeInt32(2, msg.seed);
@@ -607,7 +709,7 @@ export const ProfileMedical = {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.bloodType = reader.readString();
+          msg.bloodType = BloodType._fromInt(reader.readEnum());
           break;
         }
         case 2: {
@@ -1114,6 +1216,94 @@ export const SinQualityJSON = {
   },
 } as const;
 
+export const BloodTypeJSON = {
+  BLOOD_TYPE_UNSPECIFIED: "BLOOD_TYPE_UNSPECIFIED",
+  BLOOD_TYPE_A_POSITIVE: "BLOOD_TYPE_A_POSITIVE",
+  BLOOD_TYPE_A_NEGATIVE: "BLOOD_TYPE_A_NEGATIVE",
+  BLOOD_TYPE_B_POSITIVE: "BLOOD_TYPE_B_POSITIVE",
+  BLOOD_TYPE_B_NEGATIVE: "BLOOD_TYPE_B_NEGATIVE",
+  BLOOD_TYPE_AB_POSITIVE: "BLOOD_TYPE_AB_POSITIVE",
+  BLOOD_TYPE_AB_NEGATIVE: "BLOOD_TYPE_AB_NEGATIVE",
+  BLOOD_TYPE_O_POSITIVE: "BLOOD_TYPE_O_POSITIVE",
+  BLOOD_TYPE_O_NEGATIVE: "BLOOD_TYPE_O_NEGATIVE",
+  /**
+   * @private
+   */
+  _fromInt: function (i: number): BloodType {
+    switch (i) {
+      case 0: {
+        return "BLOOD_TYPE_UNSPECIFIED";
+      }
+      case 1: {
+        return "BLOOD_TYPE_A_POSITIVE";
+      }
+      case 2: {
+        return "BLOOD_TYPE_A_NEGATIVE";
+      }
+      case 3: {
+        return "BLOOD_TYPE_B_POSITIVE";
+      }
+      case 4: {
+        return "BLOOD_TYPE_B_NEGATIVE";
+      }
+      case 5: {
+        return "BLOOD_TYPE_AB_POSITIVE";
+      }
+      case 6: {
+        return "BLOOD_TYPE_AB_NEGATIVE";
+      }
+      case 7: {
+        return "BLOOD_TYPE_O_POSITIVE";
+      }
+      case 8: {
+        return "BLOOD_TYPE_O_NEGATIVE";
+      }
+      // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
+      default: {
+        return i as unknown as BloodType;
+      }
+    }
+  },
+  /**
+   * @private
+   */
+  _toInt: function (i: BloodType): number {
+    switch (i) {
+      case "BLOOD_TYPE_UNSPECIFIED": {
+        return 0;
+      }
+      case "BLOOD_TYPE_A_POSITIVE": {
+        return 1;
+      }
+      case "BLOOD_TYPE_A_NEGATIVE": {
+        return 2;
+      }
+      case "BLOOD_TYPE_B_POSITIVE": {
+        return 3;
+      }
+      case "BLOOD_TYPE_B_NEGATIVE": {
+        return 4;
+      }
+      case "BLOOD_TYPE_AB_POSITIVE": {
+        return 5;
+      }
+      case "BLOOD_TYPE_AB_NEGATIVE": {
+        return 6;
+      }
+      case "BLOOD_TYPE_O_POSITIVE": {
+        return 7;
+      }
+      case "BLOOD_TYPE_O_NEGATIVE": {
+        return 8;
+      }
+      // unknown values are preserved as numbers. this occurs when new enum values are introduced and the generated code is out of date.
+      default: {
+        return i as unknown as number;
+      }
+    }
+  },
+} as const;
+
 export const ProfileBasicJSON = {
   /**
    * Serializes ProfileBasic to JSON.
@@ -1392,7 +1582,7 @@ export const ProfileMedicalJSON = {
    */
   initialize: function (msg?: Partial<ProfileMedical>): ProfileMedical {
     return {
-      bloodType: "",
+      bloodType: BloodType._fromInt(0),
       seed: 0,
       ...msg,
     };
@@ -1405,7 +1595,7 @@ export const ProfileMedicalJSON = {
     msg: PartialDeep<ProfileMedical>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    if (msg.bloodType) {
+    if (msg.bloodType && BloodTypeJSON._toInt(msg.bloodType)) {
       json["bloodType"] = msg.bloodType;
     }
     if (msg.seed) {
@@ -1420,7 +1610,7 @@ export const ProfileMedicalJSON = {
   _readMessage: function (msg: ProfileMedical, json: any): ProfileMedical {
     const _bloodType_ = json["bloodType"] ?? json["blood_type"];
     if (_bloodType_) {
-      msg.bloodType = _bloodType_;
+      msg.bloodType = BloodType._fromInt(_bloodType_);
     }
     const _seed_ = json["seed"];
     if (_seed_) {

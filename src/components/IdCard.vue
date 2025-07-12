@@ -237,7 +237,10 @@
             <span class="label">Blood Type</span>
             <span class="label-colon">:</span>
             <span class="value">{{
-              internalProfileData.medical?.bloodType || "N/A"
+              BloodTypeDisplayMap[
+                internalProfileData.medical?.bloodType ??
+                  BloodType.BLOOD_TYPE_UNSPECIFIED
+              ]
             }}</span>
           </div>
           <div class="detail-row">
@@ -345,8 +348,12 @@ import DnaFingerprint from "./DnaFingerprint.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
-import { SinQuality } from "../proto/profile.pb";
-import { getDefaultProfileData, GenderDisplayMap } from "../utils/profile";
+import { BloodType, SinQuality } from "../proto/profile.pb";
+import {
+  BloodTypeDisplayMap,
+  getDefaultProfileData,
+  GenderDisplayMap,
+} from "../utils/profile";
 import { SinQualityFlairMap, SinQualityTitleMap } from "../utils/sin-quality";
 import { checkSin } from "../utils/sin-check-helpers";
 import { sinScanResultTextMap } from "../utils/sin-scan-result";
