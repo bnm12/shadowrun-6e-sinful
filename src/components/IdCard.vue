@@ -237,13 +237,6 @@
             }}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Eye Scan</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.medical?.eyeScan || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
             <span class="label">Medical Record</span>
             <span class="label-colon">:</span>
             <span class="value">{{

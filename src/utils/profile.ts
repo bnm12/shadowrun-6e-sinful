@@ -31,7 +31,6 @@ export const getDefaultProfileData = (): ProfileData => ({
   },
   medical: {
     bloodType: "N/A",
-    eyeScan: "N/A",
     seed: 0,
   },
   employment: {

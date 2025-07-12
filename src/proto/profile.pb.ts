@@ -68,7 +68,6 @@ export interface ProfilePhysical {
  */
 export interface ProfileMedical {
   bloodType: string;
-  eyeScan: string;
   seed: number;
 }
 
@@ -576,7 +575,6 @@ export const ProfileMedical = {
   initialize: function (msg?: Partial<ProfileMedical>): ProfileMedical {
     return {
       bloodType: "",
-      eyeScan: "",
       seed: 0,
       ...msg,
     };
@@ -592,11 +590,8 @@ export const ProfileMedical = {
     if (msg.bloodType) {
       writer.writeString(1, msg.bloodType);
     }
-    if (msg.eyeScan) {
-      writer.writeString(2, msg.eyeScan);
-    }
     if (msg.seed) {
-      writer.writeInt32(3, msg.seed);
+      writer.writeInt32(2, msg.seed);
     }
     return writer;
   },
@@ -616,10 +611,6 @@ export const ProfileMedical = {
           break;
         }
         case 2: {
-          msg.eyeScan = reader.readString();
-          break;
-        }
-        case 3: {
           msg.seed = reader.readInt32();
           break;
         }
@@ -1402,7 +1393,6 @@ export const ProfileMedicalJSON = {
   initialize: function (msg?: Partial<ProfileMedical>): ProfileMedical {
     return {
       bloodType: "",
-      eyeScan: "",
       seed: 0,
       ...msg,
     };
@@ -1418,9 +1408,6 @@ export const ProfileMedicalJSON = {
     if (msg.bloodType) {
       json["bloodType"] = msg.bloodType;
     }
-    if (msg.eyeScan) {
-      json["eyeScan"] = msg.eyeScan;
-    }
     if (msg.seed) {
       json["seed"] = msg.seed;
     }
@@ -1434,10 +1421,6 @@ export const ProfileMedicalJSON = {
     const _bloodType_ = json["bloodType"] ?? json["blood_type"];
     if (_bloodType_) {
       msg.bloodType = _bloodType_;
-    }
-    const _eyeScan_ = json["eyeScan"] ?? json["eye_scan"];
-    if (_eyeScan_) {
-      msg.eyeScan = _eyeScan_;
     }
     const _seed_ = json["seed"];
     if (_seed_) {
