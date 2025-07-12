@@ -63,8 +63,6 @@ const handleHashChange = () => {
 onMounted(() => {
   handleHashChange();
   window.addEventListener("hashchange", handleHashChange);
-  // initializeBackground(); // Logic moved to FancyBackground.vue
-  // Initial README load can be triggered here if desired, or on first click via toggleReadmeModal
 });
 
 onBeforeUnmount(() => {
@@ -139,7 +137,6 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
-
   </div>
 </template>
 

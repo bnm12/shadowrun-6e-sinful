@@ -15,12 +15,11 @@
       </template>
     </div>
     <div class="grid-overlay"></div>
-    <div class="glow-effect"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed, onMounted, onBeforeUnmount } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps<{
   count: number;
@@ -48,43 +47,6 @@ const particles = computed(() => {
   }
   return generatedParticles;
 });
-
-// TODO: Move mousemove logic here if it's tightly coupled with the background
-
-let cleanupMouseMove: (() => void) | null = null;
-
-const initializeBackground = () => {
-  // Add subtle mouse movement effect
-  const handleMouseMove = (e: MouseEvent) => {
-    const mouseX = e.clientX / window.innerWidth;
-    const mouseY = e.clientY / window.innerHeight;
-
-    // Query within the component's scope if possible, or ensure it runs after DOM is ready.
-    // Since this is in FancyBackground's script setup, document.querySelector should be fine
-    // once the component is mounted.
-    const glow = document.querySelector(".glow-effect") as HTMLElement;
-    if (glow) {
-      glow.style.transform = `translate(-50%, -50%) translate(${mouseX * 30}px, ${mouseY * 30}px)`;
-    }
-  };
-
-  document.addEventListener("mousemove", handleMouseMove);
-
-  // Store the cleanup function
-  cleanupMouseMove = () => {
-    document.removeEventListener("mousemove", handleMouseMove);
-  };
-};
-
-onMounted(() => {
-  initializeBackground();
-});
-
-onBeforeUnmount(() => {
-  if (cleanupMouseMove) {
-    cleanupMouseMove();
-  }
-});
 </script>
 
 <style scoped>
@@ -94,7 +56,6 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* Ensure it's behind other content */
   pointer-events: none; /* Allow clicks to pass through */
 }
 
@@ -141,13 +102,13 @@ onBeforeUnmount(() => {
 
 .grid-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
   background-image:
-    linear-gradient(rgba(255, 20, 147, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 20, 147, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(255, 20, 147, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 20, 147, 0.4) 1px, transparent 1px);
   background-size: 60px 60px;
   opacity: 0.4;
   animation: gridMove 15s linear infinite;
@@ -159,33 +120,6 @@ onBeforeUnmount(() => {
   }
   100% {
     transform: translate(60px, 60px);
-  }
-}
-
-.glow-effect {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 20, 147, 0.08) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: glow 4s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.3;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.3);
-    opacity: 0.6;
   }
 }
 </style>
