@@ -317,6 +317,10 @@
       >
         Check SIN
       </button>
+      <div class="validate-on-scan-control">
+        <input type="checkbox" id="validate-on-scan" v-model="validateOnScan" />
+        <label for="validate-on-scan">Validate on scan</label>
+      </div>
     </div>
     <div class="system-info">
       <div class="system-codes">
@@ -362,6 +366,7 @@ onBeforeUnmount(() => {
 
 // INITIAL_SIN_ID can be defined here if only used by setup logic, or keep INITIAL_SIN_ID_MODULE if it was truly module-scoped
 const INITIAL_SIN_ID = "00000000-0000-0000-0000-000000000000";
+const validateOnScan = ref(false);
 
 // Overlay state - will be computed based on props
 const isOverlayVisible = ref(true); // Will be managed by new logic
@@ -379,11 +384,15 @@ watch(
       overlayMessage.value = newMessage || "Error during scan.";
       isOverlayVisible.value = true;
     } else if (newStatus === "success" && newSinId) {
-      overlayMessage.value = "SIN Scanned successfully";
-      isOverlayVisible.value = true;
-      setTimeout(() => {
-        isOverlayVisible.value = false;
-      }, 2000);
+      if (validateOnScan.value) {
+        performSinCheck();
+      } else {
+        overlayMessage.value = "SIN Scanned successfully";
+        isOverlayVisible.value = true;
+        setTimeout(() => {
+          isOverlayVisible.value = false;
+        }, 2000);
+      }
     } else if (newStatus === "idle") {
       if (!newSinId || newSinId === INITIAL_SIN_ID) {
         overlayMessage.value = "Waiting for SIN";
@@ -465,6 +474,13 @@ const performSinCheck = () => {
   gap: 10px;
   padding: 0 5px;
   justify-content: center;
+  align-items: center;
+}
+
+.validate-on-scan-control {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .scan-level-dropdown,
