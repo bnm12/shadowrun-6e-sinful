@@ -307,12 +307,30 @@
       </div>
     </div>
 
+    <div class="sin-check-controls">
+      <select v-model="selectedScanLevel" class="scan-level-dropdown">
+        <option
+          v-for="level in availableScanLevels"
+          :key="level"
+          :value="level"
+        >
+          Scan Level {{ level }}
+        </option>
+      </select>
+      <button
+        @click="performSinCheck"
+        class="scan-button"
+        :disabled="!internalProfileData.sinId"
+      >
+        Check SIN
+      </button>
+    </div>
     <div class="system-info">
-      <div class="system-title">
-        {{ internalProfileData.active ? "## ACTIVE ##" : "## BURNED ##" }}
-      </div>
       <div class="system-codes">
         <div class="code-line">IDC : {{ idc }}</div>
+        <div class="system-title">
+          {{ internalProfileData.active ? "## ACTIVE ##" : "## BURNED ##" }}
+        </div>
         <div class="code-line">{{ additionalCode }}</div>
       </div>
     </div>
@@ -329,6 +347,8 @@ import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
 import { SinQuality, type ProfileData } from "../proto/profile.pb";
 import { getDefaultProfileData, GenderDisplayMap } from "../utils/profile";
 import { SinQualityFlairMap, SinQualityTitleMap } from "../utils/sin-quality";
+import { checkSin } from "../utils/sin-check-helpers";
+import { sinScanResultTextMap } from "../utils/sin-scan-result";
 
 type ScanStatus = "idle" | "scanning" | "success" | "error";
 
@@ -441,8 +461,6 @@ const selectTab = (tabIdentifier: SinQuality | "licenses") => {
   activeTab.value = tabIdentifier;
 };
 
-// effectiveSinQuality computed property is removed as it's no longer directly used for rendering tabs.
-
 // Function to get flag colors based on nationality or manual override
 const getFlagColors = (): string => {
   // If manual colors are provided, use them
@@ -457,9 +475,44 @@ const getFlagColors = (): string => {
     internalProfileData.value.basic?.nationality || ShadowrunNationality.UNKNOWN
   );
 };
+
+const availableScanLevels = [1, 2, 3, 4, 5, 6];
+const selectedScanLevel = ref(1);
+
+const performSinCheck = () => {
+  const result = checkSin(
+    SinQuality._toInt(internalProfileData.value.sinQuality),
+    selectedScanLevel.value
+  );
+  overlayMessage.value = sinScanResultTextMap[result];
+  isOverlayVisible.value = true;
+  setTimeout(() => {
+    isOverlayVisible.value = false;
+  }, 2000);
+};
 </script>
 
 <style scoped>
+.sin-check-controls {
+  display: flex;
+  gap: 10px;
+  padding: 0 5px;
+  justify-content: center;
+}
+
+.scan-level-dropdown,
+.scan-button {
+  background-color: #00ffff;
+  color: #1a2332;
+  border: 1px solid #00ffff;
+  padding: 5px 5px;
+  cursor: pointer;
+}
+
+.scan-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
 .id-card {
   background: linear-gradient(135deg, #1a2332 0%, #2a3847 100%);
   border: 2px solid #4a9eff;
@@ -801,22 +854,26 @@ const getFlagColors = (): string => {
 
 .system-info {
   background: rgba(0, 255, 255, 0.1);
-  padding: 10px; /* Relative padding */
+  padding: 5px 10px; /* Relative padding */
   border-top: 1px solid #4a9eff;
   font-size: clamp(0.5em, 1.8svh, 0.8em); /* Responsive font size */
-}
-
-.system-title {
-  color: #00ffff;
-  margin-bottom: 1%;
-  font-weight: bold;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .system-codes {
   display: flex;
+  width: 100%;
   flex-direction: row;
   justify-content: space-between;
+  align-items: flex-end;
   gap: 0.3svh;
+}
+
+.system-title {
+  color: #00ffff;
+  font-weight: bold;
 }
 
 .code-line {

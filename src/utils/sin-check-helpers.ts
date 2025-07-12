@@ -7,7 +7,10 @@ export type sincheckresult = "success" | "blip" | "flagged" | "burned";
  * @param n The number of dice to roll.
  * @returns An object containing the number of hits and failures.
  */
-export function countHitsAndFailures(n: number): { hits: number; failures: number } {
+export function countHitsAndFailures(n: number): {
+  hits: number;
+  failures: number;
+} {
   let hits = 0;
   let failures = 0;
 
@@ -19,11 +22,14 @@ export function countHitsAndFailures(n: number): { hits: number; failures: numbe
       failures++;
     }
   }
-
+  console.log(`Dice roll (${n}):`, { hits, failures });
   return { hits, failures };
 }
 
-export function checkSin(sinRating: number, scannerRating: number): sincheckresult {
+export function checkSin(
+  sinRating: number,
+  scannerRating: number
+): sincheckresult {
   const { hits } = countHitsAndFailures(scannerRating * 2);
   const difference = hits - sinRating;
 
