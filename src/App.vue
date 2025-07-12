@@ -39,7 +39,7 @@ const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   history.replaceState(null, "", `#${viewName}`);
   if (viewName === "sin-check") {
     currentProfileData.value = {} as ProfileData; // Reset before scan
-    readTag();
+    readTag(true);
   }
 };
 
@@ -52,7 +52,7 @@ const handleHashChange = () => {
     currentView.value = hash;
     if (hash === "sin-check") {
       currentProfileData.value = {} as ProfileData; // Reset before scan
-      readTag();
+      readTag(true);
     }
   } else {
     currentView.value = "landing";
