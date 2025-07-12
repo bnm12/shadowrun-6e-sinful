@@ -293,6 +293,15 @@
       <!-- Submit Section -->
       <div class="form-actions">
         <button
+          type="button"
+          @click="scanNfc"
+          :disabled="props.isScanning"
+          class="cyber-button"
+        >
+          <span v-if="props.isScanning">SCANNING...</span>
+          <span v-else>SCAN CARD</span>
+        </button>
+        <button
           type="submit"
           :disabled="props.isWriting"
           class="cyber-button cyber-button-primary"
@@ -322,11 +331,25 @@ import { useLicenseManagement } from "../composables/useLicenseManagement";
 import { SinQualityFlairMap } from "../utils/sin-quality";
 import { GenderDisplayMap } from "../utils/profile";
 
+import { watch } from "vue";
+
 const props = defineProps<{
   isWriting: boolean;
+  isScanning: boolean;
   writeStatusMessage: string;
   writeStatusMessageType: "success" | "error" | "";
+  scannedProfileData?: ProfileData;
 }>();
+
+watch(
+  () => props.scannedProfileData,
+  (newData) => {
+    if (newData) {
+      Object.assign(formData, newData);
+    }
+  },
+  { deep: true }
+);
 
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
@@ -381,7 +404,11 @@ const {
   deleteLicense,
 } = useLicenseManagement(formData);
 
-const emit = defineEmits(["submitSinData"]);
+const emit = defineEmits(["submitSinData", "scanNfc"]);
+
+const scanNfc = () => {
+  emit("scanNfc");
+};
 
 const submitForm = () => {
   if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {

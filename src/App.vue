@@ -126,9 +126,15 @@ onBeforeUnmount(() => {
       <div class="sin-form-section">
         <SinForm
           @submitSinData="writeTag"
+          @scanNfc="readTag"
           :isWriting="isWriting"
-          :writeStatusMessage="writeStatusMessage"
-          :writeStatusMessageType="writeStatusMessageType"
+          :isScanning="currentScanStatus === 'scanning'"
+          :writeStatusMessage="writeStatusMessage || currentScanResultMessage"
+          :writeStatusMessageType="
+            writeStatusMessageType ||
+            (currentScanStatus === 'error' ? 'error' : 'success')
+          "
+          :scannedProfileData="scannedProfileData"
         />
       </div>
       <div class="navigation-buttons">
