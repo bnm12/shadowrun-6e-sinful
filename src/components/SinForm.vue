@@ -170,11 +170,19 @@
 
         <div class="form-field">
           <label for="bloodType">Blood Type:</label>
-          <input
-            type="text"
+          <select
             id="bloodType"
             v-model="formData.medical!.bloodType"
-          />
+            required
+          >
+            <option
+              v-for="[key, value] in Object.entries(BloodTypeDisplayMap)"
+              :key="key"
+              :value="key"
+            >
+              {{ value }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -328,11 +336,16 @@
 import { reactive, watch } from "vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
-import { Gender, SinQuality, type ProfileData } from "../proto/profile.pb";
+import {
+  BloodType,
+  Gender,
+  SinQuality,
+  type ProfileData,
+} from "../proto/profile.pb";
 import { v4 as uuidv4 } from "uuid";
 import { useLicenseManagement } from "../composables/useLicenseManagement";
 import { SinQualityFlairMap } from "../utils/sin-quality";
-import { GenderDisplayMap } from "../utils/profile";
+import { BloodTypeDisplayMap, GenderDisplayMap } from "../utils/profile";
 import { useNfc } from "../composables/useNfc";
 
 const {
@@ -387,7 +400,7 @@ const formData = reactive<ProfileData>({
     seed: 0,
   },
   medical: {
-    bloodType: "",
+    bloodType: BloodType.BLOOD_TYPE_A_POSITIVE,
     seed: 0,
   },
   employment: {
@@ -422,9 +435,9 @@ const submitForm = () => {
       ...formData.physical,
     };
   }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_4) {
+  if (formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_4) {
     formData.medical = {
-      bloodType: "N/A",
+      bloodType: BloodType.BLOOD_TYPE_UNSPECIFIED,
       seed: Date.now(),
       ...formData.medical,
     };

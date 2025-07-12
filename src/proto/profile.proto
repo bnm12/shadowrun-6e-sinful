@@ -48,9 +48,22 @@ message ProfilePhysical {
   int32 seed = 6;          // Random seed for generation
 }
 
+// Enum for blood types
+enum BloodType {
+  BLOOD_TYPE_UNSPECIFIED = 0;
+  BLOOD_TYPE_A_POSITIVE = 1;
+  BLOOD_TYPE_A_NEGATIVE = 2;
+  BLOOD_TYPE_B_POSITIVE = 3;
+  BLOOD_TYPE_B_NEGATIVE = 4;
+  BLOOD_TYPE_AB_POSITIVE = 5;
+  BLOOD_TYPE_AB_NEGATIVE = 6;
+  BLOOD_TYPE_O_POSITIVE = 7;
+  BLOOD_TYPE_O_NEGATIVE = 8;
+}
+
 // Medical information (Level 4)
 message ProfileMedical {
-  string blood_type = 1;
+  BloodType blood_type = 1;
   int32 seed = 2;          // Random seed for generation
 }
 
