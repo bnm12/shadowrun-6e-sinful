@@ -4,6 +4,12 @@ import { gzipSync, gunzipSync } from "fflate"; // Removed strToU8
 
 export type ScanStatus = "idle" | "scanning" | "success" | "error";
 
+// A singleton AbortController to manage NFC scanning sessions.
+// This allows any component to stop the current NFC scan, which is crucial
+// for a single-page application (SPA) where navigation shouldn't leave
+// old scans running in the background.
+let abortController: AbortController | null = null;
+
 export function useNfc() {
   const isWriting = ref(false);
   const writeStatusMessage = ref("");
@@ -14,6 +20,13 @@ export function useNfc() {
   const scannedProfileData = ref<ProfileData>({} as ProfileData);
 
   const readTag = async (continuous = false) => {
+    // If a scan is already in progress, don't start a new one.
+    if (currentScanStatus.value === "scanning" && abortController) {
+      console.log("Scan already in progress.");
+      return;
+    }
+
+    // Reset state for a new scan session
     currentScanStatus.value = "idle";
     currentScanResultMessage.value = "";
     scannedProfileData.value = {} as ProfileData;
@@ -24,10 +37,18 @@ export function useNfc() {
         "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
       return;
     }
+
     try {
       // @ts-ignore
       const ndef = new NDEFReader();
-      const abortController = new AbortController();
+      abortController = new AbortController();
+
+      // Signal to abort previous scans.
+      abortController.signal.onabort = () => {
+        console.log("NFC scan aborted.");
+        currentScanStatus.value = "idle";
+        currentScanResultMessage.value = "Scan aborted.";
+      };
 
       ndef.onreading = (event: any) => {
         let sinDataFound = false;
@@ -51,24 +72,20 @@ export function useNfc() {
               currentScanResultMessage.value = "SIN data found and parsed.";
               scannedProfileData.value = parsedProfileData;
               if (!continuous) {
-                abortController.abort(); // Stop scanning
+                abortController?.abort();
               }
-              break; // Found and processed the SIN data, so exit the loop
+              break;
             } catch (e: any) {
               currentScanStatus.value = "error";
               currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
               console.error("Error processing SIN data:", e);
               if (!continuous) {
-                abortController.abort(); // Stop scanning
+                abortController?.abort();
               }
-              break; // Error processing, exit the loop
+              break;
             }
           } else if (record.recordType === "mime") {
-            // Log other mime types but don't try to process them as SIN data
-            console.log(
-              "Skipping record with mediaType:",
-              record.mediaType
-            );
+            console.log("Skipping record with mediaType:", record.mediaType);
           }
         }
         if (!sinDataFound && currentScanStatus.value !== "error") {
@@ -92,10 +109,22 @@ export function useNfc() {
         "Bring a tag closer to read. Scanning...";
     } catch (error: any) {
       currentScanStatus.value = "error";
-      currentScanResultMessage.value = `Error starting scan: ${
-        error.message || "Failed to start NDEFReader"
-      }`;
+      if (error.name === "AbortError") {
+        currentScanResultMessage.value = "Scan was aborted.";
+      } else {
+        currentScanResultMessage.value = `Error starting scan: ${
+          error.message || "Failed to start NDEFReader"
+        }`;
+      }
       console.error("Error starting NDEFReader scan:", error);
+      abortController = null; // Clear the controller on error
+    }
+  };
+
+  const abortScan = () => {
+    if (abortController) {
+      abortController.abort();
+      abortController = null;
     }
   };
 
@@ -159,5 +188,6 @@ export function useNfc() {
     scannedProfileData,
     readTag,
     writeTag,
+    abortScan,
   };
 }

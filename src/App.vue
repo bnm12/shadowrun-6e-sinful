@@ -1,59 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import FancyBackground from "./components/FancyBackground.vue"; // Import the new component
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import FancyBackground from "./components/FancyBackground.vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
-import ReadmeInfoModal from "./components/ReadmeInfoModal.vue"; // Import the new component
-import type { ProfileData } from "./proto/profile.pb";
+import ReadmeInfoModal from "./components/ReadmeInfoModal.vue";
 import { useNfc } from "./composables/useNfc";
-import { useReadme } from "./composables/useReadme"; // Restore import
+import { useReadme } from "./composables/useReadme";
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
-
-const {
-  isWriting,
-  writeStatusMessage,
-  writeStatusMessageType,
-  currentScanStatus,
-  currentScanResultMessage,
-  scannedProfileData,
-  readTag,
-  writeTag,
-} = useNfc();
-
-const { toggleReadmeModal } = useReadme(); // Restore for the button's click handler
-
-// Initialize currentProfileData as a minimal empty object.
-// IdCard.vue's withDefaults will handle showing its own default "standby" data.
-const currentProfileData = ref<ProfileData>({} as ProfileData);
-
-// Watch for changes in scannedProfileData from the composable and update local currentProfileData
-watch(scannedProfileData, (newData) => {
-  if (newData && newData.sinId) {
-    currentProfileData.value = newData;
-  }
-});
+const { toggleReadmeModal } = useReadme();
+const { abortScan } = useNfc(); // Import abortScan from useNfc
 
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
   history.replaceState(null, "", `#${viewName}`);
-  if (viewName === "sin-check") {
-    currentProfileData.value = {} as ProfileData; // Reset before scan
-    readTag(true);
-  }
 };
 
 const handleHashChange = () => {
-  const hash = window.location.hash.replace(/^#/, "") as
-    | "landing"
-    | "sin-check"
-    | "create-sin";
+  const hash =
+    (window.location.hash.replace(/^#/, "") as
+      | "landing"
+      | "sin-check"
+      | "create-sin") || "landing";
+
   if (["landing", "sin-check", "create-sin"].includes(hash)) {
+    // Abort any ongoing NFC scan when the view changes
+    abortScan();
     currentView.value = hash;
-    if (hash === "sin-check") {
-      currentProfileData.value = {} as ProfileData; // Reset before scan
-      readTag(true);
-    }
   } else {
     currentView.value = "landing";
     window.location.hash = "landing";
@@ -102,11 +75,7 @@ onBeforeUnmount(() => {
       class="sin-check-view main-content"
     >
       <div class="id-card-container">
-        <IdCard
-          :profileData="currentProfileData"
-          :scanStatus="currentScanStatus"
-          :scanResultMessage="currentScanResultMessage"
-        />
+        <IdCard />
       </div>
       <div class="navigation-buttons">
         <div @click="setView('landing')" class="navigation-button">
@@ -124,18 +93,7 @@ onBeforeUnmount(() => {
         Create your SIN
       </div>
       <div class="sin-form-section">
-        <SinForm
-          @submitSinData="writeTag"
-          @scanNfc="readTag"
-          :isWriting="isWriting"
-          :isScanning="currentScanStatus === 'scanning'"
-          :writeStatusMessage="writeStatusMessage || currentScanResultMessage"
-          :writeStatusMessageType="
-            writeStatusMessageType ||
-            (currentScanStatus === 'error' ? 'error' : 'success')
-          "
-          :scannedProfileData="scannedProfileData"
-        />
+        <SinForm />
       </div>
       <div class="navigation-buttons">
         <div @click="setView('landing')" class="navigation-button">

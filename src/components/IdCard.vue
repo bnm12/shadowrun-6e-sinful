@@ -331,116 +331,90 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import IdCardOverlay from "./IdCardOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
-import { SinQuality, type ProfileData } from "../proto/profile.pb";
+import { SinQuality } from "../proto/profile.pb";
 import { getDefaultProfileData, GenderDisplayMap } from "../utils/profile";
 import { SinQualityFlairMap, SinQualityTitleMap } from "../utils/sin-quality";
 import { checkSin } from "../utils/sin-check-helpers";
 import { sinScanResultTextMap } from "../utils/sin-scan-result";
+import { useNfc } from "../composables/useNfc";
 
-type ScanStatus = "idle" | "scanning" | "success" | "error";
+const {
+  readTag,
+  abortScan,
+  currentScanStatus,
+  currentScanResultMessage,
+  scannedProfileData,
+} = useNfc();
 
-interface Props {
-  profileData: ProfileData;
-  scanStatus: ScanStatus;
-  scanResultMessage?: string;
-}
+onMounted(() => {
+  readTag(true); // Start scanning when component is mounted
+});
+
+onBeforeUnmount(() => {
+  abortScan(); // Stop scanning when component is unmounted
+});
 
 // INITIAL_SIN_ID can be defined here if only used by setup logic, or keep INITIAL_SIN_ID_MODULE if it was truly module-scoped
 const INITIAL_SIN_ID = "00000000-0000-0000-0000-000000000000";
-
-const props = withDefaults(defineProps<Props>(), {
-  profileData: getDefaultProfileData,
-  scanStatus: "idle",
-  scanResultMessage: "",
-});
 
 // Overlay state - will be computed based on props
 const isOverlayVisible = ref(true); // Will be managed by new logic
 const overlayMessage = ref("Waiting for SIN");
 
-// New watcher for overlay logic
 watch(
-  [
-    () => props.scanStatus,
-    () => props.scanResultMessage,
-    () => props.profileData.sinId,
-  ],
-  ([newStatus, newMessage, newSinId], [_oldStatus, _oldMessage, oldSinId]) => {
-    // Priority 1: Actual SIN data changed (successful read)
-    if (newSinId && newSinId !== INITIAL_SIN_ID && newSinId !== oldSinId) {
-      overlayMessage.value = "SIN Scanned successfully";
-      isOverlayVisible.value = true;
-      setTimeout(() => {
-        isOverlayVisible.value = false;
-      }, 2000);
-    }
-    // Priority 2: Specific scanning states from App.vue
-    else if (newStatus === "scanning") {
+  [currentScanStatus, currentScanResultMessage, scannedProfileData],
+  ([newStatus, newMessage, newProfileData]) => {
+    const newSinId = newProfileData?.sinId;
+
+    if (newStatus === "scanning") {
       overlayMessage.value = newMessage || "Scanning...";
       isOverlayVisible.value = true;
     } else if (newStatus === "error") {
       overlayMessage.value = newMessage || "Error during scan.";
       isOverlayVisible.value = true;
-      // Optional: auto-hide error after a delay
-      // setTimeout(() => { isOverlayVisible.value = false; }, 3000);
-    } else if (newStatus === "success") {
-      // Generic success from App.vue, only if not handled by sinId change.
-      overlayMessage.value = newMessage || "Operation successful.";
+    } else if (newStatus === "success" && newSinId) {
+      overlayMessage.value = "SIN Scanned successfully";
       isOverlayVisible.value = true;
       setTimeout(() => {
         isOverlayVisible.value = false;
       }, 2000);
-    }
-    // Priority 3: Idle states
-    else if (newStatus === "idle") {
+    } else if (newStatus === "idle") {
       if (!newSinId || newSinId === INITIAL_SIN_ID) {
         overlayMessage.value = "Waiting for SIN";
         isOverlayVisible.value = true;
       } else {
-        // Idle and have a valid SIN, hide overlay
         isOverlayVisible.value = false;
       }
     }
-    // Fallback for initial load or unhandled states:
-    // If visible is true and no message set, default to "Waiting for SIN"
-    // This is mostly covered by immediate:true and idle state logic.
-    // else if (isOverlayVisible.value && !overlayMessage.value) {
-    //   overlayMessage.value = "Waiting for SIN";
-    // }
   },
-  { immediate: true, deep: false }
+  { immediate: true, deep: true }
 );
 
 const internalProfileData = computed(() => {
-  // If the passed sinId is undefined or the initial one, use full default data
-  // When props.profileData.sinId is undefined or INITIAL_SIN_ID,
-  // it means we are in a "waiting for scan" or "standby" state.
-  // In this case, use the IdCard's own default data structure.
-  if (!props.profileData.sinId || props.profileData.sinId === INITIAL_SIN_ID) {
-    const defaultData = getDefaultProfileData(); // Get the default nested structure
+  if (
+    !scannedProfileData.value?.sinId ||
+    scannedProfileData.value.sinId === INITIAL_SIN_ID
+  ) {
+    const defaultData = getDefaultProfileData();
     return {
-      ...defaultData, // Spread all default fields
-      // Compute flagColors based on the default nationality
+      ...defaultData,
       flagColors: getFlagCSS(
         defaultData.basic.nationality || ShadowrunNationality.UNKNOWN
       ),
     };
   }
 
-  // This is for when a real SIN is scanned and props.profileData contains actual data.
-  // It should already be in the new nested format from App.vue.
   return {
-    ...props.profileData, // Use the actual data from App.vue (already nested)
-    // Compute flagColors based on the actual nationality
-    // Ensure Basic object and nationality exist, otherwise default to UNKNOWN
+    ...scannedProfileData.value,
     flagColors: getFlagCSS(
-      props.profileData.basic?.nationality || ShadowrunNationality.UNKNOWN
+      scannedProfileData.value.basic?.nationality ||
+        ShadowrunNationality.UNKNOWN
     ),
   };
 });
