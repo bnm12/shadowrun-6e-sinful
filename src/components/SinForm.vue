@@ -382,21 +382,22 @@ const submitForm = () => {
   margin-bottom: 30px;
 }
 
-.form-section::after {
+.section-title {
+  font-size: 1.5rem;
+  color: #00ffff;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.section-title::after,
+.section-title::before {
   content: "";
   display: block;
   height: 2px;
   background: linear-gradient(90deg, transparent, #00ffff, transparent);
-  margin: 30px 0 20px 0;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  color: #00ffff;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px #00ffff;
+  margin: 10px 0;
 }
 
 .form-field {
