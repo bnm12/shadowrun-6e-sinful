@@ -162,6 +162,67 @@
         </div>
       </div>
 
+      <!-- Medical Details Section -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_4"
+        class="form-section"
+      >
+        <h3 class="section-title">Medical Details</h3>
+
+        <div class="form-field">
+          <label for="bloodType">Blood Type:</label>
+          <input
+            type="text"
+            id="bloodType"
+            v-model="formData.medical!.bloodType"
+          />
+        </div>
+      </div>
+
+      <!-- Employment Details Section -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_5"
+        class="form-section"
+      >
+        <h3 class="section-title">Employment Details</h3>
+
+        <div class="form-field">
+          <label for="profession">Profession:</label>
+          <input
+            type="text"
+            id="profession"
+            v-model="formData.employment!.profession"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="employer">Employer:</label>
+          <input
+            type="text"
+            id="employer"
+            v-model="formData.employment!.employer"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="employerAddress">Employer Address:</label>
+          <input
+            type="text"
+            id="employerAddress"
+            v-model="formData.employment!.employerAddress"
+          />
+        </div>
+      </div>
+
+      <!-- Genetic Details Section -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_6"
+        class="form-section"
+      >
+        <h3 class="section-title">Genetic Details</h3>
+        <p>Genetic info included</p>
+      </div>
+
       <!-- Licenses Section -->
       <div class="form-section">
         <h3 class="section-title">Manage Licenses</h3>
@@ -298,7 +359,6 @@ const formData = reactive<ProfileData>({
   },
   medical: {
     bloodType: "",
-    eyeScan: "",
     seed: 0,
   },
   employment: {
@@ -338,7 +398,6 @@ const submitForm = () => {
   if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_4) {
     formData.medical = {
       bloodType: "N/A",
-      eyeScan: "N/A",
       seed: Date.now(),
       ...formData.medical,
     };

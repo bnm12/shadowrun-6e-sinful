@@ -51,8 +51,7 @@ message ProfilePhysical {
 // Medical information (Level 4)
 message ProfileMedical {
   string blood_type = 1;
-  string eye_scan = 2;     // Biometric data
-  int32 seed = 3;          // Random seed for generation
+  int32 seed = 2;          // Random seed for generation
 }
 
 // Employment information (Level 5)
