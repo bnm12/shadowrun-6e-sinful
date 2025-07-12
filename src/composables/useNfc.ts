@@ -13,7 +13,7 @@ export function useNfc() {
   const currentScanResultMessage = ref("");
   const scannedProfileData = ref<ProfileData>({} as ProfileData);
 
-  const readTag = async () => {
+  const readTag = async (continuous = false) => {
     currentScanStatus.value = "idle";
     currentScanResultMessage.value = "";
     scannedProfileData.value = {} as ProfileData;
@@ -27,17 +27,17 @@ export function useNfc() {
     try {
       // @ts-ignore
       const ndef = new NDEFReader();
-      await ndef.scan();
-      currentScanStatus.value = "scanning";
-      currentScanResultMessage.value =
-        "Bring a tag closer to read. Scanning...";
+      const abortController = new AbortController();
 
       ndef.onreading = (event: any) => {
         let sinDataFound = false;
         currentScanResultMessage.value = "Tag detected! Processing...";
 
         for (const record of event.message.records) {
-          if (record.recordType === "mime" && record.mediaType === "application/vnd.shadowrun.sin+gzip") {
+          if (
+            record.recordType === "mime" &&
+            record.mediaType === "application/vnd.shadowrun.sin+gzip"
+          ) {
             try {
               if (!record.data) throw new Error("Record data is undefined.");
               const compressedData = new Uint8Array(record.data.buffer);
@@ -50,11 +50,17 @@ export function useNfc() {
               currentScanStatus.value = "success";
               currentScanResultMessage.value = "SIN data found and parsed.";
               scannedProfileData.value = parsedProfileData;
+              if (!continuous) {
+                abortController.abort(); // Stop scanning
+              }
               break; // Found and processed the SIN data, so exit the loop
             } catch (e: any) {
               currentScanStatus.value = "error";
               currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
               console.error("Error processing SIN data:", e);
+              if (!continuous) {
+                abortController.abort(); // Stop scanning
+              }
               break; // Error processing, exit the loop
             }
           } else if (record.recordType === "mime") {
@@ -79,6 +85,11 @@ export function useNfc() {
         }`;
         console.error("NDEFReader.onreadingerror", event);
       };
+
+      await ndef.scan({ signal: abortController.signal });
+      currentScanStatus.value = "scanning";
+      currentScanResultMessage.value =
+        "Bring a tag closer to read. Scanning...";
     } catch (error: any) {
       currentScanStatus.value = "error";
       currentScanResultMessage.value = `Error starting scan: ${
