@@ -1,6 +1,20 @@
 <template>
   <div class="sin-form-container">
     <form @submit.prevent="submitForm" class="sin-form">
+      <div class="form-field">
+        <label for="sinQuality">SIN Quality:</label>
+        <select id="sinQuality" v-model="formData.sinQuality" required>
+          <option
+            v-for="[qualityName, qualityFlair] in Object.entries(
+              SinQualityFlairMap
+            )"
+            :key="qualityName"
+            :value="qualityName"
+          >
+            {{ qualityFlair }}
+          </option>
+        </select>
+      </div>
       <!-- Basic Information Section -->
       <div class="form-section">
         <h3 class="section-title">Basic Details</h3>
@@ -48,21 +62,6 @@
               :value="metatype"
             >
               {{ metatype }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label for="sinQuality">SIN Quality:</label>
-          <select id="sinQuality" v-model="formData.sinQuality" required>
-            <option
-              v-for="[qualityName, qualityFlair] in Object.entries(
-                SinQualityFlairMap
-              )"
-              :key="qualityName"
-              :value="qualityName"
-            >
-              {{ qualityFlair }}
             </option>
           </select>
         </div>
