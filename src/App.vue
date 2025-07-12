@@ -72,7 +72,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-container">
-    <FancyBackground :count="45" />
+    <FancyBackground :count="25" />
     <!-- Readme Info Modal and its Trigger Button -->
     <ReadmeInfoModal />
 
@@ -436,7 +436,6 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   border: 1px solid #4a9eff;
   border-radius: 8px;
-  background: rgba(26, 35, 50, 0.7);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(1px);
 }
 </style>

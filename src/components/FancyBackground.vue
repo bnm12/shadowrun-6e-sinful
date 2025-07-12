@@ -107,8 +107,8 @@ const particles = computed(() => {
   width: 200%;
   height: 200%;
   background-image:
-    linear-gradient(rgba(255, 20, 147, 0.4) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 20, 147, 0.4) 1px, transparent 1px);
+    linear-gradient(rgba(255, 20, 147, 0.8) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 20, 147, 0.8) 1px, transparent 1px);
   background-size: 60px 60px;
   opacity: 0.4;
   animation: gridMove 15s linear infinite;

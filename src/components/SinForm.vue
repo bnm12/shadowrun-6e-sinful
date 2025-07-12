@@ -349,7 +349,6 @@ const submitForm = () => {
 <style scoped>
 .sin-form-container {
   padding: 20px;
-  background-color: #1a2332;
   color: #00ffff;
 }
 
@@ -365,6 +364,8 @@ const submitForm = () => {
 }
 
 .form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"],
 .form-group input[type="url"],
 .form-group select {
   width: 100%;
