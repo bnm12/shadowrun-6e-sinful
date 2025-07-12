@@ -1,3 +1,5 @@
+export type sincheckresult = "success" | "blip" | "flagged" | "burned";
+
 /**
  * Generates a given number of random dice rolls (1-6) and counts the
  * hits (5s and 6s) and failures (1s).
@@ -19,4 +21,19 @@ export function countHitsAndFailures(n: number): { hits: number; failures: numbe
   }
 
   return { hits, failures };
+}
+
+export function checkSin(sinRating: number, scannerRating: number): sincheckresult {
+  const { hits } = countHitsAndFailures(scannerRating * 2);
+  const difference = hits - sinRating;
+
+  if (difference >= 2) {
+    return "burned";
+  } else if (difference === 1) {
+    return "flagged";
+  } else if (difference === 0) {
+    return "blip";
+  } else {
+    return "success";
+  }
 }
