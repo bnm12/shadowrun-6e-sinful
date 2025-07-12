@@ -1,6 +1,10 @@
 <template>
   <div class="id-card">
-    <IdCardOverlay :visible="isOverlayVisible" :message="overlayMessage" />
+    <IdCardOverlay
+      :visible="isOverlayVisible"
+      :message="overlayMessage"
+      :result-type="overlayResultType"
+    />
     <div class="card-header">
       <div class="header-tabs">
         <div class="quality-tabs">
@@ -347,6 +351,7 @@ import { SinQualityFlairMap, SinQualityTitleMap } from "../utils/sin-quality";
 import { checkSin } from "../utils/sin-check-helpers";
 import { sinScanResultTextMap } from "../utils/sin-scan-result";
 import { useNfc } from "../composables/useNfc";
+import type { sincheckresult } from "../utils/sin-check-helpers";
 
 const {
   readTag,
@@ -371,23 +376,28 @@ const validateOnScan = ref(false);
 // Overlay state - will be computed based on props
 const isOverlayVisible = ref(true); // Will be managed by new logic
 const overlayMessage = ref("Waiting for SIN");
+const overlayResultType = ref<sincheckresult | undefined>(undefined);
 
 watch(
   [currentScanStatus, currentScanResultMessage, scannedProfileData],
   ([newStatus, newMessage, newProfileData]) => {
     const newSinId = newProfileData?.sinId;
 
+    overlayResultType.value = undefined;
+
     if (newStatus === "scanning") {
       overlayMessage.value = newMessage || "Scanning...";
       isOverlayVisible.value = true;
     } else if (newStatus === "error") {
       overlayMessage.value = newMessage || "Error during scan.";
+      overlayResultType.value = "burned";
       isOverlayVisible.value = true;
     } else if (newStatus === "success" && newSinId) {
       if (validateOnScan.value) {
         performSinCheck();
       } else {
         overlayMessage.value = "SIN Scanned successfully";
+        overlayResultType.value = "success";
         isOverlayVisible.value = true;
         setTimeout(() => {
           isOverlayVisible.value = false;
@@ -461,6 +471,7 @@ const performSinCheck = () => {
     selectedScanLevel.value
   );
   overlayMessage.value = sinScanResultTextMap[result];
+  overlayResultType.value = result;
   isOverlayVisible.value = true;
   setTimeout(() => {
     isOverlayVisible.value = false;
