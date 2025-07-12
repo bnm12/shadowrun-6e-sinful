@@ -577,6 +577,8 @@ const getFlagColors = (): string => {
 
 .tab-content-section h4 {
   margin: 0;
+  font-size: 1.3em;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
 }
 
 /* Specific styling for when left and right sections are visible for Basic Info */
@@ -768,7 +770,7 @@ const getFlagColors = (): string => {
 .details {
   display: flex;
   flex-direction: column;
-  gap: 0.5svh; /* Relative gap */
+  gap: 5px; /* Relative gap */
 }
 
 .detail-row {

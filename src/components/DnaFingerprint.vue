@@ -144,11 +144,9 @@ const totalBands = computed(() =>
 .lane {
   display: flex;
   flex-direction: column;
-  /* background: linear-gradient(180deg, #111 0%, #000 100%);*/
   background: linear-gradient(135deg, #111826 0%, #1e2b38 100%);
   border-radius: 3px;
   position: relative;
-  border: 1px solid #222;
   gap: 5px;
 }
 
@@ -243,6 +241,5 @@ const totalBands = computed(() =>
 
 .value {
   color: #00ffff;
-  font-family: "Courier New", monospace;
 }
 </style>
