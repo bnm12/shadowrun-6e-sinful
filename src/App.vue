@@ -162,21 +162,13 @@ onBeforeUnmount(() => {
         <div
           @click="sinFormRef?.readTag(false)"
           class="navigation-button"
-          :disabled="sinFormRef?.currentScanStatus === 'scanning'"
+          :disabled="sinFormRef?.isReading"
         >
           <div
             class="glitch-text"
-            :data-text="
-              sinFormRef?.currentScanStatus === 'scanning'
-                ? 'Scanning...'
-                : 'Read Tag'
-            "
+            :data-text="sinFormRef?.isReading ? 'Scanning...' : 'Read Tag'"
           >
-            {{
-              sinFormRef?.currentScanStatus === "scanning"
-                ? "Scanning..."
-                : "Read Tag"
-            }}
+            {{ sinFormRef?.isReading ? "Scanning..." : "Read Tag" }}
           </div>
         </div>
         <div @click="setView('landing')" class="navigation-button">

@@ -325,7 +325,6 @@ const {
   isReading,
   writeStatusMessage,
   writeStatusMessageType,
-  currentScanStatus,
   currentScanResultMessage,
   readStatusMessageType,
   scannedProfileData,
@@ -481,8 +480,8 @@ defineExpose({
   readTag,
   writeTag,
   formData,
-  currentScanStatus,
   isWriting,
+  isReading,
   submitForm,
 });
 </script>
