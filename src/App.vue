@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
         />
       </div>
       <div class="navigation-buttons">
-        <div style="transform: rotate(90deg)">
+        <div class="navigation-button-group rotated-90">
           <div
             @click="showScanLevelDropdown = !showScanLevelDropdown"
             class="navigation-button"
@@ -105,16 +105,18 @@ onBeforeUnmount(() => {
             </div>
             <div v-if="showScanLevelDropdown" class="dropdown-menu">
               <div
-                v-for="level in [1, 2, 3, 4, 5, 6]"
+                v-for="level in 6"
                 :key="level"
                 @click="selectedScanLevel = level"
-                class="dropdown-item"
+                class="dropdown-item navigation-button"
+                :data-text="level"
               >
                 {{ level }}
               </div>
             </div>
           </div>
           <div
+            v-if="!validateOnScan"
             @click="idCardRef?.performSinCheck()"
             class="navigation-button"
           >
@@ -303,23 +305,19 @@ onBeforeUnmount(() => {
 <style scoped>
 .dropdown-menu {
   position: absolute;
-  bottom: 100%;
-  left: 0;
   background-color: rgba(16, 1, 44, 0.9);
   border: 1px solid #ff1493;
   border-radius: 5px;
-  padding: 5px;
-  z-index: 100;
+  display: flex;
+  flex-direction: row;
+  width: 600%;
+  left: -600%;
+  height: 100%;
 }
 
 .dropdown-item {
-  padding: 5px 10px;
-  cursor: pointer;
-  color: #00ffff;
-}
-
-.dropdown-item:hover {
-  background-color: rgba(106, 183, 255, 0.8);
+  width: 100%;
+  height: 100%;
 }
 
 .info-button-container {
@@ -421,7 +419,72 @@ onBeforeUnmount(() => {
   height: 5svh;
 }
 
+.navigation-button-group {
+  position: relative;
+  padding: 0px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 1, 44, 0.8);
+  border: 1px solid #ff1493;
+  border-radius: 5px;
+  backdrop-filter: blur(10px);
+}
+
+.navigation-button-group:hover {
+  background-color: rgba(106, 183, 255, 0.8);
+  box-shadow: 0 0 15px rgba(106, 183, 255, 0.4);
+}
+
+.rotated-90 {
+  transform: rotate(90deg);
+}
+
+.navigation-button-group.rotated-90 {
+  padding: 0;
+}
+
+.navigation-button-group.rotated-90::before {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  content: "Scan Lvl";
+  font-size: 0.55em;
+}
+
+.navigation-button-group:has(> .navigation-button:nth-child(2)) {
+  border: none;
+  background: none;
+  border-radius: 0;
+  backdrop-filter: initial;
+}
+
+.navigation-button-group:has(> .navigation-button:nth-child(2)):hover {
+  background-color: initial;
+  box-shadow: initial;
+}
+
+.navigation-buttons .navigation-button-group .navigation-button {
+  width: 2.624em;
+  height: 100%;
+}
+
+.navigation-buttons .navigation-button-group .navigation-button:only-of-type {
+  background: none;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: initial;
+}
+
+.navigation-buttons
+  .navigation-button-group
+  .navigation-button:only-of-type:hover {
+  background-color: initial;
+  box-shadow: none;
+}
+
 .navigation-buttons .navigation-button {
+  position: relative;
   padding: 0px 10px;
   font-size: 1em;
   background: rgba(16, 1, 44, 0.8);
@@ -431,6 +494,7 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: center;
   backdrop-filter: blur(10px);
 }
 

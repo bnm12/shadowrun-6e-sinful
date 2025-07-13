@@ -307,7 +307,7 @@
       </div>
     </div>
 
-    <div class="sin-check-controls">
+    <!-- <div class="sin-check-controls">
       <select
         :value="modelValue"
         @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
@@ -337,7 +337,7 @@
         />
         <label for="validate-on-scan">Validate on scan</label>
       </div>
-    </div>
+    </div> -->
     <div class="system-info">
       <div class="system-codes">
         <div class="code-line">IDC : {{ idc }}</div>

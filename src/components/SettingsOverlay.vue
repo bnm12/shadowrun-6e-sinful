@@ -7,7 +7,12 @@
           type="checkbox"
           id="validate-on-scan-checkbox"
           :checked="validateOnScan"
-          @change="$emit('update:validateOnScan', ($event.target as HTMLInputElement).checked)"
+          @change="
+            $emit(
+              'update:validateOnScan',
+              ($event.target as HTMLInputElement).checked
+            )
+          "
         />
         <label for="validate-on-scan-checkbox">Validate on scan</label>
       </div>
@@ -41,6 +46,7 @@ defineEmits(["close", "update:validateOnScan"]);
 }
 
 .overlay-content {
+  transform: rotate(90deg);
   background: linear-gradient(135deg, #0a0a2e, #1a2332, #16213e);
   padding: 20px;
   border-radius: 8px;
