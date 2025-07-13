@@ -276,20 +276,20 @@
               </span>
             </div>
             <div class="license-actions">
-              <button
-                type="button"
+              <div
                 @click="editLicense(licenseName)"
-                class="cyber-button cyber-button-small"
+                class="glitch-text license-action"
+                data-text="✏️"
               >
-                EDIT
-              </button>
-              <button
-                type="button"
+                ✏️
+              </div>
+              <div
                 @click="deleteLicense(licenseName)"
-                class="cyber-button cyber-button-small cyber-button-danger"
+                class="glitch-text license-action"
+                data-text="❌"
               >
-                DELETE
-              </button>
+                ❌
+              </div>
             </div>
           </div>
         </div>
@@ -589,102 +589,21 @@ defineExpose({
 }
 
 .cyber-button {
-  background: linear-gradient(45deg, #ff00ff, #8000ff);
-  color: #ffffff;
+  color: #00ffff;
   border: 2px solid #ff00ff;
-  padding: 12px 24px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.cyber-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-
-.cyber-button:hover::before {
-  left: 100%;
-}
-
-.cyber-button:hover {
-  background: linear-gradient(45deg, #ff3399, #9933ff);
-  box-shadow:
-    0 0 20px rgba(255, 0, 255, 0.5),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.cyber-button:active {
-  transform: translateY(0);
-}
-
-.cyber-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.cyber-button-primary {
-  font-size: 1.2rem;
-  padding: 16px 32px;
-  background: linear-gradient(45deg, #00ffff, #0099cc);
-  border-color: #00ffff;
-  color: #1a1a2e;
-}
-
-.cyber-button-primary:hover {
-  background: linear-gradient(45deg, #33ffff, #00ccff);
-  box-shadow:
-    0 0 20px rgba(0, 255, 255, 0.5),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-.cyber-button-small {
-  padding: 8px 16px;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-}
-
-.cyber-button-danger {
-  background: linear-gradient(45deg, #ff0066, #cc0033);
-  border-color: #ff0066;
-}
-
-.cyber-button-danger:hover {
-  background: linear-gradient(45deg, #ff3388, #ff0044);
-  box-shadow:
-    0 0 20px rgba(255, 0, 102, 0.5),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .licenses-display {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .license-item {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  margin-bottom: 10px;
+  padding: 10px 5px;
   background: rgba(26, 26, 46, 0.8);
   border: 1px solid #00ffff;
   border-left: 4px solid #ff00ff;
@@ -699,22 +618,26 @@ defineExpose({
 
 .license-info {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
 }
 
 .license-name {
   font-weight: 700;
   color: #00ffff;
+  text-align: left;
 }
 
 .license-quality {
   color: #ff00ff;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
+  text-align: left;
 }
 
 .license-actions {
-  display: flex;
-  gap: 5px;
+}
+
+.license-action {
+  aspect-ratio: 1/1;
+  display: inline-block;
 }
 </style>

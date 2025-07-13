@@ -447,7 +447,6 @@ onBeforeUnmount(() => {
 
 .navigation-button-group {
   position: relative;
-  padding: 0px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -481,6 +480,7 @@ onBeforeUnmount(() => {
   > .dropdown-item {
   width: 100%;
   height: 100%;
+  border-radius: 0;
 }
 
 @media (orientation: landscape) {
@@ -488,8 +488,14 @@ onBeforeUnmount(() => {
     flex-direction: column;
     height: 600%;
     top: -600%;
-    left: 0;
-    width: 100%;
+    left: -1px;
+    width: calc(100% + 2px);
+    border-radius: 5px 5px 0 0;
+  }
+  .navigation-button-group.rotated-90:has(.dropdown-menu),
+  .navigation-button-group.rotated-90:has(.dropdown-menu)
+    > .navigation-button:first-child {
+    border-radius: 0 0 5px 5px;
   }
 }
 
@@ -497,8 +503,10 @@ onBeforeUnmount(() => {
   .rotated-90 {
     transform: rotate(90deg);
   }
-  .navigation-button-group.rotated-90 {
-    padding: 0;
+  .navigation-button-group.rotated-90:has(.dropdown-menu),
+  .navigation-button-group.rotated-90:has(.dropdown-menu)
+    > .navigation-button:first-child {
+    border-radius: 0 5px 5px 0;
   }
   .navigation-button-group::before {
     position: absolute;
@@ -510,7 +518,9 @@ onBeforeUnmount(() => {
     flex-direction: row;
     width: 600%;
     left: -600%;
-    height: 100%;
+    bottom: -1px;
+    height: calc(100% + 2px);
+    border-radius: 5px 0 0 5px;
   }
 }
 

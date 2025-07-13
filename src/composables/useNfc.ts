@@ -16,7 +16,6 @@ export function useNfc() {
   const writeStatusMessage = ref("");
   const writeStatusMessageType = ref<"success" | "error" | "">("");
 
-  const currentScanStatus = ref<ScanStatus>("idle");
   const currentScanResultMessage = ref("");
   const readStatusMessageType = ref<"success" | "error" | "">("");
 
@@ -198,7 +197,6 @@ export function useNfc() {
     isReading,
     writeStatusMessage,
     writeStatusMessageType,
-    currentScanStatus,
     currentScanResultMessage,
     readStatusMessageType,
     scannedProfileData,
