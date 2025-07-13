@@ -44,25 +44,29 @@
         class="licenses-display-section tab-content-section"
       >
         <h4>Licenses on Record</h4>
-        <ul
+        <div
           v-if="
             internalProfileData.licenses &&
             Object.keys(internalProfileData.licenses).length > 0
           "
           class="licenses-list-display"
         >
-          <li
+          <div
+            class="license-item"
             v-for="[name, quality] in Object.entries(
               internalProfileData.licenses
             )"
             :key="name"
           >
-            <span class="license-name">{{ name }}</span
-            >:
-            <span class="license-quality">{{
-              SinQualityFlairMap[quality ?? SinQuality.SIN_QUALITY_UNSPECIFIED]
-            }}</span>
-            <button
+            <div class="license-details">
+              <span class="license-name">{{ name }}</span>
+              <span class="license-quality">{{
+                SinQualityFlairMap[
+                  quality ?? SinQuality.SIN_QUALITY_UNSPECIFIED
+                ]
+              }}</span>
+            </div>
+            <div
               class="glitch-text license-check-button"
               data-text="✔️"
               @click="
@@ -72,9 +76,9 @@
               "
             >
               ✔️
-            </button>
-          </li>
-        </ul>
+            </div>
+          </div>
+        </div>
         <p v-else class="no-licenses-message">No licenses on record.</p>
       </div>
 
@@ -511,20 +515,11 @@ const performLicenseCheck = (quality: SinQuality) => {
 };
 
 defineExpose({
-  performSinCheck: () =>
-    performSinCheck(internalProfileData.value.sinQuality),
+  performSinCheck: () => performSinCheck(internalProfileData.value.sinQuality),
 });
 </script>
 
 <style scoped>
-.license-check-button {
-  background: none;
-  border: none;
-  color: #00ffff;
-  cursor: pointer;
-  font-size: 1em;
-  margin-left: 10px;
-}
 .sin-check-controls {
   display: flex;
   gap: 10px;
@@ -681,34 +676,30 @@ defineExpose({
   width: 66%; /* Restore original width */
 }
 
-.placeholder-content h4 {
-  color: #4a9eff;
-  margin-bottom: 10px;
-}
-
-.placeholder-content p {
-  font-size: clamp(0.7em, 2svh, 1em);
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
-
-.licenses-display-section h4 {
-  color: #4a9eff;
-  margin-bottom: 10px;
-  font-size: clamp(0.8em, 2.5svh, 1.2em);
-}
-
 .licenses-list-display {
-  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 0;
   font-size: clamp(0.7em, 2svh, 1em);
 }
 
-.licenses-list-display li {
-  margin-bottom: 8px;
-  padding: 5px;
+.licenses-list-display .license-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
   background-color: rgba(0, 255, 255, 0.05);
   border-left: 3px solid #4a9eff;
+}
+
+.license-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 5px;
 }
 
 .license-name {
@@ -717,6 +708,10 @@ defineExpose({
 
 .license-quality {
   font-style: italic;
+  font-size: 0.6em;
+}
+
+.license-check-button {
 }
 
 .no-licenses-message {
