@@ -250,7 +250,15 @@
           </select>
         </div>
 
-        <button type="button" @click="addOrUpdateLicense" class="cyber-button">
+        <div v-if="licenseQualityError" class="error-message">
+          {{ licenseQualityError }}
+        </div>
+        <button
+          type="button"
+          @click="addOrUpdateLicense"
+          class="cyber-button"
+          :disabled="isLicenseQualityInvalid"
+        >
           {{ editingLicenseKey ? "UPDATE LICENSE" : "ADD LICENSE" }}
         </button>
 
@@ -430,6 +438,8 @@ const {
   addOrUpdateLicense,
   editLicense,
   deleteLicense,
+  licenseQualityError,
+  isLicenseQualityInvalid,
 } = useLicenseManagement(formData);
 
 const submitForm = () => {
@@ -638,5 +648,15 @@ defineExpose({
 .license-action {
   aspect-ratio: 1/1;
   display: inline-block;
+}
+
+.error-message {
+  color: #ff00ff;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255, 0, 255, 0.1);
+  border: 1px solid #ff00ff;
 }
 </style>
