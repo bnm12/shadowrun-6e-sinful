@@ -1,19 +1,21 @@
 <template>
   <div class="sin-form-container">
     <form @submit.prevent="submitForm" class="sin-form">
-      <div class="form-field">
-        <label for="sinQuality">SIN Quality:</label>
-        <select id="sinQuality" v-model="formData.sinQuality" required>
-          <option
-            v-for="[qualityName, qualityFlair] in Object.entries(
-              SinQualityFlairMap
-            )"
-            :key="qualityName"
-            :value="qualityName"
-          >
-            {{ qualityFlair }}
-          </option>
-        </select>
+      <div class="form-section">
+        <div class="form-field">
+          <label for="sinQuality">SIN Quality:</label>
+          <select id="sinQuality" v-model="formData.sinQuality" required>
+            <option
+              v-for="[qualityName, qualityFlair] in Object.entries(
+                SinQualityFlairMap
+              )"
+              :key="qualityName"
+              :value="qualityName"
+            >
+              {{ qualityFlair }}
+            </option>
+          </select>
+        </div>
       </div>
       <!-- Basic Information Section -->
       <div class="form-section">
@@ -295,24 +297,6 @@
 
       <!-- Submit Section -->
       <div class="form-actions">
-        <button
-          type="button"
-          @click="readTag(false)"
-          :disabled="currentScanStatus === 'scanning'"
-          class="cyber-button"
-        >
-          <span v-if="currentScanStatus === 'scanning'">SCANNING...</span>
-          <span v-else>SCAN CARD</span>
-        </button>
-        <button
-          type="submit"
-          :disabled="isWriting"
-          class="cyber-button cyber-button-primary"
-        >
-          <span v-if="isWriting">WAITING FOR TAG...</span>
-          <span v-else>WRITE TO TAG</span>
-        </button>
-
         <div
           v-if="writeStatusMessage || currentScanResultMessage"
           :class="[
@@ -486,10 +470,15 @@ defineExpose({
   margin: 0 auto;
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .form-section {
-  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .section-title {
@@ -511,12 +500,13 @@ defineExpose({
 }
 
 .form-field {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .form-field label {
   display: block;
-  margin-bottom: 8px;
   color: #00ffff;
   font-weight: 600;
   text-transform: uppercase;
