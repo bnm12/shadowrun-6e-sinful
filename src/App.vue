@@ -159,17 +159,42 @@ onBeforeUnmount(() => {
         <SinForm ref="sinFormRef" />
       </div>
       <div class="navigation-buttons">
-        <div @click="sinFormRef?.readTag(false)" class="navigation-button">
-          <div class="glitch-text" data-text="Read Tag">Read Tag</div>
+        <div
+          @click="sinFormRef?.readTag(false)"
+          class="navigation-button"
+          :disabled="sinFormRef?.currentScanStatus === 'scanning'"
+        >
+          <div
+            class="glitch-text"
+            :data-text="
+              sinFormRef?.currentScanStatus === 'scanning'
+                ? 'Scanning...'
+                : 'Read Tag'
+            "
+          >
+            {{
+              sinFormRef?.currentScanStatus === "scanning"
+                ? "Scanning..."
+                : "Read Tag"
+            }}
+          </div>
         </div>
         <div @click="setView('landing')" class="navigation-button">
           <div class="glitch-text" data-text="🏚️">🏚️</div>
         </div>
         <div
-          @click="sinFormRef?.writeTag(sinFormRef.formData)"
+          @click="sinFormRef?.submitForm()"
           class="navigation-button"
+          :disabled="sinFormRef?.isWriting"
         >
-          <div class="glitch-text" data-text="Write Tag">Write Tag</div>
+          <div
+            class="glitch-text"
+            :data-text="
+              sinFormRef?.isWriting ? 'WAITING FOR TAG...' : 'Write Tag'
+            "
+          >
+            {{ sinFormRef?.isWriting ? "WAITING FOR TAG..." : "Write Tag" }}
+          </div>
         </div>
       </div>
     </div>
