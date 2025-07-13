@@ -327,6 +327,7 @@ const {
   writeStatusMessageType,
   currentScanStatus,
   currentScanResultMessage,
+  readStatusMessageType,
   scannedProfileData,
   readTag,
   writeTag,
@@ -355,7 +356,7 @@ watch(
       overlayMessage.value = writeMsg || scanMsg || "";
       overlayStatus.value =
         writeStatusMessageType.value === "error" ||
-        currentScanStatus.value === "error"
+        readStatusMessageType.value === "error"
           ? "error"
           : "success";
       overlayTimeout = setTimeout(() => {

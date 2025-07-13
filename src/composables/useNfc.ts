@@ -18,25 +18,28 @@ export function useNfc() {
 
   const currentScanStatus = ref<ScanStatus>("idle");
   const currentScanResultMessage = ref("");
+  const readStatusMessageType = ref<"success" | "error" | "">("");
+
   const scannedProfileData = ref<ProfileData>({} as ProfileData);
 
   const readTag = async (continuous = false) => {
     // If a scan is already in progress, don't start a new one.
     if (isReading.value && abortController) {
       console.log("Scan already in progress.");
-      return;
+      abortController.abort();
     }
 
     // Reset state for a new scan session
     isReading.value = false;
     currentScanResultMessage.value = "";
+    readStatusMessageType.value = "";
     scannedProfileData.value = {} as ProfileData;
 
     if (!("NDEFReader" in window)) {
       isReading.value = false;
       currentScanResultMessage.value =
         "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
-      writeStatusMessageType.value = "error";
+      readStatusMessageType.value = "error";
       return;
     }
 
@@ -49,12 +52,14 @@ export function useNfc() {
       abortController.signal.onabort = () => {
         console.log("NFC scan aborted.");
         isReading.value = false;
-        currentScanResultMessage.value = "Scan aborted.";
+        readStatusMessageType.value = "";
+        currentScanResultMessage.value = "";
       };
 
       ndef.onreading = (event: any) => {
         let sinDataFound = false;
         currentScanResultMessage.value = "Tag detected! Processing...";
+        readStatusMessageType.value = "";
 
         for (const record of event.message.records) {
           if (
@@ -67,11 +72,13 @@ export function useNfc() {
               const decompressedData = gunzipSync(compressedData);
               currentScanResultMessage.value =
                 "Decompressed (auto-detect format) and processing SIN data...";
+              readStatusMessageType.value = "";
 
               const parsedProfileData = ProfileData.decode(decompressedData);
               sinDataFound = true;
               isReading.value = false;
               currentScanResultMessage.value = "SIN data found and parsed.";
+              readStatusMessageType.value = "success";
               scannedProfileData.value = parsedProfileData;
               if (!continuous) {
                 abortController?.abort();
@@ -80,6 +87,7 @@ export function useNfc() {
             } catch (e: any) {
               isReading.value = false;
               currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
+              readStatusMessageType.value = "error";
               console.error("Error processing SIN data:", e);
               if (!continuous) {
                 abortController?.abort();
@@ -94,6 +102,7 @@ export function useNfc() {
           isReading.value = false;
           currentScanResultMessage.value =
             "No Shadowrun SIN data found on this tag, or data is corrupted/unreadable.";
+          readStatusMessageType.value = "error";
         }
       };
 
@@ -102,6 +111,7 @@ export function useNfc() {
         currentScanResultMessage.value = `Error reading tag: ${
           event.message || "Unknown read error"
         }`;
+        readStatusMessageType.value = "error";
         console.error("NDEFReader.onreadingerror", event);
       };
 
@@ -113,10 +123,12 @@ export function useNfc() {
       isReading.value = false;
       if (error.name === "AbortError") {
         currentScanResultMessage.value = "Scan was aborted.";
+        readStatusMessageType.value = "error";
       } else {
         currentScanResultMessage.value = `Error starting scan: ${
           error.message || "Failed to start NDEFReader"
         }`;
+        readStatusMessageType.value = "error";
       }
       console.error("Error starting NDEFReader scan:", error);
       abortController = null; // Clear the controller on error
@@ -188,6 +200,7 @@ export function useNfc() {
     writeStatusMessageType,
     currentScanStatus,
     currentScanResultMessage,
+    readStatusMessageType,
     scannedProfileData,
     readTag,
     writeTag,

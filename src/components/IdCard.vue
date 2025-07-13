@@ -382,11 +382,12 @@ const emit = defineEmits([
 ]);
 
 const {
+  isReading,
+  currentScanResultMessage,
+  readStatusMessageType,
+  scannedProfileData,
   readTag,
   abortScan,
-  currentScanStatus,
-  currentScanResultMessage,
-  scannedProfileData,
 } = useNfc();
 
 onMounted(() => {
@@ -408,20 +409,21 @@ const overlayResultType = ref<sincheckresult | undefined>(undefined);
 let overlayTimeout: NodeJS.Timeout;
 
 watch(
-  [currentScanStatus, currentScanResultMessage, scannedProfileData],
-  ([newStatus, newMessage, newProfileData]) => {
+  [isReading, currentScanResultMessage, scannedProfileData],
+  ([reading, newMessage, newProfileData]) => {
+    clearTimeout(overlayTimeout);
     const newSinId = newProfileData?.sinId;
 
     overlayResultType.value = undefined;
 
-    if (newStatus === "scanning") {
+    if (reading) {
       overlayMessage.value = newMessage || "Scanning...";
       isOverlayVisible.value = true;
-    } else if (newStatus === "error") {
+    } else if (readStatusMessageType.value === "error") {
       overlayMessage.value = newMessage || "Error during scan.";
       overlayResultType.value = "burned";
       isOverlayVisible.value = true;
-    } else if (newStatus === "success" && newSinId) {
+    } else if (readStatusMessageType.value === "success" && newSinId) {
       if (props.validateOnScan) {
         performSinCheck();
       } else {
@@ -433,7 +435,7 @@ watch(
           isOverlayVisible.value = false;
         }, 2000);
       }
-    } else if (newStatus === "idle") {
+    } else if (!isReading) {
       if (!newSinId || newSinId === INITIAL_SIN_ID) {
         overlayMessage.value = "Waiting for SIN";
         isOverlayVisible.value = true;
