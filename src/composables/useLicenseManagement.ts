@@ -11,6 +11,12 @@ export function useLicenseManagement(formData: ProfileData) {
       alert("License name cannot be empty.");
       return;
     }
+
+    if (currentLicenseQuality.value > formData.sinQuality) {
+      alert("A license cannot have a higher quality than the SIN itself.");
+      return;
+    }
+
     const name = currentLicenseName.value.trim();
     if (!formData.licenses) {
       formData.licenses = {};
