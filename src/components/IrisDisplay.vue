@@ -101,9 +101,9 @@ const props = withDefaults(defineProps<IrisProps>(), {
   seed: "default-seed",
 });
 
-const rng = new Rand(props.seed);
+const rng = computed(() => new Rand(props.seed));
 
-const matchCount = rng.next() * 30 + 5; // Random match count between 5 and 25
+const matchCount = computed(() => rng.value.next() * 30 + 5); // Random match count between 5 and 25
 
 // Generate iris ridges
 const ridges = computed(() => {
@@ -119,7 +119,7 @@ const ridges = computed(() => {
     // Create wavy, organic ridge lines
     for (let angle = 0; angle <= 360; angle += 8) {
       const rad = (angle * Math.PI) / 180;
-      const noise = (rng.next() - 0.5) * 8; // Random variation
+      const noise = (rng.value.next() - 0.5) * 8; // Random variation
       const radius = baseRadius + noise + Math.sin(rad * 3) * 3;
 
       const x = centerX + Math.cos(rad) * radius;
@@ -139,9 +139,9 @@ const ridges = computed(() => {
 
     ridgeData.push({
       path,
-      color: `rgba(0, 255, 255, ${0.4 + rng.next() * 0.3})`,
-      width: 0.8 + rng.next() * 0.4,
-      opacity: 0.6 + rng.next() * 0.4,
+      color: `rgba(0, 255, 255, ${0.4 + rng.value.next() * 0.3})`,
+      width: 0.8 + rng.value.next() * 0.4,
+      opacity: 0.6 + rng.value.next() * 0.4,
     });
   }
 
@@ -154,9 +154,9 @@ const matchPoints = computed(() => {
   const centerX = 100;
   const centerY = 120;
 
-  for (let i = 0; i < matchCount; i++) {
-    const angle = rng.next() * Math.PI * 2;
-    const distance = 20 + rng.next() * 60;
+  for (let i = 0; i < matchCount.value; i++) {
+    const angle = rng.value.next() * Math.PI * 2;
+    const distance = 20 + rng.value.next() * 60;
 
     const x = centerX + Math.cos(angle) * distance;
     const y = centerY + Math.sin(angle) * distance * 0.85;
@@ -164,9 +164,9 @@ const matchPoints = computed(() => {
     points.push({
       x,
       y,
-      radius: 4 + rng.next() * 3,
-      color: `rgba(255, 20, 147, ${0.5 + rng.next() * 0.3})`,
-      opacity: 0.7 + rng.next() * 0.3,
+      radius: 4 + rng.value.next() * 3,
+      color: `rgba(255, 20, 147, ${0.5 + rng.value.next() * 0.3})`,
+      opacity: 0.7 + rng.value.next() * 0.3,
     });
   }
 
@@ -180,11 +180,11 @@ const scanLines = computed(() => {
   for (let i = 0; i < 12; i++) {
     const y = 20 + i * 18;
     lines.push({
-      x1: 10 + rng.next() * 20,
+      x1: 10 + rng.value.next() * 20,
       y1: y,
-      x2: 170 + rng.next() * 20,
-      y2: y + (rng.next() - 0.5) * 4,
-      opacity: 0.1 + rng.next() * 0.2,
+      x2: 170 + rng.value.next() * 20,
+      y2: y + (rng.value.next() - 0.5) * 4,
+      opacity: 0.1 + rng.value.next() * 0.2,
     });
   }
 
@@ -193,8 +193,8 @@ const scanLines = computed(() => {
 
 // Calculate quality percentage based on match count and seed
 const qualityPercentage = computed(() => {
-  const baseQuality = Math.min(matchCount * 8, 85);
-  const seedVariation = Math.floor(rng.next() * 15);
+  const baseQuality = Math.min(matchCount.value * 8, 85);
+  const seedVariation = Math.floor(rng.value.next() * 15);
   return Math.max(45, Math.min(99, baseQuality + seedVariation));
 });
 </script>
