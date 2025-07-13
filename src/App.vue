@@ -4,12 +4,19 @@ import FancyBackground from "./components/FancyBackground.vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import ReadmeInfoModal from "./components/ReadmeInfoModal.vue";
+import SettingsOverlay from "./components/SettingsOverlay.vue";
 import { useNfc } from "./composables/useNfc";
 import { useReadme } from "./composables/useReadme";
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 const { toggleReadmeModal } = useReadme();
 const { abortScan } = useNfc(); // Import abortScan from useNfc
+
+const idCardRef = ref<InstanceType<typeof IdCard> | null>(null);
+const selectedScanLevel = ref(3);
+const showScanLevelDropdown = ref(false);
+const showSettingsOverlay = ref(false);
+const validateOnScan = ref(false);
 
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
   currentView.value = viewName;
@@ -48,6 +55,11 @@ onBeforeUnmount(() => {
     <FancyBackground :count="25" />
     <!-- Readme Info Modal and its Trigger Button -->
     <ReadmeInfoModal />
+    <SettingsOverlay
+      :visible="showSettingsOverlay"
+      v-model:validate-on-scan="validateOnScan"
+      @close="showSettingsOverlay = false"
+    />
 
     <!-- Landing View -->
     <div v-if="currentView === 'landing'" class="landing-view main-content">
@@ -75,21 +87,44 @@ onBeforeUnmount(() => {
       class="sin-check-view main-content"
     >
       <div class="id-card-container">
-        <IdCard />
+        <IdCard
+          ref="idCardRef"
+          v-model="selectedScanLevel"
+          v-model:validate-on-scan="validateOnScan"
+          @check-sin="idCardRef?.performSinCheck()"
+        />
       </div>
       <div class="navigation-buttons">
         <div style="transform: rotate(90deg)">
-          <div @click="" class="navigation-button">
-            <div class="glitch-text" data-text="1">1</div>
+          <div
+            @click="showScanLevelDropdown = !showScanLevelDropdown"
+            class="navigation-button"
+          >
+            <div class="glitch-text" :data-text="selectedScanLevel">
+              {{ selectedScanLevel }}
+            </div>
+            <div v-if="showScanLevelDropdown" class="dropdown-menu">
+              <div
+                v-for="level in [1, 2, 3, 4, 5, 6]"
+                :key="level"
+                @click="selectedScanLevel = level"
+                class="dropdown-item"
+              >
+                {{ level }}
+              </div>
+            </div>
           </div>
-          <div @click="" class="navigation-button">
+          <div
+            @click="idCardRef?.performSinCheck()"
+            class="navigation-button"
+          >
             <div class="glitch-text" data-text="✔️">✔️</div>
           </div>
         </div>
         <div @click="setView('landing')" class="navigation-button">
           <div class="glitch-text" data-text="🏚️">🏚️</div>
         </div>
-        <div @click="" class="navigation-button">
+        <div @click="showSettingsOverlay = true" class="navigation-button">
           <div class="glitch-text" data-text="⚙️">⚙️</div>
         </div>
       </div>
@@ -266,6 +301,27 @@ onBeforeUnmount(() => {
 </style>
 
 <style scoped>
+.dropdown-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: rgba(16, 1, 44, 0.9);
+  border: 1px solid #ff1493;
+  border-radius: 5px;
+  padding: 5px;
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #00ffff;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(106, 183, 255, 0.8);
+}
+
 .info-button-container {
   position: absolute;
   top: 0;

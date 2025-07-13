@@ -308,7 +308,11 @@
     </div>
 
     <div class="sin-check-controls">
-      <select v-model="selectedScanLevel" class="scan-level-dropdown">
+      <select
+        :value="modelValue"
+        @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+        class="scan-level-dropdown"
+      >
         <option
           v-for="level in availableScanLevels"
           :key="level"
@@ -318,14 +322,19 @@
         </option>
       </select>
       <button
-        @click="performSinCheck"
+        @click="$emit('check-sin')"
         class="scan-button"
         :disabled="!internalProfileData.sinId"
       >
         Check SIN
       </button>
       <div class="validate-on-scan-control">
-        <input type="checkbox" id="validate-on-scan" v-model="validateOnScan" />
+        <input
+          type="checkbox"
+          id="validate-on-scan"
+          :checked="validateOnScan"
+          @input="$emit('update:validateOnScan', ($event.target as HTMLInputElement).checked)"
+        />
         <label for="validate-on-scan">Validate on scan</label>
       </div>
     </div>
@@ -360,6 +369,18 @@ import { sinScanResultTextMap } from "../utils/sin-scan-result";
 import { useNfc } from "../composables/useNfc";
 import type { sincheckresult } from "../utils/sin-check-helpers";
 
+interface IdCardProps {
+  modelValue: number;
+  validateOnScan: boolean;
+}
+
+const props = defineProps<IdCardProps>();
+const emit = defineEmits([
+  "update:modelValue",
+  "update:validateOnScan",
+  "check-sin",
+]);
+
 const {
   readTag,
   abortScan,
@@ -378,7 +399,6 @@ onBeforeUnmount(() => {
 
 // INITIAL_SIN_ID can be defined here if only used by setup logic, or keep INITIAL_SIN_ID_MODULE if it was truly module-scoped
 const INITIAL_SIN_ID = "00000000-0000-0000-0000-000000000000";
-const validateOnScan = ref(false);
 
 // Overlay state - will be computed based on props
 const isOverlayVisible = ref(true); // Will be managed by new logic
@@ -400,7 +420,7 @@ watch(
       overlayResultType.value = "burned";
       isOverlayVisible.value = true;
     } else if (newStatus === "success" && newSinId) {
-      if (validateOnScan.value) {
+      if (props.validateOnScan) {
         performSinCheck();
       } else {
         overlayMessage.value = "SIN Scanned successfully";
@@ -470,12 +490,11 @@ const getFlagColors = (): string => {
 };
 
 const availableScanLevels = [1, 2, 3, 4, 5, 6];
-const selectedScanLevel = ref(1);
 
 const performSinCheck = () => {
   const result = checkSin(
     SinQuality._toInt(internalProfileData.value.sinQuality),
-    selectedScanLevel.value
+    props.modelValue
   );
   overlayMessage.value = sinScanResultTextMap[result];
   overlayResultType.value = result;
@@ -484,6 +503,10 @@ const performSinCheck = () => {
     isOverlayVisible.value = false;
   }, 2000);
 };
+
+defineExpose({
+  performSinCheck,
+});
 </script>
 
 <style scoped>
