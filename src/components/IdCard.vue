@@ -309,8 +309,8 @@
 
     <!-- <div class="sin-check-controls">
       <select
-        :value="modelValue"
-        @input="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+        :value="scanLevel"
+        @input="$emit('update:scanLevel', ($event.target as HTMLSelectElement).value)"
         class="scan-level-dropdown"
       >
         <option
@@ -370,13 +370,13 @@ import { useNfc } from "../composables/useNfc";
 import type { sincheckresult } from "../utils/sin-check-helpers";
 
 interface IdCardProps {
-  modelValue: number;
+  scanLevel: SinQuality;
   validateOnScan: boolean;
 }
 
 const props = defineProps<IdCardProps>();
 const emit = defineEmits([
-  "update:modelValue",
+  "update:scanLevel",
   "update:validateOnScan",
   "check-sin",
 ]);
@@ -405,6 +405,8 @@ const isOverlayVisible = ref(true); // Will be managed by new logic
 const overlayMessage = ref("Waiting for SIN");
 const overlayResultType = ref<sincheckresult | undefined>(undefined);
 
+let overlayTimeout: NodeJS.Timeout;
+
 watch(
   [currentScanStatus, currentScanResultMessage, scannedProfileData],
   ([newStatus, newMessage, newProfileData]) => {
@@ -423,10 +425,11 @@ watch(
       if (props.validateOnScan) {
         performSinCheck();
       } else {
+        clearTimeout(overlayTimeout);
         overlayMessage.value = "SIN Scanned successfully";
         overlayResultType.value = "success";
         isOverlayVisible.value = true;
-        setTimeout(() => {
+        overlayTimeout = setTimeout(() => {
           isOverlayVisible.value = false;
         }, 2000);
       }
@@ -489,17 +492,16 @@ const getFlagColors = (): string => {
   );
 };
 
-const availableScanLevels = [1, 2, 3, 4, 5, 6];
-
 const performSinCheck = () => {
   const result = checkSin(
     SinQuality._toInt(internalProfileData.value.sinQuality),
-    props.modelValue
+    SinQuality._toInt(props.scanLevel)
   );
+  clearTimeout(overlayTimeout);
   overlayMessage.value = sinScanResultTextMap[result];
   overlayResultType.value = result;
   isOverlayVisible.value = true;
-  setTimeout(() => {
+  overlayTimeout = setTimeout(() => {
     isOverlayVisible.value = false;
   }, 2000);
 };

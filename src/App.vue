@@ -7,13 +7,14 @@ import ReadmeInfoModal from "./components/ReadmeInfoModal.vue";
 import SettingsOverlay from "./components/SettingsOverlay.vue";
 import { useNfc } from "./composables/useNfc";
 import { useReadme } from "./composables/useReadme";
+import { SinQuality } from "./proto/profile.pb";
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 const { toggleReadmeModal } = useReadme();
 const { abortScan } = useNfc(); // Import abortScan from useNfc
 
 const idCardRef = ref<InstanceType<typeof IdCard> | null>(null);
-const selectedScanLevel = ref(3);
+const selectedScanLevel = ref(SinQuality.SIN_QUALITY_LEVEL_3);
 const showScanLevelDropdown = ref(false);
 const showSettingsOverlay = ref(false);
 const validateOnScan = ref(false);
@@ -89,7 +90,7 @@ onBeforeUnmount(() => {
       <div class="id-card-container">
         <IdCard
           ref="idCardRef"
-          v-model="selectedScanLevel"
+          v-model:scanLevel="selectedScanLevel"
           v-model:validate-on-scan="validateOnScan"
           @check-sin="idCardRef?.performSinCheck()"
         />
@@ -100,18 +101,24 @@ onBeforeUnmount(() => {
             @click="showScanLevelDropdown = !showScanLevelDropdown"
             class="navigation-button"
           >
-            <div class="glitch-text" :data-text="selectedScanLevel">
-              {{ selectedScanLevel }}
+            <div
+              class="glitch-text"
+              :data-text="SinQuality._toInt(selectedScanLevel)"
+            >
+              {{ SinQuality._toInt(selectedScanLevel) }}
             </div>
             <div v-if="showScanLevelDropdown" class="dropdown-menu">
               <div
-                v-for="level in 6"
+                v-for="level in Object.keys(SinQuality).filter(
+                  (v) =>
+                    v[0] !== '_' && v !== SinQuality.SIN_QUALITY_UNSPECIFIED
+                )"
                 :key="level"
                 @click="selectedScanLevel = level"
                 class="dropdown-item navigation-button"
-                :data-text="level"
+                :data-text="SinQuality._toInt(level)"
               >
-                {{ level }}
+                {{ SinQuality._toInt(level) }}
               </div>
             </div>
           </div>
