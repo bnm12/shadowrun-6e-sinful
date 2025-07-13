@@ -44,6 +44,7 @@ const resultClass = computed(() =>
   align-items: center;
   z-index: 1000; /* Ensure it's on top */
   border-radius: 8px; /* Match IdCard border-radius */
+  padding: 20px;
 }
 
 .overlay-content {

@@ -45,6 +45,7 @@ const statusClass = computed(() =>
   align-items: center;
   z-index: 1000;
   border-radius: 8px;
+  padding: 20px;
 }
 
 .overlay-content {
@@ -59,14 +60,14 @@ const statusClass = computed(() =>
 .overlay-message {
   color: #00ffff;
   font-size: 1.6em;
-  font-family: "Doctor Glitch", monospace;
+  font-family: monospace;
   margin: 0;
   text-transform: uppercase;
 }
 
 .status-reading .overlay-message,
 .status-writing .overlay-message {
-  color: #ffff00;
+  color: #00ffff;
 }
 
 .status-success {

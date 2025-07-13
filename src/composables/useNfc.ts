@@ -36,6 +36,7 @@ export function useNfc() {
       isReading.value = false;
       currentScanResultMessage.value =
         "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
+      writeStatusMessageType.value = "error";
       return;
     }
 

@@ -294,9 +294,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Submit Section -->
-      <div class="form-actions"></div>
     </form>
     <StatusOverlay
       :message="overlayMessage"
@@ -491,20 +488,21 @@ defineExpose({
 
 <style scoped>
 .sin-form-container {
-  min-height: 100vh;
-  padding: 20px;
+  max-height: 100svh;
   color: #00ffff;
   position: relative;
+  height: 100%;
 }
 
 .sin-form {
-  max-width: 600px;
-  margin: 0 auto;
+  padding: 20px;
   position: relative;
-  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .form-section {
@@ -717,30 +715,5 @@ defineExpose({
 .license-actions {
   display: flex;
   gap: 5px;
-}
-
-.form-actions {
-  text-align: center;
-  margin-top: 40px;
-}
-
-@media (max-width: 768px) {
-  .form-title {
-    font-size: 2rem;
-  }
-
-  .sin-form {
-    max-width: 100%;
-  }
-
-  .license-item {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-  }
-
-  .license-actions {
-    justify-content: center;
-  }
 }
 </style>
