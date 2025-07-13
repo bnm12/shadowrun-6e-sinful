@@ -321,23 +321,6 @@ onBeforeUnmount(() => {
 </style>
 
 <style scoped>
-.dropdown-menu {
-  position: absolute;
-  background-color: rgba(16, 1, 44, 0.9);
-  border: 1px solid #ff1493;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: row;
-  width: 600%;
-  left: -600%;
-  height: 100%;
-}
-
-.dropdown-item {
-  width: 100%;
-  height: 100%;
-}
-
 .info-button-container {
   position: absolute;
   top: 0;
@@ -455,19 +438,55 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 15px rgba(106, 183, 255, 0.4);
 }
 
-.rotated-90 {
-  transform: rotate(90deg);
-}
-
-.navigation-button-group.rotated-90 {
-  padding: 0;
-}
-
-.navigation-button-group.rotated-90::before {
+.dropdown-menu {
   position: absolute;
-  bottom: calc(100% + 5px);
-  content: "Scan Lvl";
-  font-size: 0.55em;
+  background-color: rgba(16, 1, 44, 0.9);
+  border: 1px solid #ff1493;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  width: 600%;
+  left: -600%;
+  height: 100%;
+}
+
+.navigation-button-group
+  > .navigation-button
+  > .dropdown-menu
+  > .dropdown-item {
+  width: 100%;
+  height: 100%;
+}
+
+@media (orientation: landscape) {
+  .dropdown-menu {
+    flex-direction: column;
+    height: 600%;
+    top: -600%;
+    left: 0;
+    width: 100%;
+  }
+}
+
+@media (orientation: portrait) {
+  .rotated-90 {
+    transform: rotate(90deg);
+  }
+  .navigation-button-group.rotated-90 {
+    padding: 0;
+  }
+  .navigation-button-group::before {
+    position: absolute;
+    bottom: calc(100% + 5px);
+    content: "Scan Lvl";
+    font-size: 0.55em;
+  }
+  .dropdown-menu {
+    flex-direction: row;
+    width: 600%;
+    left: -600%;
+    height: 100%;
+  }
 }
 
 .navigation-button-group:has(> .navigation-button:nth-child(2)) {

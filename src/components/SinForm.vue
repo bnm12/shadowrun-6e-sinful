@@ -170,11 +170,7 @@
 
         <div class="form-field">
           <label for="bloodType">Blood Type:</label>
-          <select
-            id="bloodType"
-            v-model="formData.medical!.bloodType"
-            required
-          >
+          <select id="bloodType" v-model="formData.medical!.bloodType" required>
             <option
               v-for="[key, value] in Object.entries(BloodTypeDisplayMap)"
               :key="key"
@@ -473,7 +469,6 @@ defineExpose({
   padding: 20px;
   color: #00ffff;
   position: relative;
-  overflow-x: hidden;
 }
 
 .sin-form {
