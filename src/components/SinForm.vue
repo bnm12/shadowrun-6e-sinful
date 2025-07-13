@@ -459,6 +459,12 @@ const submitForm = () => {
   }
   writeTag(formData);
 };
+
+defineExpose({
+  readTag,
+  writeTag,
+  formData,
+});
 </script>
 
 <style scoped>

@@ -17,6 +17,7 @@ const { toggleReadmeModal } = useReadme();
 const { abortScan } = useNfc(); // Import abortScan from useNfc
 
 const idCardRef = ref<InstanceType<typeof IdCard> | null>(null);
+const sinFormRef = ref<InstanceType<typeof SinForm> | null>(null);
 const selectedScanLevel = ref<SinQualityType>(SinQuality.SIN_QUALITY_LEVEL_3);
 const showScanLevelDropdown = ref(false);
 const showSettingsOverlay = ref(false);
@@ -155,16 +156,19 @@ onBeforeUnmount(() => {
         Create your SIN
       </div>
       <div class="sin-form-section">
-        <SinForm />
+        <SinForm ref="sinFormRef" />
       </div>
       <div class="navigation-buttons">
-        <div @click="" class="navigation-button">
+        <div @click="sinFormRef?.readTag(false)" class="navigation-button">
           <div class="glitch-text" data-text="Read Tag">Read Tag</div>
         </div>
         <div @click="setView('landing')" class="navigation-button">
           <div class="glitch-text" data-text="🏚️">🏚️</div>
         </div>
-        <div @click="" class="navigation-button">
+        <div
+          @click="sinFormRef?.writeTag(sinFormRef.formData)"
+          class="navigation-button"
+        >
           <div class="glitch-text" data-text="Write Tag">Write Tag</div>
         </div>
       </div>
