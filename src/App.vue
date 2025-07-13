@@ -123,10 +123,13 @@ onBeforeUnmount(() => {
             <div class="glitch-text" data-text="✔️">✔️</div>
           </div>
         </div>
-        <div @click="setView('landing')" class="navigation-button">
+        <div @click="setView('landing')" class="navigation-button rotated-90">
           <div class="glitch-text" data-text="🏚️">🏚️</div>
         </div>
-        <div @click="showSettingsOverlay = true" class="navigation-button">
+        <div
+          @click="showSettingsOverlay = true"
+          class="navigation-button rotated-90"
+        >
           <div class="glitch-text" data-text="⚙️">⚙️</div>
         </div>
       </div>
