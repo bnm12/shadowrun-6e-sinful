@@ -296,24 +296,19 @@
       </div>
 
       <!-- Submit Section -->
-      <div class="form-actions">
-        <div
-          v-if="writeStatusMessage || currentScanResultMessage"
-          :class="[
-            'status-message',
-            writeStatusMessageType ||
-              (currentScanStatus === 'error' ? 'error' : 'success'),
-          ]"
-        >
-          {{ writeStatusMessage || currentScanResultMessage }}
-        </div>
-      </div>
+      <div class="form-actions"></div>
     </form>
+    <StatusOverlay
+      :message="overlayMessage"
+      :visible="isOverlayVisible"
+      :status="overlayStatus"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, watch, ref } from "vue";
+import StatusOverlay from "./StatusOverlay.vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
 import {
@@ -330,6 +325,7 @@ import { useNfc } from "../composables/useNfc";
 
 const {
   isWriting,
+  isReading,
   writeStatusMessage,
   writeStatusMessageType,
   currentScanStatus,
@@ -338,6 +334,42 @@ const {
   readTag,
   writeTag,
 } = useNfc();
+
+const isOverlayVisible = ref(false);
+const overlayMessage = ref("");
+const overlayStatus = ref<"reading" | "writing" | "success" | "error" | "">("");
+
+let overlayTimeout: ReturnType<typeof setTimeout> | undefined;
+
+watch(
+  [isReading, isWriting, writeStatusMessage, currentScanResultMessage],
+  ([reading, writing, writeMsg, scanMsg]) => {
+    clearTimeout(overlayTimeout);
+    if (reading) {
+      isOverlayVisible.value = true;
+      overlayMessage.value = "Waiting for read...";
+      overlayStatus.value = "reading";
+    } else if (writing) {
+      isOverlayVisible.value = true;
+      overlayMessage.value = "Waiting for write...";
+      overlayStatus.value = "writing";
+    } else if (writeMsg || scanMsg) {
+      isOverlayVisible.value = true;
+      overlayMessage.value = writeMsg || scanMsg || "";
+      overlayStatus.value =
+        writeStatusMessageType.value === "error" ||
+        currentScanStatus.value === "error"
+          ? "error"
+          : "success";
+      overlayTimeout = setTimeout(() => {
+        isOverlayVisible.value = false;
+      }, 2000);
+    } else {
+      isOverlayVisible.value = false;
+    }
+  },
+  { immediate: true }
+);
 
 watch(
   scannedProfileData,
@@ -690,28 +722,6 @@ defineExpose({
 .form-actions {
   text-align: center;
   margin-top: 40px;
-}
-
-.status-message {
-  margin-top: 20px;
-  padding: 15px;
-  border: 2px solid;
-  background: rgba(26, 26, 46, 0.9);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.status-message.success {
-  border-color: #00ff00;
-  color: #00ff00;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-}
-
-.status-message.error {
-  border-color: #ff0000;
-  color: #ff0000;
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
 
 @media (max-width: 768px) {
