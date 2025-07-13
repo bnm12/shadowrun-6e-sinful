@@ -143,33 +143,35 @@
       >
         <h4>Identity Information</h4>
         <div class="details">
-          <div class="detail-row">
-            <span class="label">Address</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.identity?.address || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">City</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.identity?.city || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Country</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.identity?.country || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Birthdate</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.identity?.birthdate || "N/A"
-            }}</span>
+          <div class="left-content">
+            <div class="detail-row">
+              <span class="label">Address</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.identity?.address || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">City</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.identity?.city || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Country</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.identity?.country || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Birthdate</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.identity?.birthdate || "N/A"
+              }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -181,47 +183,57 @@
       >
         <h4>Physical Characteristics</h4>
         <div class="details">
-          <div class="detail-row">
-            <span class="label">Height (cm)</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.physical?.height || "N/A"
-            }}</span>
+          <div class="left-content">
+            <div class="detail-row">
+              <span class="label">Height (cm)</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.physical?.height || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Weight (kg)</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.physical?.weight || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Skin color</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.physical?.skin || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Hair color</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.physical?.hair || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Eye color</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.physical?.eyes || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Fingerprints</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.physical?.seed || "N/A"
+              }}</span>
+            </div>
           </div>
-          <div class="detail-row">
-            <span class="label">Weight (kg)</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.physical?.weight || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Skin color</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.physical?.skin || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Hair color</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.physical?.hair || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Eye color</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.physical?.eyes || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Fingerprints</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.physical?.seed || "N/A"
-            }}</span>
+          <div class="right-content">
+            <span>Iris Scan</span>
+            <IrisDisplay
+              :seed="
+                internalProfileData.sinId + internalProfileData.physical?.seed
+              "
+            />
           </div>
         </div>
       </div>
@@ -233,22 +245,24 @@
       >
         <h4>Medical Records</h4>
         <div class="details">
-          <div class="detail-row">
-            <span class="label">Blood Type</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              BloodTypeDisplayMap[
-                internalProfileData.medical?.bloodType ??
-                  BloodType.BLOOD_TYPE_UNSPECIFIED
-              ]
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Medical Record</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.medical?.seed ?? "N/A"
-            }}</span>
+          <div class="left-content">
+            <div class="detail-row">
+              <span class="label">Blood Type</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                BloodTypeDisplayMap[
+                  internalProfileData.medical?.bloodType ??
+                    BloodType.BLOOD_TYPE_UNSPECIFIED
+                ]
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Medical Record</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.medical?.seed ?? "N/A"
+              }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -260,34 +274,36 @@
       >
         <h4>Employment History</h4>
         <div class="details">
-          <div class="detail-row">
-            <span class="label">Profession</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.employment?.profession || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Employer</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.employment?.employer || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Employer Address</span>
-            <span class="label-colon">:</span>
-            <span class="value">{{
-              internalProfileData.employment?.employerAddress || "N/A"
-            }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">Verified Data Links</span>
-            <span class="label-colon">:</span>
-            <div class="value">
-              <div>Civil: "N/A"</div>
-              <div>Bank: "N/A"</div>
-              <div>Personal: "N/A"</div>
+          <div class="left-content">
+            <div class="detail-row">
+              <span class="label">Profession</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.employment?.profession || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Employer</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.employment?.employer || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Employer Address</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.employment?.employerAddress || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Verified Data Links</span>
+              <span class="label-colon">:</span>
+              <div class="value">
+                <div>Civil: "N/A"</div>
+                <div>Bank: "N/A"</div>
+                <div>Personal: "N/A"</div>
+              </div>
             </div>
           </div>
         </div>
@@ -306,38 +322,6 @@
         />
       </div>
     </div>
-
-    <!-- <div class="sin-check-controls">
-      <select
-        :value="scanLevel"
-        @input="$emit('update:scanLevel', ($event.target as HTMLSelectElement).value)"
-        class="scan-level-dropdown"
-      >
-        <option
-          v-for="level in availableScanLevels"
-          :key="level"
-          :value="level"
-        >
-          Scan Level {{ level }}
-        </option>
-      </select>
-      <button
-        @click="$emit('check-sin')"
-        class="scan-button"
-        :disabled="!internalProfileData.sinId"
-      >
-        Check SIN
-      </button>
-      <div class="validate-on-scan-control">
-        <input
-          type="checkbox"
-          id="validate-on-scan"
-          :checked="validateOnScan"
-          @input="$emit('update:validateOnScan', ($event.target as HTMLInputElement).checked)"
-        />
-        <label for="validate-on-scan">Validate on scan</label>
-      </div>
-    </div> -->
     <div class="system-info">
       <div class="system-codes">
         <div class="code-line">IDC : {{ idc }}</div>
@@ -354,6 +338,7 @@
 import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import IdCardOverlay from "./IdCardOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
+import IrisDisplay from "./IrisDisplay.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
@@ -836,7 +821,7 @@ defineExpose({
 .info-section {
   display: flex;
   flex-direction: column;
-  gap: 5%; /* Relative gap */
+  gap: 5%;
   flex-grow: 1;
 }
 
@@ -850,8 +835,22 @@ defineExpose({
 
 .details {
   display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.left-content,
+.right-content {
+  display: flex;
   flex-direction: column;
-  gap: 5px; /* Relative gap */
+  gap: 5px;
+}
+
+.right-content {
+  align-items: center;
+  justify-content: center;
 }
 
 .detail-row {
