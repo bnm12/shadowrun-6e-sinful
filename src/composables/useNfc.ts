@@ -12,6 +12,7 @@ let abortController: AbortController | null = null;
 
 export function useNfc() {
   const isWriting = ref(false);
+  const isReading = ref(false);
   const writeStatusMessage = ref("");
   const writeStatusMessageType = ref<"success" | "error" | "">("");
 
@@ -21,18 +22,18 @@ export function useNfc() {
 
   const readTag = async (continuous = false) => {
     // If a scan is already in progress, don't start a new one.
-    if (currentScanStatus.value === "scanning" && abortController) {
+    if (isReading.value && abortController) {
       console.log("Scan already in progress.");
       return;
     }
 
     // Reset state for a new scan session
-    currentScanStatus.value = "idle";
+    isReading.value = false;
     currentScanResultMessage.value = "";
     scannedProfileData.value = {} as ProfileData;
 
     if (!("NDEFReader" in window)) {
-      currentScanStatus.value = "error";
+      isReading.value = false;
       currentScanResultMessage.value =
         "Web NFC is not available. Please use a compatible browser (e.g., Chrome on Android) and ensure it's enabled.";
       return;
@@ -46,7 +47,7 @@ export function useNfc() {
       // Signal to abort previous scans.
       abortController.signal.onabort = () => {
         console.log("NFC scan aborted.");
-        currentScanStatus.value = "idle";
+        isReading.value = false;
         currentScanResultMessage.value = "Scan aborted.";
       };
 
@@ -68,7 +69,7 @@ export function useNfc() {
 
               const parsedProfileData = ProfileData.decode(decompressedData);
               sinDataFound = true;
-              currentScanStatus.value = "success";
+              isReading.value = false;
               currentScanResultMessage.value = "SIN data found and parsed.";
               scannedProfileData.value = parsedProfileData;
               if (!continuous) {
@@ -76,7 +77,7 @@ export function useNfc() {
               }
               break;
             } catch (e: any) {
-              currentScanStatus.value = "error";
+              isReading.value = false;
               currentScanResultMessage.value = `Error processing SIN data: ${e.message}`;
               console.error("Error processing SIN data:", e);
               if (!continuous) {
@@ -88,15 +89,15 @@ export function useNfc() {
             console.log("Skipping record with mediaType:", record.mediaType);
           }
         }
-        if (!sinDataFound && currentScanStatus.value !== "error") {
-          currentScanStatus.value = "error";
+        if (!sinDataFound && isReading.value) {
+          isReading.value = false;
           currentScanResultMessage.value =
             "No Shadowrun SIN data found on this tag, or data is corrupted/unreadable.";
         }
       };
 
       ndef.onreadingerror = (event: any) => {
-        currentScanStatus.value = "error";
+        isReading.value = false;
         currentScanResultMessage.value = `Error reading tag: ${
           event.message || "Unknown read error"
         }`;
@@ -104,11 +105,11 @@ export function useNfc() {
       };
 
       await ndef.scan({ signal: abortController.signal });
-      currentScanStatus.value = "scanning";
+      isReading.value = true;
       currentScanResultMessage.value =
         "Bring a tag closer to read. Scanning...";
     } catch (error: any) {
-      currentScanStatus.value = "error";
+      isReading.value = false;
       if (error.name === "AbortError") {
         currentScanResultMessage.value = "Scan was aborted.";
       } else {
@@ -124,7 +125,7 @@ export function useNfc() {
   const abortScan = () => {
     if (abortController) {
       abortController.abort();
-      abortController = null;
+      isReading.value = false;
     }
   };
 
@@ -181,6 +182,7 @@ export function useNfc() {
 
   return {
     isWriting,
+    isReading,
     writeStatusMessage,
     writeStatusMessageType,
     currentScanStatus,
