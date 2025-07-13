@@ -420,6 +420,13 @@ const {
 } = useLicenseManagement(formData);
 
 const submitForm = () => {
+  // Validate the form
+  const form = document.querySelector(".sin-form") as HTMLFormElement;
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
   if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {
     formData.physical = {
       height: 0,
@@ -460,6 +467,9 @@ defineExpose({
   readTag,
   writeTag,
   formData,
+  currentScanStatus,
+  isWriting,
+  submitForm,
 });
 </script>
 
