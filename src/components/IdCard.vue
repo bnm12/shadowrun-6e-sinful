@@ -841,7 +841,13 @@ defineExpose({
   height: 100%;
 }
 
-.left-content,
+.left-content {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr;
+  gap: 5px;
+  align-items: center;
+}
+
 .right-content {
   display: flex;
   flex-direction: column;
@@ -854,11 +860,7 @@ defineExpose({
 }
 
 .detail-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  font-size: clamp(0.6em, 2svh, 1em); /* Responsive font size */
-  gap: 1%;
+  display: contents; /* This makes the detail-row a direct child of the grid */
 }
 
 .label {
