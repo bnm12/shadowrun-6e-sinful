@@ -1,10 +1,24 @@
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import { SinQuality, type ProfileData } from "../proto/profile.pb";
 
 export function useLicenseManagement(formData: ProfileData) {
   const currentLicenseName = ref("");
   const currentLicenseQuality = ref<SinQuality>(SinQuality.SIN_QUALITY_LEVEL_1);
   const editingLicenseKey = ref<string | null>(null);
+  const licenseQualityError = ref<string | null>(null);
+
+  const isLicenseQualityInvalid = computed(() => {
+    return currentLicenseQuality.value > formData.sinQuality;
+  });
+
+  watch([currentLicenseQuality, () => formData.sinQuality], () => {
+    if (isLicenseQualityInvalid.value) {
+      licenseQualityError.value =
+        "A license cannot have a higher quality than the SIN itself.";
+    } else {
+      licenseQualityError.value = null;
+    }
+  });
 
   const addOrUpdateLicense = () => {
     if (!currentLicenseName.value.trim()) {
@@ -12,8 +26,8 @@ export function useLicenseManagement(formData: ProfileData) {
       return;
     }
 
-    if (currentLicenseQuality.value > formData.sinQuality) {
-      alert("A license cannot have a higher quality than the SIN itself.");
+    if (isLicenseQualityInvalid.value) {
+      // This check is redundant due to the watch, but good for safety
       return;
     }
 
@@ -57,5 +71,7 @@ export function useLicenseManagement(formData: ProfileData) {
     addOrUpdateLicense,
     editLicense,
     deleteLicense,
+    licenseQualityError,
+    isLicenseQualityInvalid,
   };
 }
