@@ -78,8 +78,19 @@ onBeforeUnmount(() => {
         <IdCard />
       </div>
       <div class="navigation-buttons">
+        <div style="transform: rotate(90deg)">
+          <div @click="" class="navigation-button">
+            <div class="glitch-text" data-text="1">1</div>
+          </div>
+          <div @click="" class="navigation-button">
+            <div class="glitch-text" data-text="✔️">✔️</div>
+          </div>
+        </div>
         <div @click="setView('landing')" class="navigation-button">
-          <div class="glitch-text" data-text="Back to Home">Back to Home</div>
+          <div class="glitch-text" data-text="🏚️">🏚️</div>
+        </div>
+        <div @click="" class="navigation-button">
+          <div class="glitch-text" data-text="⚙️">⚙️</div>
         </div>
       </div>
     </div>
@@ -96,8 +107,14 @@ onBeforeUnmount(() => {
         <SinForm />
       </div>
       <div class="navigation-buttons">
+        <div @click="" class="navigation-button">
+          <div class="glitch-text" data-text="Read Tag">Read Tag</div>
+        </div>
         <div @click="setView('landing')" class="navigation-button">
-          <div class="glitch-text" data-text="Back to Home">Back to Home</div>
+          <div class="glitch-text" data-text="🏚️">🏚️</div>
+        </div>
+        <div @click="" class="navigation-button">
+          <div class="glitch-text" data-text="Write Tag">Write Tag</div>
         </div>
       </div>
     </div>
@@ -343,7 +360,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  justify-content: center;
+  justify-content: space-evenly;
   width: 100%;
   height: 5svh;
 }
