@@ -110,26 +110,28 @@
           <div class="info-section">
             <span class="name">{{ internalProfileData.basic.name }}</span>
             <div class="details">
-              <div class="detail-row">
-                <span class="label">Nationality</span>
-                <span class="label-colon">:</span>
-                <span class="value">{{
-                  internalProfileData.basic.nationality
-                }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Gender</span>
-                <span class="label-colon">:</span>
-                <span class="value">{{
-                  GenderDisplayMap[internalProfileData.basic.gender]
-                }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Metatype</span>
-                <span class="label-colon">:</span>
-                <span class="value">{{
-                  internalProfileData.basic.metatype
-                }}</span>
+              <div class="left-content">
+                <div class="detail-row">
+                  <span class="label">Nationality</span>
+                  <span class="label-colon">:</span>
+                  <span class="value">{{
+                    internalProfileData.basic.nationality
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Gender</span>
+                  <span class="label-colon">:</span>
+                  <span class="value">{{
+                    GenderDisplayMap[internalProfileData.basic.gender]
+                  }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Metatype</span>
+                  <span class="label-colon">:</span>
+                  <span class="value">{{
+                    internalProfileData.basic.metatype
+                  }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -846,6 +848,8 @@ defineExpose({
   grid-template-columns: max-content max-content 1fr;
   gap: 5px;
   align-items: center;
+  align-content: center;
+  align-self: flex-start;
 }
 
 .right-content {
@@ -879,6 +883,7 @@ defineExpose({
 .value {
   color: #00ffff;
   white-space: nowrap;
+  text-align: left;
 }
 
 .system-info {
