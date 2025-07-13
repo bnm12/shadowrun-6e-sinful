@@ -65,7 +65,11 @@
             <button
               class="glitch-text license-check-button"
               data-text="✔️"
-              @click="performLicenseCheck(quality)"
+              @click="
+                performLicenseCheck(
+                  quality ?? SinQuality.SIN_QUALITY_UNSPECIFIED
+                )
+              "
             >
               ✔️
             </button>
@@ -419,7 +423,7 @@ watch(
       isOverlayVisible.value = true;
     } else if (readStatusMessageType.value === "success" && newSinId) {
       if (props.validateOnScan) {
-        performSinCheck();
+        performSinCheck(internalProfileData.value.sinQuality);
       } else {
         clearTimeout(overlayTimeout);
         overlayMessage.value = "SIN Scanned successfully";
