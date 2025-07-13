@@ -62,6 +62,13 @@
             <span class="license-quality">{{
               SinQualityFlairMap[quality ?? SinQuality.SIN_QUALITY_UNSPECIFIED]
             }}</span>
+            <button
+              class="glitch-text license-check-button"
+              data-text="✔️"
+              @click="performLicenseCheck(quality)"
+            >
+              ✔️
+            </button>
           </li>
         </ul>
         <p v-else class="no-licenses-message">No licenses on record.</p>
@@ -481,9 +488,9 @@ const getFlagColors = (): string => {
   );
 };
 
-const performSinCheck = () => {
+const performSinCheck = (quality: SinQuality) => {
   const result = checkSin(
-    SinQuality._toInt(internalProfileData.value.sinQuality),
+    SinQuality._toInt(quality),
     SinQuality._toInt(props.scanLevel)
   );
   clearTimeout(overlayTimeout);
@@ -495,12 +502,25 @@ const performSinCheck = () => {
   }, 2000);
 };
 
+const performLicenseCheck = (quality: SinQuality) => {
+  performSinCheck(quality);
+};
+
 defineExpose({
-  performSinCheck,
+  performSinCheck: () =>
+    performSinCheck(internalProfileData.value.sinQuality),
 });
 </script>
 
 <style scoped>
+.license-check-button {
+  background: none;
+  border: none;
+  color: #00ffff;
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 10px;
+}
 .sin-check-controls {
   display: flex;
   gap: 10px;
