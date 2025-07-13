@@ -7,14 +7,17 @@ import ReadmeInfoModal from "./components/ReadmeInfoModal.vue";
 import SettingsOverlay from "./components/SettingsOverlay.vue";
 import { useNfc } from "./composables/useNfc";
 import { useReadme } from "./composables/useReadme";
-import { SinQuality } from "./proto/profile.pb";
+import {
+  SinQuality,
+  type SinQuality as SinQualityType,
+} from "./proto/profile.pb";
 
 const currentView = ref<"landing" | "sin-check" | "create-sin">("landing");
 const { toggleReadmeModal } = useReadme();
 const { abortScan } = useNfc(); // Import abortScan from useNfc
 
 const idCardRef = ref<InstanceType<typeof IdCard> | null>(null);
-const selectedScanLevel = ref(SinQuality.SIN_QUALITY_LEVEL_3);
+const selectedScanLevel = ref<SinQualityType>(SinQuality.SIN_QUALITY_LEVEL_3);
 const showScanLevelDropdown = ref(false);
 const showSettingsOverlay = ref(false);
 const validateOnScan = ref(false);
@@ -109,16 +112,17 @@ onBeforeUnmount(() => {
             </div>
             <div v-if="showScanLevelDropdown" class="dropdown-menu">
               <div
-                v-for="level in Object.keys(SinQuality).filter(
-                  (v) =>
-                    v[0] !== '_' && v !== SinQuality.SIN_QUALITY_UNSPECIFIED
-                )"
-                :key="level"
-                @click="selectedScanLevel = level"
+                v-for="value in Object.values(SinQuality).filter(
+                  (value) =>
+                    typeof value === 'string' &&
+                    value !== SinQuality.SIN_QUALITY_UNSPECIFIED
+                ) as SinQualityType[]"
+                :key="value"
+                @click="selectedScanLevel = value"
                 class="dropdown-item navigation-button"
-                :data-text="SinQuality._toInt(level)"
+                :data-text="SinQuality._toInt(value)"
               >
-                {{ SinQuality._toInt(level) }}
+                {{ SinQuality._toInt(value) }}
               </div>
             </div>
           </div>
