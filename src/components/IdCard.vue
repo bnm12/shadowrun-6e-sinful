@@ -4,7 +4,7 @@
       :visible="isOverlayVisible"
       :message="overlayMessage"
       :result-type="overlayResultType"
-      title="SIN Check"
+      :title="overlayTitle"
     />
     <div class="card-header">
       <div class="header-tabs">
@@ -408,6 +408,7 @@ const INITIAL_SIN_ID = "00000000-0000-0000-0000-000000000000";
 // Overlay state - will be computed based on props
 const isOverlayVisible = ref(true); // Will be managed by new logic
 const overlayMessage = ref("Waiting for SIN");
+const overlayTitle = ref("SIN Check");
 const overlayResultType = ref<sincheckresult | undefined>(undefined);
 
 let overlayTimeout: NodeJS.Timeout;
@@ -503,8 +504,10 @@ const performSinCheck = (quality: SinQuality) => {
     SinQuality._toInt(quality),
     SinQuality._toInt(props.scanLevel)
   );
+  const { title, message } = sinScanResultTextMap[result];
   clearTimeout(overlayTimeout);
-  overlayMessage.value = sinScanResultTextMap[result];
+  overlayTitle.value = title;
+  overlayMessage.value = message;
   overlayResultType.value = result;
   isOverlayVisible.value = true;
   overlayTimeout = setTimeout(() => {
@@ -517,8 +520,10 @@ const validateLicense = (quality: SinQuality) => {
     SinQuality._toInt(quality),
     SinQuality._toInt(props.scanLevel)
   );
+  const { title, message } = licenseScanResultTextMap[result];
   clearTimeout(overlayTimeout);
-  overlayMessage.value = licenseScanResultTextMap[result];
+  overlayTitle.value = title;
+  overlayMessage.value = message;
   overlayResultType.value = result;
   isOverlayVisible.value = true;
   overlayTimeout = setTimeout(() => {

@@ -1,8 +1,23 @@
 import type { sincheckresult } from "./sin-check-helpers";
 
-export const sinScanResultTextMap: Record<sincheckresult, string> = {
-  success: "Verification successful. SIN is valid.",
-  blip: "Verification blip. SIN may be forged or duplicated.",
-  flagged: "Verification annomoly. SIN is likely forged or has alerts.",
-  burned: "Verification failed. SIN is invalid and has been blacklisted.",
+export const sinScanResultTextMap: Record<
+  sincheckresult,
+  { title: string; message: string }
+> = {
+  success: {
+    title: "Verification successful",
+    message: "SIN is valid.",
+  },
+  blip: {
+    title: "Verification blip",
+    message: "SIN may be forged or duplicated.",
+  },
+  flagged: {
+    title: "Verification annomoly",
+    message: "SIN is likely forged or has alerts.",
+  },
+  burned: {
+    title: "Verification failed",
+    message: "SIN is invalid and has been blacklisted.",
+  },
 };
