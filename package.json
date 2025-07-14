@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "vitest --run",
     "test-dev": "vitest",
-    "ai-check": "npm run test && npm run non-proto-build"
+    "ai-check": "npm install && npm run test && npm run non-proto-build"
   },
   "dependencies": {
     "@types/marked": "^5.0.2",
