@@ -433,7 +433,7 @@ watch(
         performSinCheck(internalProfileData.value.sinQuality);
       } else {
         clearTimeout(overlayTimeout);
-        overlayMessage.value = "SIN Scanned successfully";
+        overlayMessage.value = newMessage || "SIN Scanned successfully";
         overlayResultType.value = "success";
         isOverlayVisible.value = true;
         overlayTimeout = setTimeout(() => {
