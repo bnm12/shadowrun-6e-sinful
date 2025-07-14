@@ -1,8 +1,10 @@
 <template>
   <transition name="fade">
-    <div v-if="visible" class="id-card-overlay">
+    <div v-if="visible" class="message-overlay">
       <div class="overlay-content" :class="resultClass">
-        <p class="overlay-message">{{ message }}</p>
+        <h2 v-if="title" class="overlay-title">{{ title }}</h2>
+        <p v-if="message" class="overlay-message">{{ message }}</p>
+        <slot></slot>
       </div>
     </div>
   </transition>
@@ -13,12 +15,14 @@ import { computed } from "vue";
 import type { sincheckresult } from "../utils/sin-check-helpers";
 
 interface Props {
-  message: string;
+  title?: string;
+  message?: string;
   visible: boolean;
   resultType?: sincheckresult;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  title: "",
   message: "",
   visible: false,
   resultType: undefined,
@@ -30,7 +34,7 @@ const resultClass = computed(() =>
 </script>
 
 <style scoped>
-.id-card-overlay {
+.message-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -61,6 +65,13 @@ const resultClass = computed(() =>
   border: 2px solid rgba(0, 255, 255, 0.5);
 }
 
+.overlay-title {
+  color: #00ffff; /* Cyan text color */
+  font-size: 2em; /* Larger font size */
+  font-family: "Courier New", monospace; /* Consistent font */
+  margin: 0 0 10px 0;
+}
+
 .overlay-message {
   color: #00ffff; /* Cyan text color */
   font-size: 1.5em; /* Larger font size */
@@ -73,7 +84,8 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
-.result-success .overlay-message {
+.result-success .overlay-message,
+.result-success .overlay-title {
   color: #00ff00;
 }
 
@@ -82,7 +94,8 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
 }
 
-.result-blip .overlay-message {
+.result-blip .overlay-message,
+.result-blip .overlay-title {
   color: #ffff00;
 }
 
@@ -91,7 +104,8 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
 }
 
-.result-flagged .overlay-message {
+.result-flagged .overlay-message,
+.result-flagged .overlay-title {
   color: #ff69b4;
 }
 
@@ -100,7 +114,8 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
-.result-burned .overlay-message {
+.result-burned .overlay-message,
+.result-burned .overlay-title {
   color: #ff0000;
 }
 

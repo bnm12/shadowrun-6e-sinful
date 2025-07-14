@@ -4,7 +4,6 @@ import FancyBackground from "./components/FancyBackground.vue";
 import IdCard from "./components/IdCard.vue";
 import SinForm from "./components/SinForm.vue";
 import ReadmeInfoModal from "./components/ReadmeInfoModal.vue";
-import SettingsOverlay from "./components/SettingsOverlay.vue";
 import { useNfc } from "./composables/useNfc";
 import { useReadme } from "./composables/useReadme";
 import {
@@ -20,7 +19,6 @@ const idCardRef = ref<InstanceType<typeof IdCard> | null>(null);
 const sinFormRef = ref<InstanceType<typeof SinForm> | null>(null);
 const selectedScanLevel = ref<SinQualityType>(SinQuality.SIN_QUALITY_LEVEL_3);
 const showScanLevelDropdown = ref(false);
-const showSettingsOverlay = ref(false);
 const validateOnScan = ref(false);
 
 const setView = (viewName: "landing" | "sin-check" | "create-sin") => {
@@ -60,11 +58,6 @@ onBeforeUnmount(() => {
     <FancyBackground :count="25" />
     <!-- Readme Info Modal and its Trigger Button -->
     <ReadmeInfoModal />
-    <SettingsOverlay
-      :visible="showSettingsOverlay"
-      v-model:validate-on-scan="validateOnScan"
-      @close="showSettingsOverlay = false"
-    />
 
     <!-- Landing View -->
     <div v-if="currentView === 'landing'" class="landing-view main-content">
@@ -137,12 +130,6 @@ onBeforeUnmount(() => {
         </div>
         <div @click="setView('landing')" class="navigation-button rotated-90">
           <div class="glitch-text" data-text="🏚️">🏚️</div>
-        </div>
-        <div
-          @click="showSettingsOverlay = true"
-          class="navigation-button rotated-90"
-        >
-          <div class="glitch-text" data-text="⚙️">⚙️</div>
         </div>
       </div>
     </div>

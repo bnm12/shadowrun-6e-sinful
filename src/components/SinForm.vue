@@ -303,17 +303,17 @@
         </div>
       </div>
     </form>
-    <StatusOverlay
+    <MessageOverlay
       :message="overlayMessage"
       :visible="isOverlayVisible"
-      :status="overlayStatus"
+      :result-type="overlayStatus"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, watch, ref } from "vue";
-import StatusOverlay from "./StatusOverlay.vue";
+import MessageOverlay from "./MessageOverlay.vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
 import {
@@ -340,9 +340,10 @@ const {
   writeTag,
 } = useNfc();
 
+import type { sincheckresult } from "../utils/sin-check-helpers";
 const isOverlayVisible = ref(false);
 const overlayMessage = ref("");
-const overlayStatus = ref<"reading" | "writing" | "success" | "error" | "">("");
+const overlayStatus = ref<sincheckresult | undefined>(undefined);
 
 let overlayTimeout: ReturnType<typeof setTimeout> | undefined;
 
@@ -353,18 +354,18 @@ watch(
     if (reading) {
       isOverlayVisible.value = true;
       overlayMessage.value = "Waiting for read...";
-      overlayStatus.value = "reading";
+      overlayStatus.value = undefined;
     } else if (writing) {
       isOverlayVisible.value = true;
       overlayMessage.value = "Waiting for write...";
-      overlayStatus.value = "writing";
+      overlayStatus.value = undefined;
     } else if (writeMsg || scanMsg) {
       isOverlayVisible.value = true;
       overlayMessage.value = writeMsg || scanMsg || "";
       overlayStatus.value =
         writeStatusMessageType.value === "error" ||
         readStatusMessageType.value === "error"
-          ? "error"
+          ? "burned"
           : "success";
       overlayTimeout = setTimeout(() => {
         isOverlayVisible.value = false;
