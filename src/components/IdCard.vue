@@ -368,6 +368,7 @@ import {
 import { SinQualityFlairMap, SinQualityTitleMap } from "../utils/sin-quality";
 import { checkSin } from "../utils/sin-check-helpers";
 import { sinScanResultTextMap } from "../utils/sin-scan-result";
+import { licenseScanResultTextMap } from "../utils/license-scan-result";
 import { useNfc } from "../composables/useNfc";
 import type { sincheckresult } from "../utils/sin-check-helpers";
 
@@ -510,8 +511,22 @@ const performSinCheck = (quality: SinQuality) => {
   }, 2000);
 };
 
+const validateLicense = (quality: SinQuality) => {
+  const result = checkSin(
+    SinQuality._toInt(quality),
+    SinQuality._toInt(props.scanLevel)
+  );
+  clearTimeout(overlayTimeout);
+  overlayMessage.value = licenseScanResultTextMap[result];
+  overlayResultType.value = result;
+  isOverlayVisible.value = true;
+  overlayTimeout = setTimeout(() => {
+    isOverlayVisible.value = false;
+  }, 2000);
+};
+
 const performLicenseCheck = (quality: SinQuality) => {
-  performSinCheck(quality);
+  validateLicense(quality);
 };
 
 defineExpose({
