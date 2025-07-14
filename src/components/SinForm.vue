@@ -303,17 +303,18 @@
         </div>
       </div>
     </form>
-    <StatusOverlay
+    <MessageOverlay
       :message="overlayMessage"
       :visible="isOverlayVisible"
-      :status="overlayStatus"
+      :result-type="overlayStatus"
+      title="NFC Status"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, watch, ref } from "vue";
-import StatusOverlay from "./StatusOverlay.vue";
+import MessageOverlay from "./MessageOverlay.vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
 import {

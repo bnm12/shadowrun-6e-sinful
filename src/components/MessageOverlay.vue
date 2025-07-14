@@ -1,7 +1,8 @@
 <template>
   <transition name="fade">
-    <div v-if="visible" class="id-card-overlay">
+    <div v-if="visible" class="message-overlay">
       <div class="overlay-content" :class="resultClass">
+        <h3 v-if="title" class="overlay-title">{{ title }}</h3>
         <p class="overlay-message">{{ message }}</p>
       </div>
     </div>
@@ -12,15 +13,19 @@
 import { computed } from "vue";
 import type { sincheckresult } from "../utils/sin-check-helpers";
 
+type StatusType = "reading" | "writing" | "success" | "error" | "";
+
 interface Props {
   message: string;
   visible: boolean;
-  resultType?: sincheckresult;
+  title?: string;
+  resultType?: sincheckresult | StatusType;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   message: "",
   visible: false,
+  title: "",
   resultType: undefined,
 });
 
@@ -30,7 +35,7 @@ const resultClass = computed(() =>
 </script>
 
 <style scoped>
-.id-card-overlay {
+.message-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -61,6 +66,14 @@ const resultClass = computed(() =>
   border: 2px solid rgba(0, 255, 255, 0.5);
 }
 
+.overlay-title {
+  color: #00ffff; /* Cyan text color */
+  font-size: 1.8em; /* Larger font size */
+  font-family: "Courier New", monospace; /* Consistent font */
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+}
+
 .overlay-message {
   color: #00ffff; /* Cyan text color */
   font-size: 1.5em; /* Larger font size */
@@ -73,7 +86,8 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
-.result-success .overlay-message {
+.result-success .overlay-message,
+.result-success .overlay-title {
   color: #00ff00;
 }
 
@@ -82,7 +96,8 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
 }
 
-.result-blip .overlay-message {
+.result-blip .overlay-message,
+.result-blip .overlay-title {
   color: #ffff00;
 }
 
@@ -91,17 +106,29 @@ const resultClass = computed(() =>
   box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
 }
 
-.result-flagged .overlay-message {
+.result-flagged .overlay-message,
+.result-flagged .overlay-title {
   color: #ff69b4;
 }
 
-.result-burned {
+.result-burned,
+.result-error {
   border-color: rgba(255, 0, 0, 0.5);
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
-.result-burned .overlay-message {
+.result-burned .overlay-message,
+.result-burned .overlay-title,
+.result-error .overlay-message,
+.result-error .overlay-title {
   color: #ff0000;
+}
+
+.result-reading .overlay-message,
+.result-reading .overlay-title,
+.result-writing .overlay-message,
+.result-writing .overlay-title {
+  color: #00ffff;
 }
 
 /* Fade transition */
