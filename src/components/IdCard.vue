@@ -1,9 +1,10 @@
 <template>
   <div class="id-card">
-    <IdCardOverlay
+    <MessageOverlay
       :visible="isOverlayVisible"
       :message="overlayMessage"
       :result-type="overlayResultType"
+      title="SIN Check"
     />
     <div class="card-header">
       <div class="header-tabs">
@@ -353,7 +354,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
-import IdCardOverlay from "./IdCardOverlay.vue";
+import MessageOverlay from "./MessageOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
 import IrisDisplay from "./IrisDisplay.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
