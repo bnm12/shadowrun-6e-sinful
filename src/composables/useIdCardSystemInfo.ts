@@ -16,10 +16,10 @@ export function useIdCardSystemInfo(
 
   const additionalCode = computed(() => {
     return `<<< ${
-      internalProfileData.value.basic?.nationality ||
+      internalProfileData.value.level3?.nationality ||
       ShadowrunNationality.UNKNOWN
     }/${
-      internalProfileData.value.basic?.metatype || "UNKNOWN"
+      internalProfileData.value.level2?.metatype || "UNKNOWN"
     } >>> SIN ID VERIFIED`;
   });
 

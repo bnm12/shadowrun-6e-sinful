@@ -13,40 +13,52 @@ export const getDefaultProfileData = (): ProfileData => ({
   active: false,
   sinQuality: SinQuality.SIN_QUALITY_LEVEL_3,
   licenses: {},
-  basic: {
-    name: "Jane Doe",
-    gender: Gender.GENDER_UNSPECIFIED,
-    nationality: ShadowrunNationality.UNKNOWN,
-    metatype: "N/A",
+  level1: {
     photo: "/blank-profile-picture.svg",
   },
-  identity: {
+  level2: {
+    name: "Jane Doe",
+    birthdate: "N/A",
+    birthplace: "N/A",
+    gender: Gender.GENDER_UNSPECIFIED,
+    metatype: "N/A",
+  },
+  level3: {
+    fullName: "Jane Doe",
     address: "N/A",
     city: "N/A",
     country: "N/A",
-    birthdate: "N/A",
+    nationality: ShadowrunNationality.UNKNOWN,
+    occupation: "N/A",
+    datalinks: [],
   },
-  physical: {
+  level4: {
+    fingerprintHash: "N/A",
+    retinalHash: "N/A",
+    voiceHash: "N/A",
     height: 0,
     weight: 0,
-    skin: "N/A",
-    hair: "N/A",
-    eyes: "N/A",
-    seed: 0,
+    eyeColor: "N/A",
+    hairColor: "N/A",
+    skinTone: "N/A",
   },
-  medical: {
-    bloodType: BloodType.BLOOD_TYPE_UNSPECIFIED,
-    seed: 0,
-  },
-  employment: {
-    profession: "N/A",
+  level5: {
     employer: "N/A",
     employerAddress: "N/A",
-    seed: 0,
+    travelStamps: [],
+    affiliationCodes: [],
+    educationRecords: [],
+    residenceHistory: [],
   },
-  genetic: {
-    seed: 0,
+  level6: {
+    bloodType: BloodType.BLOOD_TYPE_UNSPECIFIED,
+    dnaSequenceHash: "N/A",
+    geneticMarkers: [],
+    medicalAlertCodes: "N/A",
   },
+  baseSeed: 0,
+  biometricSeed: 0,
+  backgroundSeed: 0,
 });
 
 export const GenderDisplayMap: Record<Gender, string> = {

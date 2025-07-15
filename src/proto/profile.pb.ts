@@ -45,61 +45,70 @@ export type BloodType =
   | "BLOOD_TYPE_O_NEGATIVE";
 
 /**
- * Basic profile information (Level 1)
+ * Level 1: Basic identity check - just confirms SIN exists
  */
-export interface ProfileBasic {
-  name: string;
-  gender: Gender;
-  nationality: string;
-  metatype: string;
+export interface SinLevel1 {
   photo: string;
 }
 
 /**
- * Identity information (Level 2)
+ * Level 2: Core identity fields
  */
-export interface ProfileIdentity {
+export interface SinLevel2 {
+  name: string;
+  birthdate: string;
+  birthplace: string;
+  gender: Gender;
+  metatype: string;
+}
+
+/**
+ * Level 3: All printed SIN information
+ */
+export interface SinLevel3 {
+  fullName: string;
   address: string;
   city: string;
   country: string;
-  birthdate: string;
+  nationality: string;
+  occupation: string;
+  datalinks: string[];
 }
 
 /**
- * Physical characteristics (Level 3)
+ * Level 4: Physical biometrics
  */
-export interface ProfilePhysical {
+export interface SinLevel4 {
+  fingerprintHash: string;
+  retinalHash: string;
+  voiceHash: string;
   height: number;
   weight: number;
-  skin: string;
-  hair: string;
-  eyes: string;
-  seed: number;
+  eyeColor: string;
+  hairColor: string;
+  skinTone: string;
 }
 
 /**
- * Medical information (Level 4)
+ * Level 5: Deep background data
  */
-export interface ProfileMedical {
-  bloodType: BloodType;
-  seed: number;
-}
-
-/**
- * Employment information (Level 5)
- */
-export interface ProfileEmployment {
-  profession: string;
+export interface SinLevel5 {
   employer: string;
   employerAddress: string;
-  seed: number;
+  travelStamps: string[];
+  affiliationCodes: string[];
+  educationRecords: string[];
+  residenceHistory: string[];
 }
 
 /**
- * Genetic information (Level 6)
+ * Level 6: Genetic markers
  */
-export interface ProfileGenetic {
-  seed: number;
+export interface SinLevel6 {
+  bloodType: BloodType;
+  dnaSequenceHash: string;
+  geneticMarkers: string[];
+  medicalAlertCodes: string;
 }
 
 /**
@@ -107,21 +116,30 @@ export interface ProfileGenetic {
  */
 export interface ProfileData {
   /**
-   * Top-level identifiers and metadata
+   * Core SIN metadata
    */
   sinId: string;
   active: boolean;
   sinQuality: SinQuality;
+  /**
+   * Licenses (separate from SIN data)
+   */
   licenses: Record<string, ProfileData.Licenses["value"] | undefined>;
   /**
-   * Nested data structures for tabbed information
+   * Layered SIN data by verification level
    */
-  basic: ProfileBasic;
-  identity?: ProfileIdentity | null | undefined;
-  physical?: ProfilePhysical | null | undefined;
-  medical?: ProfileMedical | null | undefined;
-  employment?: ProfileEmployment | null | undefined;
-  genetic?: ProfileGenetic | null | undefined;
+  level1?: SinLevel1 | null | undefined;
+  level2?: SinLevel2 | null | undefined;
+  level3?: SinLevel3 | null | undefined;
+  level4?: SinLevel4 | null | undefined;
+  level5?: SinLevel5 | null | undefined;
+  level6?: SinLevel6 | null | undefined;
+  /**
+   * Random seeds for generating consistent fake data
+   */
+  baseSeed: number;
+  biometricSeed: number;
+  backgroundSeed: number;
 }
 
 export declare namespace ProfileData {
@@ -350,36 +368,32 @@ export const BloodType = {
   },
 } as const;
 
-export const ProfileBasic = {
+export const SinLevel1 = {
   /**
-   * Serializes ProfileBasic to protobuf.
+   * Serializes SinLevel1 to protobuf.
    */
-  encode: function (msg: PartialDeep<ProfileBasic>): Uint8Array {
-    return ProfileBasic._writeMessage(
+  encode: function (msg: PartialDeep<SinLevel1>): Uint8Array {
+    return SinLevel1._writeMessage(
       msg,
       new protoscript.BinaryWriter(),
     ).getResultBuffer();
   },
 
   /**
-   * Deserializes ProfileBasic from protobuf.
+   * Deserializes SinLevel1 from protobuf.
    */
-  decode: function (bytes: ByteSource): ProfileBasic {
-    return ProfileBasic._readMessage(
-      ProfileBasic.initialize(),
+  decode: function (bytes: ByteSource): SinLevel1 {
+    return SinLevel1._readMessage(
+      SinLevel1.initialize(),
       new protoscript.BinaryReader(bytes),
     );
   },
 
   /**
-   * Initializes ProfileBasic with all fields set to their default value.
+   * Initializes SinLevel1 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileBasic>): ProfileBasic {
+  initialize: function (msg?: Partial<SinLevel1>): SinLevel1 {
     return {
-      name: "",
-      gender: Gender._fromInt(0),
-      nationality: "",
-      metatype: "",
       photo: "",
       ...msg,
     };
@@ -389,23 +403,11 @@ export const ProfileBasic = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileBasic>,
+    msg: PartialDeep<SinLevel1>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
-    if (msg.name) {
-      writer.writeString(1, msg.name);
-    }
-    if (msg.gender && Gender._toInt(msg.gender)) {
-      writer.writeEnum(2, Gender._toInt(msg.gender));
-    }
-    if (msg.nationality) {
-      writer.writeString(3, msg.nationality);
-    }
-    if (msg.metatype) {
-      writer.writeString(4, msg.metatype);
-    }
     if (msg.photo) {
-      writer.writeString(5, msg.photo);
+      writer.writeString(1, msg.photo);
     }
     return writer;
   },
@@ -414,29 +416,13 @@ export const ProfileBasic = {
    * @private
    */
   _readMessage: function (
-    msg: ProfileBasic,
+    msg: SinLevel1,
     reader: protoscript.BinaryReader,
-  ): ProfileBasic {
+  ): SinLevel1 {
     while (reader.nextField()) {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.name = reader.readString();
-          break;
-        }
-        case 2: {
-          msg.gender = Gender._fromInt(reader.readEnum());
-          break;
-        }
-        case 3: {
-          msg.nationality = reader.readString();
-          break;
-        }
-        case 4: {
-          msg.metatype = reader.readString();
-          break;
-        }
-        case 5: {
           msg.photo = reader.readString();
           break;
         }
@@ -450,36 +436,37 @@ export const ProfileBasic = {
   },
 };
 
-export const ProfileIdentity = {
+export const SinLevel2 = {
   /**
-   * Serializes ProfileIdentity to protobuf.
+   * Serializes SinLevel2 to protobuf.
    */
-  encode: function (msg: PartialDeep<ProfileIdentity>): Uint8Array {
-    return ProfileIdentity._writeMessage(
+  encode: function (msg: PartialDeep<SinLevel2>): Uint8Array {
+    return SinLevel2._writeMessage(
       msg,
       new protoscript.BinaryWriter(),
     ).getResultBuffer();
   },
 
   /**
-   * Deserializes ProfileIdentity from protobuf.
+   * Deserializes SinLevel2 from protobuf.
    */
-  decode: function (bytes: ByteSource): ProfileIdentity {
-    return ProfileIdentity._readMessage(
-      ProfileIdentity.initialize(),
+  decode: function (bytes: ByteSource): SinLevel2 {
+    return SinLevel2._readMessage(
+      SinLevel2.initialize(),
       new protoscript.BinaryReader(bytes),
     );
   },
 
   /**
-   * Initializes ProfileIdentity with all fields set to their default value.
+   * Initializes SinLevel2 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileIdentity>): ProfileIdentity {
+  initialize: function (msg?: Partial<SinLevel2>): SinLevel2 {
     return {
-      address: "",
-      city: "",
-      country: "",
+      name: "",
       birthdate: "",
+      birthplace: "",
+      gender: Gender._fromInt(0),
+      metatype: "",
       ...msg,
     };
   },
@@ -488,20 +475,23 @@ export const ProfileIdentity = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileIdentity>,
+    msg: PartialDeep<SinLevel2>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
-    if (msg.address) {
-      writer.writeString(1, msg.address);
-    }
-    if (msg.city) {
-      writer.writeString(2, msg.city);
-    }
-    if (msg.country) {
-      writer.writeString(3, msg.country);
+    if (msg.name) {
+      writer.writeString(1, msg.name);
     }
     if (msg.birthdate) {
-      writer.writeString(4, msg.birthdate);
+      writer.writeString(2, msg.birthdate);
+    }
+    if (msg.birthplace) {
+      writer.writeString(3, msg.birthplace);
+    }
+    if (msg.gender && Gender._toInt(msg.gender)) {
+      writer.writeEnum(4, Gender._toInt(msg.gender));
+    }
+    if (msg.metatype) {
+      writer.writeString(5, msg.metatype);
     }
     return writer;
   },
@@ -510,28 +500,32 @@ export const ProfileIdentity = {
    * @private
    */
   _readMessage: function (
-    msg: ProfileIdentity,
+    msg: SinLevel2,
     reader: protoscript.BinaryReader,
-  ): ProfileIdentity {
+  ): SinLevel2 {
     while (reader.nextField()) {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.address = reader.readString();
+          msg.name = reader.readString();
           break;
         }
         case 2: {
-          msg.city = reader.readString();
-          break;
-        }
-        case 3: {
-          msg.country = reader.readString();
-          break;
-        }
-        case 4: {
           msg.birthdate = reader.readString();
           break;
         }
+        case 3: {
+          msg.birthplace = reader.readString();
+          break;
+        }
+        case 4: {
+          msg.gender = Gender._fromInt(reader.readEnum());
+          break;
+        }
+        case 5: {
+          msg.metatype = reader.readString();
+          break;
+        }
         default: {
           reader.skipField();
           break;
@@ -542,38 +536,39 @@ export const ProfileIdentity = {
   },
 };
 
-export const ProfilePhysical = {
+export const SinLevel3 = {
   /**
-   * Serializes ProfilePhysical to protobuf.
+   * Serializes SinLevel3 to protobuf.
    */
-  encode: function (msg: PartialDeep<ProfilePhysical>): Uint8Array {
-    return ProfilePhysical._writeMessage(
+  encode: function (msg: PartialDeep<SinLevel3>): Uint8Array {
+    return SinLevel3._writeMessage(
       msg,
       new protoscript.BinaryWriter(),
     ).getResultBuffer();
   },
 
   /**
-   * Deserializes ProfilePhysical from protobuf.
+   * Deserializes SinLevel3 from protobuf.
    */
-  decode: function (bytes: ByteSource): ProfilePhysical {
-    return ProfilePhysical._readMessage(
-      ProfilePhysical.initialize(),
+  decode: function (bytes: ByteSource): SinLevel3 {
+    return SinLevel3._readMessage(
+      SinLevel3.initialize(),
       new protoscript.BinaryReader(bytes),
     );
   },
 
   /**
-   * Initializes ProfilePhysical with all fields set to their default value.
+   * Initializes SinLevel3 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfilePhysical>): ProfilePhysical {
+  initialize: function (msg?: Partial<SinLevel3>): SinLevel3 {
     return {
-      height: 0,
-      weight: 0,
-      skin: "",
-      hair: "",
-      eyes: "",
-      seed: 0,
+      fullName: "",
+      address: "",
+      city: "",
+      country: "",
+      nationality: "",
+      occupation: "",
+      datalinks: [],
       ...msg,
     };
   },
@@ -582,26 +577,29 @@ export const ProfilePhysical = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfilePhysical>,
+    msg: PartialDeep<SinLevel3>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
-    if (msg.height) {
-      writer.writeInt32(1, msg.height);
+    if (msg.fullName) {
+      writer.writeString(1, msg.fullName);
     }
-    if (msg.weight) {
-      writer.writeInt32(2, msg.weight);
+    if (msg.address) {
+      writer.writeString(2, msg.address);
     }
-    if (msg.skin) {
-      writer.writeString(3, msg.skin);
+    if (msg.city) {
+      writer.writeString(3, msg.city);
     }
-    if (msg.hair) {
-      writer.writeString(4, msg.hair);
+    if (msg.country) {
+      writer.writeString(4, msg.country);
     }
-    if (msg.eyes) {
-      writer.writeString(5, msg.eyes);
+    if (msg.nationality) {
+      writer.writeString(5, msg.nationality);
     }
-    if (msg.seed) {
-      writer.writeInt32(6, msg.seed);
+    if (msg.occupation) {
+      writer.writeString(6, msg.occupation);
+    }
+    if (msg.datalinks?.length) {
+      writer.writeRepeatedString(7, msg.datalinks);
     }
     return writer;
   },
@@ -610,34 +608,38 @@ export const ProfilePhysical = {
    * @private
    */
   _readMessage: function (
-    msg: ProfilePhysical,
+    msg: SinLevel3,
     reader: protoscript.BinaryReader,
-  ): ProfilePhysical {
+  ): SinLevel3 {
     while (reader.nextField()) {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.height = reader.readInt32();
+          msg.fullName = reader.readString();
           break;
         }
         case 2: {
-          msg.weight = reader.readInt32();
+          msg.address = reader.readString();
           break;
         }
         case 3: {
-          msg.skin = reader.readString();
+          msg.city = reader.readString();
           break;
         }
         case 4: {
-          msg.hair = reader.readString();
+          msg.country = reader.readString();
           break;
         }
         case 5: {
-          msg.eyes = reader.readString();
+          msg.nationality = reader.readString();
           break;
         }
         case 6: {
-          msg.seed = reader.readInt32();
+          msg.occupation = reader.readString();
+          break;
+        }
+        case 7: {
+          msg.datalinks.push(reader.readString());
           break;
         }
         default: {
@@ -650,34 +652,40 @@ export const ProfilePhysical = {
   },
 };
 
-export const ProfileMedical = {
+export const SinLevel4 = {
   /**
-   * Serializes ProfileMedical to protobuf.
+   * Serializes SinLevel4 to protobuf.
    */
-  encode: function (msg: PartialDeep<ProfileMedical>): Uint8Array {
-    return ProfileMedical._writeMessage(
+  encode: function (msg: PartialDeep<SinLevel4>): Uint8Array {
+    return SinLevel4._writeMessage(
       msg,
       new protoscript.BinaryWriter(),
     ).getResultBuffer();
   },
 
   /**
-   * Deserializes ProfileMedical from protobuf.
+   * Deserializes SinLevel4 from protobuf.
    */
-  decode: function (bytes: ByteSource): ProfileMedical {
-    return ProfileMedical._readMessage(
-      ProfileMedical.initialize(),
+  decode: function (bytes: ByteSource): SinLevel4 {
+    return SinLevel4._readMessage(
+      SinLevel4.initialize(),
       new protoscript.BinaryReader(bytes),
     );
   },
 
   /**
-   * Initializes ProfileMedical with all fields set to their default value.
+   * Initializes SinLevel4 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileMedical>): ProfileMedical {
+  initialize: function (msg?: Partial<SinLevel4>): SinLevel4 {
     return {
-      bloodType: BloodType._fromInt(0),
-      seed: 0,
+      fingerprintHash: "",
+      retinalHash: "",
+      voiceHash: "",
+      height: 0,
+      weight: 0,
+      eyeColor: "",
+      hairColor: "",
+      skinTone: "",
       ...msg,
     };
   },
@@ -686,14 +694,248 @@ export const ProfileMedical = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileMedical>,
+    msg: PartialDeep<SinLevel4>,
+    writer: protoscript.BinaryWriter,
+  ): protoscript.BinaryWriter {
+    if (msg.fingerprintHash) {
+      writer.writeString(1, msg.fingerprintHash);
+    }
+    if (msg.retinalHash) {
+      writer.writeString(2, msg.retinalHash);
+    }
+    if (msg.voiceHash) {
+      writer.writeString(3, msg.voiceHash);
+    }
+    if (msg.height) {
+      writer.writeInt32(4, msg.height);
+    }
+    if (msg.weight) {
+      writer.writeInt32(5, msg.weight);
+    }
+    if (msg.eyeColor) {
+      writer.writeString(6, msg.eyeColor);
+    }
+    if (msg.hairColor) {
+      writer.writeString(7, msg.hairColor);
+    }
+    if (msg.skinTone) {
+      writer.writeString(8, msg.skinTone);
+    }
+    return writer;
+  },
+
+  /**
+   * @private
+   */
+  _readMessage: function (
+    msg: SinLevel4,
+    reader: protoscript.BinaryReader,
+  ): SinLevel4 {
+    while (reader.nextField()) {
+      const field = reader.getFieldNumber();
+      switch (field) {
+        case 1: {
+          msg.fingerprintHash = reader.readString();
+          break;
+        }
+        case 2: {
+          msg.retinalHash = reader.readString();
+          break;
+        }
+        case 3: {
+          msg.voiceHash = reader.readString();
+          break;
+        }
+        case 4: {
+          msg.height = reader.readInt32();
+          break;
+        }
+        case 5: {
+          msg.weight = reader.readInt32();
+          break;
+        }
+        case 6: {
+          msg.eyeColor = reader.readString();
+          break;
+        }
+        case 7: {
+          msg.hairColor = reader.readString();
+          break;
+        }
+        case 8: {
+          msg.skinTone = reader.readString();
+          break;
+        }
+        default: {
+          reader.skipField();
+          break;
+        }
+      }
+    }
+    return msg;
+  },
+};
+
+export const SinLevel5 = {
+  /**
+   * Serializes SinLevel5 to protobuf.
+   */
+  encode: function (msg: PartialDeep<SinLevel5>): Uint8Array {
+    return SinLevel5._writeMessage(
+      msg,
+      new protoscript.BinaryWriter(),
+    ).getResultBuffer();
+  },
+
+  /**
+   * Deserializes SinLevel5 from protobuf.
+   */
+  decode: function (bytes: ByteSource): SinLevel5 {
+    return SinLevel5._readMessage(
+      SinLevel5.initialize(),
+      new protoscript.BinaryReader(bytes),
+    );
+  },
+
+  /**
+   * Initializes SinLevel5 with all fields set to their default value.
+   */
+  initialize: function (msg?: Partial<SinLevel5>): SinLevel5 {
+    return {
+      employer: "",
+      employerAddress: "",
+      travelStamps: [],
+      affiliationCodes: [],
+      educationRecords: [],
+      residenceHistory: [],
+      ...msg,
+    };
+  },
+
+  /**
+   * @private
+   */
+  _writeMessage: function (
+    msg: PartialDeep<SinLevel5>,
+    writer: protoscript.BinaryWriter,
+  ): protoscript.BinaryWriter {
+    if (msg.employer) {
+      writer.writeString(1, msg.employer);
+    }
+    if (msg.employerAddress) {
+      writer.writeString(2, msg.employerAddress);
+    }
+    if (msg.travelStamps?.length) {
+      writer.writeRepeatedString(3, msg.travelStamps);
+    }
+    if (msg.affiliationCodes?.length) {
+      writer.writeRepeatedString(4, msg.affiliationCodes);
+    }
+    if (msg.educationRecords?.length) {
+      writer.writeRepeatedString(5, msg.educationRecords);
+    }
+    if (msg.residenceHistory?.length) {
+      writer.writeRepeatedString(6, msg.residenceHistory);
+    }
+    return writer;
+  },
+
+  /**
+   * @private
+   */
+  _readMessage: function (
+    msg: SinLevel5,
+    reader: protoscript.BinaryReader,
+  ): SinLevel5 {
+    while (reader.nextField()) {
+      const field = reader.getFieldNumber();
+      switch (field) {
+        case 1: {
+          msg.employer = reader.readString();
+          break;
+        }
+        case 2: {
+          msg.employerAddress = reader.readString();
+          break;
+        }
+        case 3: {
+          msg.travelStamps.push(reader.readString());
+          break;
+        }
+        case 4: {
+          msg.affiliationCodes.push(reader.readString());
+          break;
+        }
+        case 5: {
+          msg.educationRecords.push(reader.readString());
+          break;
+        }
+        case 6: {
+          msg.residenceHistory.push(reader.readString());
+          break;
+        }
+        default: {
+          reader.skipField();
+          break;
+        }
+      }
+    }
+    return msg;
+  },
+};
+
+export const SinLevel6 = {
+  /**
+   * Serializes SinLevel6 to protobuf.
+   */
+  encode: function (msg: PartialDeep<SinLevel6>): Uint8Array {
+    return SinLevel6._writeMessage(
+      msg,
+      new protoscript.BinaryWriter(),
+    ).getResultBuffer();
+  },
+
+  /**
+   * Deserializes SinLevel6 from protobuf.
+   */
+  decode: function (bytes: ByteSource): SinLevel6 {
+    return SinLevel6._readMessage(
+      SinLevel6.initialize(),
+      new protoscript.BinaryReader(bytes),
+    );
+  },
+
+  /**
+   * Initializes SinLevel6 with all fields set to their default value.
+   */
+  initialize: function (msg?: Partial<SinLevel6>): SinLevel6 {
+    return {
+      bloodType: BloodType._fromInt(0),
+      dnaSequenceHash: "",
+      geneticMarkers: [],
+      medicalAlertCodes: "",
+      ...msg,
+    };
+  },
+
+  /**
+   * @private
+   */
+  _writeMessage: function (
+    msg: PartialDeep<SinLevel6>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
     if (msg.bloodType && BloodType._toInt(msg.bloodType)) {
       writer.writeEnum(1, BloodType._toInt(msg.bloodType));
     }
-    if (msg.seed) {
-      writer.writeInt32(2, msg.seed);
+    if (msg.dnaSequenceHash) {
+      writer.writeString(2, msg.dnaSequenceHash);
+    }
+    if (msg.geneticMarkers?.length) {
+      writer.writeRepeatedString(3, msg.geneticMarkers);
+    }
+    if (msg.medicalAlertCodes) {
+      writer.writeString(4, msg.medicalAlertCodes);
     }
     return writer;
   },
@@ -702,9 +944,9 @@ export const ProfileMedical = {
    * @private
    */
   _readMessage: function (
-    msg: ProfileMedical,
+    msg: SinLevel6,
     reader: protoscript.BinaryReader,
-  ): ProfileMedical {
+  ): SinLevel6 {
     while (reader.nextField()) {
       const field = reader.getFieldNumber();
       switch (field) {
@@ -713,167 +955,15 @@ export const ProfileMedical = {
           break;
         }
         case 2: {
-          msg.seed = reader.readInt32();
-          break;
-        }
-        default: {
-          reader.skipField();
-          break;
-        }
-      }
-    }
-    return msg;
-  },
-};
-
-export const ProfileEmployment = {
-  /**
-   * Serializes ProfileEmployment to protobuf.
-   */
-  encode: function (msg: PartialDeep<ProfileEmployment>): Uint8Array {
-    return ProfileEmployment._writeMessage(
-      msg,
-      new protoscript.BinaryWriter(),
-    ).getResultBuffer();
-  },
-
-  /**
-   * Deserializes ProfileEmployment from protobuf.
-   */
-  decode: function (bytes: ByteSource): ProfileEmployment {
-    return ProfileEmployment._readMessage(
-      ProfileEmployment.initialize(),
-      new protoscript.BinaryReader(bytes),
-    );
-  },
-
-  /**
-   * Initializes ProfileEmployment with all fields set to their default value.
-   */
-  initialize: function (msg?: Partial<ProfileEmployment>): ProfileEmployment {
-    return {
-      profession: "",
-      employer: "",
-      employerAddress: "",
-      seed: 0,
-      ...msg,
-    };
-  },
-
-  /**
-   * @private
-   */
-  _writeMessage: function (
-    msg: PartialDeep<ProfileEmployment>,
-    writer: protoscript.BinaryWriter,
-  ): protoscript.BinaryWriter {
-    if (msg.profession) {
-      writer.writeString(1, msg.profession);
-    }
-    if (msg.employer) {
-      writer.writeString(2, msg.employer);
-    }
-    if (msg.employerAddress) {
-      writer.writeString(3, msg.employerAddress);
-    }
-    if (msg.seed) {
-      writer.writeInt32(4, msg.seed);
-    }
-    return writer;
-  },
-
-  /**
-   * @private
-   */
-  _readMessage: function (
-    msg: ProfileEmployment,
-    reader: protoscript.BinaryReader,
-  ): ProfileEmployment {
-    while (reader.nextField()) {
-      const field = reader.getFieldNumber();
-      switch (field) {
-        case 1: {
-          msg.profession = reader.readString();
-          break;
-        }
-        case 2: {
-          msg.employer = reader.readString();
+          msg.dnaSequenceHash = reader.readString();
           break;
         }
         case 3: {
-          msg.employerAddress = reader.readString();
+          msg.geneticMarkers.push(reader.readString());
           break;
         }
         case 4: {
-          msg.seed = reader.readInt32();
-          break;
-        }
-        default: {
-          reader.skipField();
-          break;
-        }
-      }
-    }
-    return msg;
-  },
-};
-
-export const ProfileGenetic = {
-  /**
-   * Serializes ProfileGenetic to protobuf.
-   */
-  encode: function (msg: PartialDeep<ProfileGenetic>): Uint8Array {
-    return ProfileGenetic._writeMessage(
-      msg,
-      new protoscript.BinaryWriter(),
-    ).getResultBuffer();
-  },
-
-  /**
-   * Deserializes ProfileGenetic from protobuf.
-   */
-  decode: function (bytes: ByteSource): ProfileGenetic {
-    return ProfileGenetic._readMessage(
-      ProfileGenetic.initialize(),
-      new protoscript.BinaryReader(bytes),
-    );
-  },
-
-  /**
-   * Initializes ProfileGenetic with all fields set to their default value.
-   */
-  initialize: function (msg?: Partial<ProfileGenetic>): ProfileGenetic {
-    return {
-      seed: 0,
-      ...msg,
-    };
-  },
-
-  /**
-   * @private
-   */
-  _writeMessage: function (
-    msg: PartialDeep<ProfileGenetic>,
-    writer: protoscript.BinaryWriter,
-  ): protoscript.BinaryWriter {
-    if (msg.seed) {
-      writer.writeInt32(1, msg.seed);
-    }
-    return writer;
-  },
-
-  /**
-   * @private
-   */
-  _readMessage: function (
-    msg: ProfileGenetic,
-    reader: protoscript.BinaryReader,
-  ): ProfileGenetic {
-    while (reader.nextField()) {
-      const field = reader.getFieldNumber();
-      switch (field) {
-        case 1: {
-          msg.seed = reader.readInt32();
+          msg.medicalAlertCodes = reader.readString();
           break;
         }
         default: {
@@ -916,12 +1006,15 @@ export const ProfileData = {
       active: false,
       sinQuality: SinQuality._fromInt(0),
       licenses: {},
-      basic: ProfileBasic.initialize(),
-      identity: undefined,
-      physical: undefined,
-      medical: undefined,
-      employment: undefined,
-      genetic: undefined,
+      level1: undefined,
+      level2: undefined,
+      level3: undefined,
+      level4: undefined,
+      level5: undefined,
+      level6: undefined,
+      baseSeed: 0,
+      biometricSeed: 0,
+      backgroundSeed: 0,
       ...msg,
     };
   },
@@ -952,23 +1045,32 @@ export const ProfileData = {
         ProfileData.Licenses._writeMessage,
       );
     }
-    if (msg.basic) {
-      writer.writeMessage(5, msg.basic, ProfileBasic._writeMessage);
+    if (msg.level1 != undefined) {
+      writer.writeMessage(5, msg.level1, SinLevel1._writeMessage);
     }
-    if (msg.identity != undefined) {
-      writer.writeMessage(6, msg.identity, ProfileIdentity._writeMessage);
+    if (msg.level2 != undefined) {
+      writer.writeMessage(6, msg.level2, SinLevel2._writeMessage);
     }
-    if (msg.physical != undefined) {
-      writer.writeMessage(7, msg.physical, ProfilePhysical._writeMessage);
+    if (msg.level3 != undefined) {
+      writer.writeMessage(7, msg.level3, SinLevel3._writeMessage);
     }
-    if (msg.medical != undefined) {
-      writer.writeMessage(8, msg.medical, ProfileMedical._writeMessage);
+    if (msg.level4 != undefined) {
+      writer.writeMessage(8, msg.level4, SinLevel4._writeMessage);
     }
-    if (msg.employment != undefined) {
-      writer.writeMessage(9, msg.employment, ProfileEmployment._writeMessage);
+    if (msg.level5 != undefined) {
+      writer.writeMessage(9, msg.level5, SinLevel5._writeMessage);
     }
-    if (msg.genetic != undefined) {
-      writer.writeMessage(10, msg.genetic, ProfileGenetic._writeMessage);
+    if (msg.level6 != undefined) {
+      writer.writeMessage(10, msg.level6, SinLevel6._writeMessage);
+    }
+    if (msg.baseSeed) {
+      writer.writeInt32(11, msg.baseSeed);
+    }
+    if (msg.biometricSeed) {
+      writer.writeInt32(12, msg.biometricSeed);
+    }
+    if (msg.backgroundSeed) {
+      writer.writeInt32(13, msg.backgroundSeed);
     }
     return writer;
   },
@@ -1002,32 +1104,45 @@ export const ProfileData = {
           break;
         }
         case 5: {
-          reader.readMessage(msg.basic, ProfileBasic._readMessage);
+          msg.level1 = SinLevel1.initialize();
+          reader.readMessage(msg.level1, SinLevel1._readMessage);
           break;
         }
         case 6: {
-          msg.identity = ProfileIdentity.initialize();
-          reader.readMessage(msg.identity, ProfileIdentity._readMessage);
+          msg.level2 = SinLevel2.initialize();
+          reader.readMessage(msg.level2, SinLevel2._readMessage);
           break;
         }
         case 7: {
-          msg.physical = ProfilePhysical.initialize();
-          reader.readMessage(msg.physical, ProfilePhysical._readMessage);
+          msg.level3 = SinLevel3.initialize();
+          reader.readMessage(msg.level3, SinLevel3._readMessage);
           break;
         }
         case 8: {
-          msg.medical = ProfileMedical.initialize();
-          reader.readMessage(msg.medical, ProfileMedical._readMessage);
+          msg.level4 = SinLevel4.initialize();
+          reader.readMessage(msg.level4, SinLevel4._readMessage);
           break;
         }
         case 9: {
-          msg.employment = ProfileEmployment.initialize();
-          reader.readMessage(msg.employment, ProfileEmployment._readMessage);
+          msg.level5 = SinLevel5.initialize();
+          reader.readMessage(msg.level5, SinLevel5._readMessage);
           break;
         }
         case 10: {
-          msg.genetic = ProfileGenetic.initialize();
-          reader.readMessage(msg.genetic, ProfileGenetic._readMessage);
+          msg.level6 = SinLevel6.initialize();
+          reader.readMessage(msg.level6, SinLevel6._readMessage);
+          break;
+        }
+        case 11: {
+          msg.baseSeed = reader.readInt32();
+          break;
+        }
+        case 12: {
+          msg.biometricSeed = reader.readInt32();
+          break;
+        }
+        case 13: {
+          msg.backgroundSeed = reader.readInt32();
           break;
         }
         default: {
@@ -1304,33 +1419,29 @@ export const BloodTypeJSON = {
   },
 } as const;
 
-export const ProfileBasicJSON = {
+export const SinLevel1JSON = {
   /**
-   * Serializes ProfileBasic to JSON.
+   * Serializes SinLevel1 to JSON.
    */
-  encode: function (msg: PartialDeep<ProfileBasic>): string {
-    return JSON.stringify(ProfileBasicJSON._writeMessage(msg));
+  encode: function (msg: PartialDeep<SinLevel1>): string {
+    return JSON.stringify(SinLevel1JSON._writeMessage(msg));
   },
 
   /**
-   * Deserializes ProfileBasic from JSON.
+   * Deserializes SinLevel1 from JSON.
    */
-  decode: function (json: string): ProfileBasic {
-    return ProfileBasicJSON._readMessage(
-      ProfileBasicJSON.initialize(),
+  decode: function (json: string): SinLevel1 {
+    return SinLevel1JSON._readMessage(
+      SinLevel1JSON.initialize(),
       JSON.parse(json),
     );
   },
 
   /**
-   * Initializes ProfileBasic with all fields set to their default value.
+   * Initializes SinLevel1 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileBasic>): ProfileBasic {
+  initialize: function (msg?: Partial<SinLevel1>): SinLevel1 {
     return {
-      name: "",
-      gender: Gender._fromInt(0),
-      nationality: "",
-      metatype: "",
       photo: "",
       ...msg,
     };
@@ -1340,21 +1451,9 @@ export const ProfileBasicJSON = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileBasic>,
+    msg: PartialDeep<SinLevel1>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    if (msg.name) {
-      json["name"] = msg.name;
-    }
-    if (msg.gender && GenderJSON._toInt(msg.gender)) {
-      json["gender"] = msg.gender;
-    }
-    if (msg.nationality) {
-      json["nationality"] = msg.nationality;
-    }
-    if (msg.metatype) {
-      json["metatype"] = msg.metatype;
-    }
     if (msg.photo) {
       json["photo"] = msg.photo;
     }
@@ -1364,23 +1463,7 @@ export const ProfileBasicJSON = {
   /**
    * @private
    */
-  _readMessage: function (msg: ProfileBasic, json: any): ProfileBasic {
-    const _name_ = json["name"];
-    if (_name_) {
-      msg.name = _name_;
-    }
-    const _gender_ = json["gender"];
-    if (_gender_) {
-      msg.gender = Gender._fromInt(_gender_);
-    }
-    const _nationality_ = json["nationality"];
-    if (_nationality_) {
-      msg.nationality = _nationality_;
-    }
-    const _metatype_ = json["metatype"];
-    if (_metatype_) {
-      msg.metatype = _metatype_;
-    }
+  _readMessage: function (msg: SinLevel1, json: any): SinLevel1 {
     const _photo_ = json["photo"];
     if (_photo_) {
       msg.photo = _photo_;
@@ -1389,33 +1472,34 @@ export const ProfileBasicJSON = {
   },
 };
 
-export const ProfileIdentityJSON = {
+export const SinLevel2JSON = {
   /**
-   * Serializes ProfileIdentity to JSON.
+   * Serializes SinLevel2 to JSON.
    */
-  encode: function (msg: PartialDeep<ProfileIdentity>): string {
-    return JSON.stringify(ProfileIdentityJSON._writeMessage(msg));
+  encode: function (msg: PartialDeep<SinLevel2>): string {
+    return JSON.stringify(SinLevel2JSON._writeMessage(msg));
   },
 
   /**
-   * Deserializes ProfileIdentity from JSON.
+   * Deserializes SinLevel2 from JSON.
    */
-  decode: function (json: string): ProfileIdentity {
-    return ProfileIdentityJSON._readMessage(
-      ProfileIdentityJSON.initialize(),
+  decode: function (json: string): SinLevel2 {
+    return SinLevel2JSON._readMessage(
+      SinLevel2JSON.initialize(),
       JSON.parse(json),
     );
   },
 
   /**
-   * Initializes ProfileIdentity with all fields set to their default value.
+   * Initializes SinLevel2 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileIdentity>): ProfileIdentity {
+  initialize: function (msg?: Partial<SinLevel2>): SinLevel2 {
     return {
-      address: "",
-      city: "",
-      country: "",
+      name: "",
       birthdate: "",
+      birthplace: "",
+      gender: Gender._fromInt(0),
+      metatype: "",
       ...msg,
     };
   },
@@ -1424,9 +1508,99 @@ export const ProfileIdentityJSON = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileIdentity>,
+    msg: PartialDeep<SinLevel2>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
+    if (msg.name) {
+      json["name"] = msg.name;
+    }
+    if (msg.birthdate) {
+      json["birthdate"] = msg.birthdate;
+    }
+    if (msg.birthplace) {
+      json["birthplace"] = msg.birthplace;
+    }
+    if (msg.gender && GenderJSON._toInt(msg.gender)) {
+      json["gender"] = msg.gender;
+    }
+    if (msg.metatype) {
+      json["metatype"] = msg.metatype;
+    }
+    return json;
+  },
+
+  /**
+   * @private
+   */
+  _readMessage: function (msg: SinLevel2, json: any): SinLevel2 {
+    const _name_ = json["name"];
+    if (_name_) {
+      msg.name = _name_;
+    }
+    const _birthdate_ = json["birthdate"];
+    if (_birthdate_) {
+      msg.birthdate = _birthdate_;
+    }
+    const _birthplace_ = json["birthplace"];
+    if (_birthplace_) {
+      msg.birthplace = _birthplace_;
+    }
+    const _gender_ = json["gender"];
+    if (_gender_) {
+      msg.gender = Gender._fromInt(_gender_);
+    }
+    const _metatype_ = json["metatype"];
+    if (_metatype_) {
+      msg.metatype = _metatype_;
+    }
+    return msg;
+  },
+};
+
+export const SinLevel3JSON = {
+  /**
+   * Serializes SinLevel3 to JSON.
+   */
+  encode: function (msg: PartialDeep<SinLevel3>): string {
+    return JSON.stringify(SinLevel3JSON._writeMessage(msg));
+  },
+
+  /**
+   * Deserializes SinLevel3 from JSON.
+   */
+  decode: function (json: string): SinLevel3 {
+    return SinLevel3JSON._readMessage(
+      SinLevel3JSON.initialize(),
+      JSON.parse(json),
+    );
+  },
+
+  /**
+   * Initializes SinLevel3 with all fields set to their default value.
+   */
+  initialize: function (msg?: Partial<SinLevel3>): SinLevel3 {
+    return {
+      fullName: "",
+      address: "",
+      city: "",
+      country: "",
+      nationality: "",
+      occupation: "",
+      datalinks: [],
+      ...msg,
+    };
+  },
+
+  /**
+   * @private
+   */
+  _writeMessage: function (
+    msg: PartialDeep<SinLevel3>,
+  ): Record<string, unknown> {
+    const json: Record<string, unknown> = {};
+    if (msg.fullName) {
+      json["fullName"] = msg.fullName;
+    }
     if (msg.address) {
       json["address"] = msg.address;
     }
@@ -1436,8 +1610,14 @@ export const ProfileIdentityJSON = {
     if (msg.country) {
       json["country"] = msg.country;
     }
-    if (msg.birthdate) {
-      json["birthdate"] = msg.birthdate;
+    if (msg.nationality) {
+      json["nationality"] = msg.nationality;
+    }
+    if (msg.occupation) {
+      json["occupation"] = msg.occupation;
+    }
+    if (msg.datalinks?.length) {
+      json["datalinks"] = msg.datalinks;
     }
     return json;
   },
@@ -1445,7 +1625,11 @@ export const ProfileIdentityJSON = {
   /**
    * @private
    */
-  _readMessage: function (msg: ProfileIdentity, json: any): ProfileIdentity {
+  _readMessage: function (msg: SinLevel3, json: any): SinLevel3 {
+    const _fullName_ = json["fullName"] ?? json["full_name"];
+    if (_fullName_) {
+      msg.fullName = _fullName_;
+    }
     const _address_ = json["address"];
     if (_address_) {
       msg.address = _address_;
@@ -1458,43 +1642,53 @@ export const ProfileIdentityJSON = {
     if (_country_) {
       msg.country = _country_;
     }
-    const _birthdate_ = json["birthdate"];
-    if (_birthdate_) {
-      msg.birthdate = _birthdate_;
+    const _nationality_ = json["nationality"];
+    if (_nationality_) {
+      msg.nationality = _nationality_;
+    }
+    const _occupation_ = json["occupation"];
+    if (_occupation_) {
+      msg.occupation = _occupation_;
+    }
+    const _datalinks_ = json["datalinks"];
+    if (_datalinks_) {
+      msg.datalinks = _datalinks_;
     }
     return msg;
   },
 };
 
-export const ProfilePhysicalJSON = {
+export const SinLevel4JSON = {
   /**
-   * Serializes ProfilePhysical to JSON.
+   * Serializes SinLevel4 to JSON.
    */
-  encode: function (msg: PartialDeep<ProfilePhysical>): string {
-    return JSON.stringify(ProfilePhysicalJSON._writeMessage(msg));
+  encode: function (msg: PartialDeep<SinLevel4>): string {
+    return JSON.stringify(SinLevel4JSON._writeMessage(msg));
   },
 
   /**
-   * Deserializes ProfilePhysical from JSON.
+   * Deserializes SinLevel4 from JSON.
    */
-  decode: function (json: string): ProfilePhysical {
-    return ProfilePhysicalJSON._readMessage(
-      ProfilePhysicalJSON.initialize(),
+  decode: function (json: string): SinLevel4 {
+    return SinLevel4JSON._readMessage(
+      SinLevel4JSON.initialize(),
       JSON.parse(json),
     );
   },
 
   /**
-   * Initializes ProfilePhysical with all fields set to their default value.
+   * Initializes SinLevel4 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfilePhysical>): ProfilePhysical {
+  initialize: function (msg?: Partial<SinLevel4>): SinLevel4 {
     return {
+      fingerprintHash: "",
+      retinalHash: "",
+      voiceHash: "",
       height: 0,
       weight: 0,
-      skin: "",
-      hair: "",
-      eyes: "",
-      seed: 0,
+      eyeColor: "",
+      hairColor: "",
+      skinTone: "",
       ...msg,
     };
   },
@@ -1503,26 +1697,32 @@ export const ProfilePhysicalJSON = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfilePhysical>,
+    msg: PartialDeep<SinLevel4>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
+    if (msg.fingerprintHash) {
+      json["fingerprintHash"] = msg.fingerprintHash;
+    }
+    if (msg.retinalHash) {
+      json["retinalHash"] = msg.retinalHash;
+    }
+    if (msg.voiceHash) {
+      json["voiceHash"] = msg.voiceHash;
+    }
     if (msg.height) {
       json["height"] = msg.height;
     }
     if (msg.weight) {
       json["weight"] = msg.weight;
     }
-    if (msg.skin) {
-      json["skin"] = msg.skin;
+    if (msg.eyeColor) {
+      json["eyeColor"] = msg.eyeColor;
     }
-    if (msg.hair) {
-      json["hair"] = msg.hair;
+    if (msg.hairColor) {
+      json["hairColor"] = msg.hairColor;
     }
-    if (msg.eyes) {
-      json["eyes"] = msg.eyes;
-    }
-    if (msg.seed) {
-      json["seed"] = msg.seed;
+    if (msg.skinTone) {
+      json["skinTone"] = msg.skinTone;
     }
     return json;
   },
@@ -1530,7 +1730,20 @@ export const ProfilePhysicalJSON = {
   /**
    * @private
    */
-  _readMessage: function (msg: ProfilePhysical, json: any): ProfilePhysical {
+  _readMessage: function (msg: SinLevel4, json: any): SinLevel4 {
+    const _fingerprintHash_ =
+      json["fingerprintHash"] ?? json["fingerprint_hash"];
+    if (_fingerprintHash_) {
+      msg.fingerprintHash = _fingerprintHash_;
+    }
+    const _retinalHash_ = json["retinalHash"] ?? json["retinal_hash"];
+    if (_retinalHash_) {
+      msg.retinalHash = _retinalHash_;
+    }
+    const _voiceHash_ = json["voiceHash"] ?? json["voice_hash"];
+    if (_voiceHash_) {
+      msg.voiceHash = _voiceHash_;
+    }
     const _height_ = json["height"];
     if (_height_) {
       msg.height = protoscript.parseNumber(_height_);
@@ -1539,114 +1752,51 @@ export const ProfilePhysicalJSON = {
     if (_weight_) {
       msg.weight = protoscript.parseNumber(_weight_);
     }
-    const _skin_ = json["skin"];
-    if (_skin_) {
-      msg.skin = _skin_;
+    const _eyeColor_ = json["eyeColor"] ?? json["eye_color"];
+    if (_eyeColor_) {
+      msg.eyeColor = _eyeColor_;
     }
-    const _hair_ = json["hair"];
-    if (_hair_) {
-      msg.hair = _hair_;
+    const _hairColor_ = json["hairColor"] ?? json["hair_color"];
+    if (_hairColor_) {
+      msg.hairColor = _hairColor_;
     }
-    const _eyes_ = json["eyes"];
-    if (_eyes_) {
-      msg.eyes = _eyes_;
-    }
-    const _seed_ = json["seed"];
-    if (_seed_) {
-      msg.seed = protoscript.parseNumber(_seed_);
+    const _skinTone_ = json["skinTone"] ?? json["skin_tone"];
+    if (_skinTone_) {
+      msg.skinTone = _skinTone_;
     }
     return msg;
   },
 };
 
-export const ProfileMedicalJSON = {
+export const SinLevel5JSON = {
   /**
-   * Serializes ProfileMedical to JSON.
+   * Serializes SinLevel5 to JSON.
    */
-  encode: function (msg: PartialDeep<ProfileMedical>): string {
-    return JSON.stringify(ProfileMedicalJSON._writeMessage(msg));
+  encode: function (msg: PartialDeep<SinLevel5>): string {
+    return JSON.stringify(SinLevel5JSON._writeMessage(msg));
   },
 
   /**
-   * Deserializes ProfileMedical from JSON.
+   * Deserializes SinLevel5 from JSON.
    */
-  decode: function (json: string): ProfileMedical {
-    return ProfileMedicalJSON._readMessage(
-      ProfileMedicalJSON.initialize(),
+  decode: function (json: string): SinLevel5 {
+    return SinLevel5JSON._readMessage(
+      SinLevel5JSON.initialize(),
       JSON.parse(json),
     );
   },
 
   /**
-   * Initializes ProfileMedical with all fields set to their default value.
+   * Initializes SinLevel5 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileMedical>): ProfileMedical {
+  initialize: function (msg?: Partial<SinLevel5>): SinLevel5 {
     return {
-      bloodType: BloodType._fromInt(0),
-      seed: 0,
-      ...msg,
-    };
-  },
-
-  /**
-   * @private
-   */
-  _writeMessage: function (
-    msg: PartialDeep<ProfileMedical>,
-  ): Record<string, unknown> {
-    const json: Record<string, unknown> = {};
-    if (msg.bloodType && BloodTypeJSON._toInt(msg.bloodType)) {
-      json["bloodType"] = msg.bloodType;
-    }
-    if (msg.seed) {
-      json["seed"] = msg.seed;
-    }
-    return json;
-  },
-
-  /**
-   * @private
-   */
-  _readMessage: function (msg: ProfileMedical, json: any): ProfileMedical {
-    const _bloodType_ = json["bloodType"] ?? json["blood_type"];
-    if (_bloodType_) {
-      msg.bloodType = BloodType._fromInt(_bloodType_);
-    }
-    const _seed_ = json["seed"];
-    if (_seed_) {
-      msg.seed = protoscript.parseNumber(_seed_);
-    }
-    return msg;
-  },
-};
-
-export const ProfileEmploymentJSON = {
-  /**
-   * Serializes ProfileEmployment to JSON.
-   */
-  encode: function (msg: PartialDeep<ProfileEmployment>): string {
-    return JSON.stringify(ProfileEmploymentJSON._writeMessage(msg));
-  },
-
-  /**
-   * Deserializes ProfileEmployment from JSON.
-   */
-  decode: function (json: string): ProfileEmployment {
-    return ProfileEmploymentJSON._readMessage(
-      ProfileEmploymentJSON.initialize(),
-      JSON.parse(json),
-    );
-  },
-
-  /**
-   * Initializes ProfileEmployment with all fields set to their default value.
-   */
-  initialize: function (msg?: Partial<ProfileEmployment>): ProfileEmployment {
-    return {
-      profession: "",
       employer: "",
       employerAddress: "",
-      seed: 0,
+      travelStamps: [],
+      affiliationCodes: [],
+      educationRecords: [],
+      residenceHistory: [],
       ...msg,
     };
   },
@@ -1655,20 +1805,26 @@ export const ProfileEmploymentJSON = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileEmployment>,
+    msg: PartialDeep<SinLevel5>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    if (msg.profession) {
-      json["profession"] = msg.profession;
-    }
     if (msg.employer) {
       json["employer"] = msg.employer;
     }
     if (msg.employerAddress) {
       json["employerAddress"] = msg.employerAddress;
     }
-    if (msg.seed) {
-      json["seed"] = msg.seed;
+    if (msg.travelStamps?.length) {
+      json["travelStamps"] = msg.travelStamps;
+    }
+    if (msg.affiliationCodes?.length) {
+      json["affiliationCodes"] = msg.affiliationCodes;
+    }
+    if (msg.educationRecords?.length) {
+      json["educationRecords"] = msg.educationRecords;
+    }
+    if (msg.residenceHistory?.length) {
+      json["residenceHistory"] = msg.residenceHistory;
     }
     return json;
   },
@@ -1676,14 +1832,7 @@ export const ProfileEmploymentJSON = {
   /**
    * @private
    */
-  _readMessage: function (
-    msg: ProfileEmployment,
-    json: any,
-  ): ProfileEmployment {
-    const _profession_ = json["profession"];
-    if (_profession_) {
-      msg.profession = _profession_;
-    }
+  _readMessage: function (msg: SinLevel5, json: any): SinLevel5 {
     const _employer_ = json["employer"];
     if (_employer_) {
       msg.employer = _employer_;
@@ -1693,38 +1842,56 @@ export const ProfileEmploymentJSON = {
     if (_employerAddress_) {
       msg.employerAddress = _employerAddress_;
     }
-    const _seed_ = json["seed"];
-    if (_seed_) {
-      msg.seed = protoscript.parseNumber(_seed_);
+    const _travelStamps_ = json["travelStamps"] ?? json["travel_stamps"];
+    if (_travelStamps_) {
+      msg.travelStamps = _travelStamps_;
+    }
+    const _affiliationCodes_ =
+      json["affiliationCodes"] ?? json["affiliation_codes"];
+    if (_affiliationCodes_) {
+      msg.affiliationCodes = _affiliationCodes_;
+    }
+    const _educationRecords_ =
+      json["educationRecords"] ?? json["education_records"];
+    if (_educationRecords_) {
+      msg.educationRecords = _educationRecords_;
+    }
+    const _residenceHistory_ =
+      json["residenceHistory"] ?? json["residence_history"];
+    if (_residenceHistory_) {
+      msg.residenceHistory = _residenceHistory_;
     }
     return msg;
   },
 };
 
-export const ProfileGeneticJSON = {
+export const SinLevel6JSON = {
   /**
-   * Serializes ProfileGenetic to JSON.
+   * Serializes SinLevel6 to JSON.
    */
-  encode: function (msg: PartialDeep<ProfileGenetic>): string {
-    return JSON.stringify(ProfileGeneticJSON._writeMessage(msg));
+  encode: function (msg: PartialDeep<SinLevel6>): string {
+    return JSON.stringify(SinLevel6JSON._writeMessage(msg));
   },
 
   /**
-   * Deserializes ProfileGenetic from JSON.
+   * Deserializes SinLevel6 from JSON.
    */
-  decode: function (json: string): ProfileGenetic {
-    return ProfileGeneticJSON._readMessage(
-      ProfileGeneticJSON.initialize(),
+  decode: function (json: string): SinLevel6 {
+    return SinLevel6JSON._readMessage(
+      SinLevel6JSON.initialize(),
       JSON.parse(json),
     );
   },
 
   /**
-   * Initializes ProfileGenetic with all fields set to their default value.
+   * Initializes SinLevel6 with all fields set to their default value.
    */
-  initialize: function (msg?: Partial<ProfileGenetic>): ProfileGenetic {
+  initialize: function (msg?: Partial<SinLevel6>): SinLevel6 {
     return {
-      seed: 0,
+      bloodType: BloodType._fromInt(0),
+      dnaSequenceHash: "",
+      geneticMarkers: [],
+      medicalAlertCodes: "",
       ...msg,
     };
   },
@@ -1733,11 +1900,20 @@ export const ProfileGeneticJSON = {
    * @private
    */
   _writeMessage: function (
-    msg: PartialDeep<ProfileGenetic>,
+    msg: PartialDeep<SinLevel6>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    if (msg.seed) {
-      json["seed"] = msg.seed;
+    if (msg.bloodType && BloodTypeJSON._toInt(msg.bloodType)) {
+      json["bloodType"] = msg.bloodType;
+    }
+    if (msg.dnaSequenceHash) {
+      json["dnaSequenceHash"] = msg.dnaSequenceHash;
+    }
+    if (msg.geneticMarkers?.length) {
+      json["geneticMarkers"] = msg.geneticMarkers;
+    }
+    if (msg.medicalAlertCodes) {
+      json["medicalAlertCodes"] = msg.medicalAlertCodes;
     }
     return json;
   },
@@ -1745,10 +1921,24 @@ export const ProfileGeneticJSON = {
   /**
    * @private
    */
-  _readMessage: function (msg: ProfileGenetic, json: any): ProfileGenetic {
-    const _seed_ = json["seed"];
-    if (_seed_) {
-      msg.seed = protoscript.parseNumber(_seed_);
+  _readMessage: function (msg: SinLevel6, json: any): SinLevel6 {
+    const _bloodType_ = json["bloodType"] ?? json["blood_type"];
+    if (_bloodType_) {
+      msg.bloodType = BloodType._fromInt(_bloodType_);
+    }
+    const _dnaSequenceHash_ =
+      json["dnaSequenceHash"] ?? json["dna_sequence_hash"];
+    if (_dnaSequenceHash_) {
+      msg.dnaSequenceHash = _dnaSequenceHash_;
+    }
+    const _geneticMarkers_ = json["geneticMarkers"] ?? json["genetic_markers"];
+    if (_geneticMarkers_) {
+      msg.geneticMarkers = _geneticMarkers_;
+    }
+    const _medicalAlertCodes_ =
+      json["medicalAlertCodes"] ?? json["medical_alert_codes"];
+    if (_medicalAlertCodes_) {
+      msg.medicalAlertCodes = _medicalAlertCodes_;
     }
     return msg;
   },
@@ -1781,12 +1971,15 @@ export const ProfileDataJSON = {
       active: false,
       sinQuality: SinQuality._fromInt(0),
       licenses: {},
-      basic: ProfileBasicJSON.initialize(),
-      identity: undefined,
-      physical: undefined,
-      medical: undefined,
-      employment: undefined,
-      genetic: undefined,
+      level1: undefined,
+      level2: undefined,
+      level3: undefined,
+      level4: undefined,
+      level5: undefined,
+      level6: undefined,
+      baseSeed: 0,
+      biometricSeed: 0,
+      backgroundSeed: 0,
       ...msg,
     };
   },
@@ -1818,31 +2011,38 @@ export const ProfileDataJSON = {
         json["licenses"] = _licenses_;
       }
     }
-    if (msg.basic) {
-      const _basic_ = ProfileBasicJSON._writeMessage(msg.basic);
-      if (Object.keys(_basic_).length > 0) {
-        json["basic"] = _basic_;
-      }
+    if (msg.level1 != undefined) {
+      const _level1_ = SinLevel1JSON._writeMessage(msg.level1);
+      json["level1"] = _level1_;
     }
-    if (msg.identity != undefined) {
-      const _identity_ = ProfileIdentityJSON._writeMessage(msg.identity);
-      json["identity"] = _identity_;
+    if (msg.level2 != undefined) {
+      const _level2_ = SinLevel2JSON._writeMessage(msg.level2);
+      json["level2"] = _level2_;
     }
-    if (msg.physical != undefined) {
-      const _physical_ = ProfilePhysicalJSON._writeMessage(msg.physical);
-      json["physical"] = _physical_;
+    if (msg.level3 != undefined) {
+      const _level3_ = SinLevel3JSON._writeMessage(msg.level3);
+      json["level3"] = _level3_;
     }
-    if (msg.medical != undefined) {
-      const _medical_ = ProfileMedicalJSON._writeMessage(msg.medical);
-      json["medical"] = _medical_;
+    if (msg.level4 != undefined) {
+      const _level4_ = SinLevel4JSON._writeMessage(msg.level4);
+      json["level4"] = _level4_;
     }
-    if (msg.employment != undefined) {
-      const _employment_ = ProfileEmploymentJSON._writeMessage(msg.employment);
-      json["employment"] = _employment_;
+    if (msg.level5 != undefined) {
+      const _level5_ = SinLevel5JSON._writeMessage(msg.level5);
+      json["level5"] = _level5_;
     }
-    if (msg.genetic != undefined) {
-      const _genetic_ = ProfileGeneticJSON._writeMessage(msg.genetic);
-      json["genetic"] = _genetic_;
+    if (msg.level6 != undefined) {
+      const _level6_ = SinLevel6JSON._writeMessage(msg.level6);
+      json["level6"] = _level6_;
+    }
+    if (msg.baseSeed) {
+      json["baseSeed"] = msg.baseSeed;
+    }
+    if (msg.biometricSeed) {
+      json["biometricSeed"] = msg.biometricSeed;
+    }
+    if (msg.backgroundSeed) {
+      json["backgroundSeed"] = msg.backgroundSeed;
     }
     return json;
   },
@@ -1872,34 +2072,47 @@ export const ProfileDataJSON = {
           .map(({ key, value }) => [key, value]),
       );
     }
-    const _basic_ = json["basic"];
-    if (_basic_) {
-      ProfileBasicJSON._readMessage(msg.basic, _basic_);
+    const _level1_ = json["level1"];
+    if (_level1_) {
+      msg.level1 = SinLevel1JSON.initialize();
+      SinLevel1JSON._readMessage(msg.level1, _level1_);
     }
-    const _identity_ = json["identity"];
-    if (_identity_) {
-      msg.identity = ProfileIdentityJSON.initialize();
-      ProfileIdentityJSON._readMessage(msg.identity, _identity_);
+    const _level2_ = json["level2"];
+    if (_level2_) {
+      msg.level2 = SinLevel2JSON.initialize();
+      SinLevel2JSON._readMessage(msg.level2, _level2_);
     }
-    const _physical_ = json["physical"];
-    if (_physical_) {
-      msg.physical = ProfilePhysicalJSON.initialize();
-      ProfilePhysicalJSON._readMessage(msg.physical, _physical_);
+    const _level3_ = json["level3"];
+    if (_level3_) {
+      msg.level3 = SinLevel3JSON.initialize();
+      SinLevel3JSON._readMessage(msg.level3, _level3_);
     }
-    const _medical_ = json["medical"];
-    if (_medical_) {
-      msg.medical = ProfileMedicalJSON.initialize();
-      ProfileMedicalJSON._readMessage(msg.medical, _medical_);
+    const _level4_ = json["level4"];
+    if (_level4_) {
+      msg.level4 = SinLevel4JSON.initialize();
+      SinLevel4JSON._readMessage(msg.level4, _level4_);
     }
-    const _employment_ = json["employment"];
-    if (_employment_) {
-      msg.employment = ProfileEmploymentJSON.initialize();
-      ProfileEmploymentJSON._readMessage(msg.employment, _employment_);
+    const _level5_ = json["level5"];
+    if (_level5_) {
+      msg.level5 = SinLevel5JSON.initialize();
+      SinLevel5JSON._readMessage(msg.level5, _level5_);
     }
-    const _genetic_ = json["genetic"];
-    if (_genetic_) {
-      msg.genetic = ProfileGeneticJSON.initialize();
-      ProfileGeneticJSON._readMessage(msg.genetic, _genetic_);
+    const _level6_ = json["level6"];
+    if (_level6_) {
+      msg.level6 = SinLevel6JSON.initialize();
+      SinLevel6JSON._readMessage(msg.level6, _level6_);
+    }
+    const _baseSeed_ = json["baseSeed"] ?? json["base_seed"];
+    if (_baseSeed_) {
+      msg.baseSeed = protoscript.parseNumber(_baseSeed_);
+    }
+    const _biometricSeed_ = json["biometricSeed"] ?? json["biometric_seed"];
+    if (_biometricSeed_) {
+      msg.biometricSeed = protoscript.parseNumber(_biometricSeed_);
+    }
+    const _backgroundSeed_ = json["backgroundSeed"] ?? json["background_seed"];
+    if (_backgroundSeed_) {
+      msg.backgroundSeed = protoscript.parseNumber(_backgroundSeed_);
     }
     return msg;
   },

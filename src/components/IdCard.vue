@@ -83,23 +83,22 @@
         <p v-else class="no-licenses-message">No licenses on record.</p>
       </div>
 
-      <!-- Basic Info (Original Content) -->
+      <!-- Level 1: Basic Info -->
       <template v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_1">
         <div class="left-section tab-content-section">
           <div class="photo-section">
             <div class="photo-container">
               <img
                 :src="
-                  internalProfileData.basic.photo ??
+                  internalProfileData.level1?.photo ??
                   '/blank-profile-picture.svg'
                 "
-                :alt="internalProfileData.basic.name"
+                :alt="internalProfileData.level2?.name"
                 class="profile-photo"
               />
             </div>
           </div>
         </div>
-
         <div class="right-section tab-content-section">
           <div class="top-right-section">
             <div class="barcode">
@@ -108,140 +107,191 @@
                   v-for="(n, index) in barcodeWidths"
                   :key="index"
                   class="barcode-line"
-                  :data-barcode-width="n"
+                  :style="{ height: `${n}%` }"
                 ></div>
               </div>
-              <div class="sin-id">
-                {{ internalProfileData.sinId }}
-              </div>
+              <div class="sin-id">{{ internalProfileData.sinId }}</div>
             </div>
             <div class="flag-container">
               <div class="flag" :style="{ background: getFlagColors() }"></div>
               <div class="flag-nationality">
-                {{ internalProfileData.basic.nationality }}
+                {{ internalProfileData.level3?.nationality }}
               </div>
             </div>
           </div>
-
           <div class="info-section">
-            <span class="name">{{ internalProfileData.basic.name }}</span>
-            <div class="details">
-              <div class="left-content">
-                <div class="detail-row">
-                  <span class="label">Nationality</span>
-                  <span class="label-colon">:</span>
-                  <span class="value">{{
-                    internalProfileData.basic.nationality
-                  }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">Gender</span>
-                  <span class="label-colon">:</span>
-                  <span class="value">{{
-                    GenderDisplayMap[internalProfileData.basic.gender]
-                  }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">Metatype</span>
-                  <span class="label-colon">:</span>
-                  <span class="value">{{
-                    internalProfileData.basic.metatype
-                  }}</span>
-                </div>
-              </div>
-            </div>
+            <span class="name">{{
+              internalProfileData.level2?.name || "N/A"
+            }}</span>
           </div>
         </div>
       </template>
 
-      <!-- Identity Info (SIN Quality 2) -->
+      <!-- Level 2: Core Identity -->
       <div
         v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_2"
         class="tab-content-section"
       >
-        <h4>Identity Information</h4>
+        <h4>Core Identity Fields</h4>
         <div class="details">
           <div class="left-content">
             <div class="detail-row">
-              <span class="label">Address</span>
+              <span class="label">Name</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.identity?.address || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">City</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.identity?.city || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Country</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.identity?.country || "N/A"
+                internalProfileData.level2?.name || "N/A"
               }}</span>
             </div>
             <div class="detail-row">
               <span class="label">Birthdate</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.identity?.birthdate || "N/A"
+                internalProfileData.level2?.birthdate || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Birthplace</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level2?.birthplace || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Gender</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                GenderDisplayMap[
+                  internalProfileData.level2?.gender ?? Gender.GENDER_UNSPECIFIED
+                ]
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Metatype</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level2?.metatype || "N/A"
               }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Physical Info (SIN Quality 3) -->
+      <!-- Level 3: Printed Information -->
       <div
         v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_3"
         class="tab-content-section"
       >
-        <h4>Physical Characteristics</h4>
+        <h4>All Printed Information</h4>
+        <div class="details">
+          <div class="left-content">
+            <div class="detail-row">
+              <span class="label">Full Name</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.fullName || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Address</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.address || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">City</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.city || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Country</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.country || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Nationality</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.nationality || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Occupation</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.occupation || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Datalinks</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level3?.datalinks?.join(", ") || "N/A"
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level 4: Physical Biometrics -->
+      <div
+        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_4"
+        class="tab-content-section"
+      >
+        <h4>Physical Biometrics</h4>
         <div class="details">
           <div class="left-content">
             <div class="detail-row">
               <span class="label">Height (cm)</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.physical?.height || "N/A"
+                internalProfileData.level4?.height || "N/A"
               }}</span>
             </div>
             <div class="detail-row">
               <span class="label">Weight (kg)</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.physical?.weight || "N/A"
+                internalProfileData.level4?.weight || "N/A"
               }}</span>
             </div>
             <div class="detail-row">
-              <span class="label">Skin color</span>
+              <span class="label">Eye Color</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.physical?.skin || "N/A"
+                internalProfileData.level4?.eyeColor || "N/A"
               }}</span>
             </div>
             <div class="detail-row">
-              <span class="label">Hair color</span>
+              <span class="label">Hair Color</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.physical?.hair || "N/A"
+                internalProfileData.level4?.hairColor || "N/A"
               }}</span>
             </div>
             <div class="detail-row">
-              <span class="label">Eye color</span>
+              <span class="label">Skin Tone</span>
               <span class="label-colon">:</span>
               <span class="value">{{
-                internalProfileData.physical?.eyes || "N/A"
+                internalProfileData.level4?.skinTone || "N/A"
               }}</span>
             </div>
             <div class="detail-row">
-              <span class="label">Fingerprints</span>
+              <span class="label">Fingerprint Hash</span>
               <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.physical?.seed || "N/A"
+              <span class="value-hash">{{
+                internalProfileData.level4?.fingerprintHash || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Retinal Hash</span>
+              <span class="label-colon">:</span>
+              <span class="value-hash">{{
+                internalProfileData.level4?.retinalHash || "N/A"
               }}</span>
             </div>
           </div>
@@ -249,19 +299,76 @@
             <span>Iris Scan</span>
             <IrisDisplay
               :seed="
-                internalProfileData.sinId + internalProfileData.physical?.seed
+                internalProfileData.sinId + internalProfileData.biometricSeed
               "
             />
           </div>
         </div>
       </div>
 
-      <!-- Medical Info (SIN Quality 4) -->
+      <!-- Level 5: Deep Background -->
       <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_4"
+        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_5"
         class="tab-content-section"
       >
-        <h4>Medical Records</h4>
+        <h4>Deep Background Data</h4>
+        <div class="details">
+          <div class="left-content">
+            <div class="detail-row">
+              <span class="label">Employer</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level5?.employer || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Employer Address</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level5?.employerAddress || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Travel Stamps</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level5?.travelStamps?.join(", ") || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Affiliation Codes</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level5?.affiliationCodes?.join(", ") ||
+                "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Education Records</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level5?.educationRecords?.join(", ") ||
+                "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Residence History</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level5?.residenceHistory?.join(", ") ||
+                "N/A"
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level 6: Genetic Markers -->
+      <div
+        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_6"
+        class="tab-content-section"
+      >
+        <h4>Genetic Markers</h4>
         <div class="details">
           <div class="left-content">
             <div class="detail-row">
@@ -269,79 +376,43 @@
               <span class="label-colon">:</span>
               <span class="value">{{
                 BloodTypeDisplayMap[
-                  internalProfileData.medical?.bloodType ??
+                  internalProfileData.level6?.bloodType ??
                     BloodType.BLOOD_TYPE_UNSPECIFIED
                 ]
               }}</span>
             </div>
-            <div
-              class="detail-row"
-              v-for="[key, value] in Object.entries(medicalRecords)"
-              :key="key"
-            >
-              <span class="label">{{ key }}</span>
+            <div class="detail-row">
+              <span class="label">DNA Sequence Hash</span>
               <span class="label-colon">:</span>
-              <span class="value">{{ value }}</span>
+              <span class="value-hash">{{
+                internalProfileData.level6?.dnaSequenceHash || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Genetic Markers</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level6?.geneticMarkers?.join(", ") || "N/A"
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Medical Alert Codes</span>
+              <span class="label-colon">:</span>
+              <span class="value">{{
+                internalProfileData.level6?.medicalAlertCodes || "N/A"
+              }}</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Employment Info (SIN Quality 5) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_5"
-        class="tab-content-section"
-      >
-        <h4>Employment History</h4>
-        <div class="details">
-          <div class="left-content">
-            <div class="detail-row">
-              <span class="label">Profession</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.employment?.profession || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Employer</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.employment?.employer || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Employer Address</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.employment?.employerAddress || "N/A"
-              }}</span>
-            </div>
-            <div
-              class="detail-row"
-              v-for="[name, link] in Object.entries(dataLinks)"
-              :key="name"
-            >
-              <span class="label">Datalink {{ name }}</span>
-              <span class="label-colon">:</span>
-              <div class="value">
-                {{ link }}
-              </div>
-            </div>
+          <div class="right-content">
+            <DnaFingerprint
+              :seed="
+                internalProfileData.sinId + internalProfileData.biometricSeed
+              "
+              :lanes="12"
+              :animated="true"
+            />
           </div>
         </div>
-      </div>
-
-      <!-- Genetic Info (SIN Quality 6) -->
-      <div
-        v-if="activeTab === SinQuality.SIN_QUALITY_LEVEL_6"
-        class="tab-content-section"
-      >
-        <h4>Genetic Markers</h4>
-        <DnaFingerprint
-          :seed="internalProfileData.sinId + internalProfileData.genetic?.seed"
-          :lanes="12"
-          :animated="true"
-        />
       </div>
     </div>
     <div class="system-info">
@@ -361,12 +432,10 @@ import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import MessageOverlay from "./MessageOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
 import IrisDisplay from "./IrisDisplay.vue";
-import Rand from "rand-seed";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
-import { useVerifiedDataLinks } from "../composables/useVerifiedDataLinks";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
-import { BloodType, SinQuality } from "../proto/profile.pb";
+import { BloodType, SinQuality, Gender } from "../proto/profile.pb";
 import {
   BloodTypeDisplayMap,
   getDefaultProfileData,
@@ -467,7 +536,7 @@ const internalProfileData = computed(() => {
     return {
       ...defaultData,
       flagColors: getFlagCSS(
-        defaultData.basic.nationality || ShadowrunNationality.UNKNOWN
+        defaultData.level3?.nationality || ShadowrunNationality.UNKNOWN
       ),
     };
   }
@@ -475,7 +544,7 @@ const internalProfileData = computed(() => {
   return {
     ...scannedProfileData.value,
     flagColors: getFlagCSS(
-      scannedProfileData.value.basic?.nationality ||
+      scannedProfileData.value.level3?.nationality ||
         ShadowrunNationality.UNKNOWN
     ),
   };
@@ -483,115 +552,6 @@ const internalProfileData = computed(() => {
 
 const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);
 const { barcodeWidths } = useIdCardBarcode(internalProfileData);
-const { dataLinks } = useVerifiedDataLinks(
-  computed(() => internalProfileData.value.sinId),
-  computed(() => String(internalProfileData.value.employment?.seed ?? ""))
-);
-
-const medicalRecords = computed(() => {
-  const seed =
-    internalProfileData.value.sinId + internalProfileData.value.medical?.seed;
-  const rand = new Rand(seed);
-  const records: Record<string, string> = {};
-  
-  const conditions = [
-    // Physical conditions
-    "Chronic fatigue syndrome",
-    "Migraine disorder",
-    "Insomnia",
-    "Hypertension",
-    "Asthma",
-    "Arthritis",
-    "Back injury",
-    "Hearing loss",
-    "Vision impairment",
-    "Nerve damage",
-    "Carpal tunnel syndrome",
-    "Tendonitis",
-    
-    // Mental health
-    "Anxiety disorder",
-    "Depression",
-    "PTSD",
-    "Bipolar disorder",
-    "Attention deficit disorder",
-    "Stress disorder",
-    "Panic disorder",
-    "Phobic disorder",
-    
-    // Allergies & sensitivities
-    "Allergy to soy",
-    "Allergy to synthetic materials",
-    "Allergy to preservatives",
-    "Chemical sensitivity",
-    "Light sensitivity",
-    "Sound sensitivity",
-    "Electromagnetic sensitivity",
-    
-    // Substance-related
-    "Stimulant dependency",
-    "Alcohol dependency",
-    "Nicotine dependency",
-    "Prescription drug dependency",
-    "Detox complications",
-    
-    // Occupational hazards
-    "Radiation exposure",
-    "Toxic exposure",
-    "Lung scarring",
-    "Chemical burns",
-    "Concussion history",
-    "Repetitive strain injury",
-    
-    // Cyberpunk/Shadowrun specific
-    "Cyberware rejection",
-    "Data-lock syndrome",
-    "Vat-job flu",
-    "Simsense addiction",
-    "Matrix fatigue",
-    "Awakening syndrome",
-    "Mana exposure",
-    "Astral burnout",
-    "Essence depletion",
-    "Neural feedback damage",
-    
-    // Genetic/hereditary
-    "Genetic predisposition to cancer",
-    "Hereditary heart condition",
-    "Genetic enzyme deficiency",
-    "Congenital condition",
-    "Autoimmune disorder",
-    
-    // Infectious diseases
-    "Viral infection (chronic)",
-    "Bacterial infection (recurring)",
-    "Fungal infection (persistent)",
-    "Parasitic infection",
-    "Compromised immune system"
-  ];
-  
-  // Generate 0-4 records (weighted toward fewer records)
-  const numRecords = Math.floor(rand.next() * 5);
-  
-  for (let i = 0; i < numRecords; i++) {
-    const condition = conditions[Math.floor(rand.next() * conditions.length)];
-    
-    // Skip if condition already exists
-    if (records[condition]) continue;
-    
-    // Generate date between 2070-2080 (varied history)
-    const baseYear = 2070;
-    const startDate = new Date(baseYear, 0, 1).getTime();
-    const endDate = new Date(2080, 11, 31).getTime();
-    const randomTime = startDate + rand.next() * (endDate - startDate);
-    
-    records[condition] = new Date(randomTime)
-      .toISOString()
-      .split("T")[0];
-  }
-  
-  return records;
-});
 
 const activeTab = ref<SinQuality | "licenses">(SinQuality.SIN_QUALITY_LEVEL_1);
 
@@ -601,16 +561,12 @@ const selectTab = (tabIdentifier: SinQuality | "licenses") => {
 
 // Function to get flag colors based on nationality or manual override
 const getFlagColors = (): string => {
-  // If manual colors are provided, use them
-  // Note: flagColors is not part of the ProfileData spec, this might be legacy or for future use.
-  // For now, we will assume it might be on internalProfileData if set by some other means.
   if ((internalProfileData.value as any).flagColors) {
     return (internalProfileData.value as any).flagColors;
   }
-
-  // Otherwise, look up by nationality from the Basic profile data
   return getFlagCSS(
-    internalProfileData.value.basic?.nationality || ShadowrunNationality.UNKNOWN
+    internalProfileData.value.level3?.nationality ||
+      ShadowrunNationality.UNKNOWN
   );
 };
 
