@@ -319,7 +319,7 @@
               v-for="[name, link] in Object.entries(dataLinks)"
               :key="name"
             >
-              <span class="label">Datalink: {{ name }}</span>
+              <span class="label">Datalink {{ name }}</span>
               <span class="label-colon">:</span>
               <div class="value">
                 {{ link }}
