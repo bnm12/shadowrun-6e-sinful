@@ -257,8 +257,8 @@ const shadowrunDataLinkWords = [
 
 // Thematic grid types for each category
 const gridTypeMap = {
-  Civil: "GRID",      // Government/civil systems use basic grid
-  Bank: "CORE",       // Financial systems are core infrastructure
+  Civil: "CLUSTER",   // Government/civil systems use clusters
+  Bank: "VAULT",      // Financial systems are vaults
   Personal: "NODE",   // Personal data stored in individual nodes
   Corporate: "ZONE",  // Corporate data in protected zones
   Security: "CORE",   // Security systems are core infrastructure
