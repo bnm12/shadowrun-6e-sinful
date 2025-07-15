@@ -579,11 +579,10 @@ const medicalRecords = computed(() => {
     // Skip if condition already exists
     if (records[condition]) continue;
     
-    // Generate date between 2070-2077 (varied history)
+    // Generate date between 2070-2080 (varied history)
     const baseYear = 2070;
-    const yearRange = 8;
     const startDate = new Date(baseYear, 0, 1).getTime();
-    const endDate = new Date(2077, 11, 31).getTime();
+    const endDate = new Date(2080, 11, 31).getTime();
     const randomTime = startDate + rand.next() * (endDate - startDate);
     
     records[condition] = new Date(randomTime)
