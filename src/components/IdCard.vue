@@ -274,12 +274,14 @@
                 ]
               }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">Medical Record</span>
+            <div
+              class="detail-row"
+              v-for="[key, value] in Object.entries(medicalRecords)"
+              :key="key"
+            >
+              <span class="label">{{ key }}</span>
               <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.medical?.seed ?? "N/A"
-              }}</span>
+              <span class="value">{{ value }}</span>
             </div>
           </div>
         </div>
@@ -359,6 +361,7 @@ import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import MessageOverlay from "./MessageOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
 import IrisDisplay from "./IrisDisplay.vue";
+import Rand from "rand-seed";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { useVerifiedDataLinks } from "../composables/useVerifiedDataLinks";
@@ -482,8 +485,34 @@ const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);
 const { barcodeWidths } = useIdCardBarcode(internalProfileData);
 const { dataLinks } = useVerifiedDataLinks(
   computed(() => internalProfileData.value.sinId),
-  computed(() => String(internalProfileData.value.employment?.seed ?? ''))
+  computed(() => String(internalProfileData.value.employment?.seed ?? ""))
 );
+
+const medicalRecords = computed(() => {
+  const seed =
+    internalProfileData.value.sinId + internalProfileData.value.medical?.seed;
+  const rand = new Rand(seed);
+  const records: Record<string, string> = {};
+  const conditions = [
+    "Cyberware rejection",
+    "Data-lock",
+    "Allergy to soy",
+    "Allergy to chrome",
+    "Insomnia",
+    "Nerve damage",
+    "Vat-job flu",
+  ];
+  const numRecords = Math.floor(rand.next() * 3);
+  for (let i = 0; i < numRecords; i++) {
+    const condition = conditions[Math.floor(rand.next() * conditions.length)];
+    records[condition] = new Date(
+      new Date(2077, 0, 1).getTime() + rand.next() * 31536000000
+    )
+      .toISOString()
+      .split("T")[0];
+  }
+  return records;
+});
 
 const activeTab = ref<SinQuality | "licenses">(SinQuality.SIN_QUALITY_LEVEL_1);
 
