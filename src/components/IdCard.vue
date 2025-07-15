@@ -318,9 +318,12 @@
               <span class="label">Verified Data Links</span>
               <span class="label-colon">:</span>
               <div class="value">
-                <div>Civil: "N/A"</div>
-                <div>Bank: "N/A"</div>
-                <div>Personal: "N/A"</div>
+                <div>Civil: {{ dataLinks.civil }}</div>
+                <div>Bank: {{ dataLinks.bank }}</div>
+                <div>Personal: {{ dataLinks.personal }}</div>
+                <div>Corporate: {{ dataLinks.corporate }}</div>
+                <div>Security: {{ dataLinks.security }}</div>
+                <div>Matrix: {{ dataLinks.matrix }}</div>
               </div>
             </div>
           </div>
@@ -359,6 +362,7 @@ import DnaFingerprint from "./DnaFingerprint.vue";
 import IrisDisplay from "./IrisDisplay.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
+import { useVerifiedDataLinks } from "../composables/useVerifiedDataLinks";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
 import { BloodType, SinQuality } from "../proto/profile.pb";
 import {
@@ -477,6 +481,10 @@ const internalProfileData = computed(() => {
 
 const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);
 const { barcodeWidths } = useIdCardBarcode(internalProfileData);
+const { dataLinks } = useVerifiedDataLinks(
+  computed(() => internalProfileData.value.sinId),
+  computed(() => String(internalProfileData.value.employment?.seed ?? ''))
+);
 
 const activeTab = ref<SinQuality | "licenses">(SinQuality.SIN_QUALITY_LEVEL_1);
 
