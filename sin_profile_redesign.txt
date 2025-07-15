@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package shadowrun.profile;
+
+// Enum for gender options
+enum Gender {
+  GENDER_UNSPECIFIED = 0;
+  GENDER_MALE = 1;
+  GENDER_FEMALE = 2;
+  GENDER_DIVERSE = 3;
+}
+
+// Enum for SIN quality levels
+enum SinQuality {
+  SIN_QUALITY_UNSPECIFIED = 0;
+  SIN_QUALITY_LEVEL_1 = 1;
+  SIN_QUALITY_LEVEL_2 = 2;
+  SIN_QUALITY_LEVEL_3 = 3;
+  SIN_QUALITY_LEVEL_4 = 4;
+  SIN_QUALITY_LEVEL_5 = 5;
+  SIN_QUALITY_LEVEL_6 = 6;
+}
+
+// Enum for blood types
+enum BloodType {
+  BLOOD_TYPE_UNSPECIFIED = 0;
+  BLOOD_TYPE_A_POSITIVE = 1;
+  BLOOD_TYPE_A_NEGATIVE = 2;
+  BLOOD_TYPE_B_POSITIVE = 3;
+  BLOOD_TYPE_B_NEGATIVE = 4;
+  BLOOD_TYPE_AB_POSITIVE = 5;
+  BLOOD_TYPE_AB_NEGATIVE = 6;
+  BLOOD_TYPE_O_POSITIVE = 7;
+  BLOOD_TYPE_O_NEGATIVE = 8;
+}
+
+// Level 1: Basic identity check - just confirms SIN exists
+message SinLevel1 {
+  string photo = 1;        // Base64 encoded image or file path
+}
+
+// Level 2: Core identity fields
+message SinLevel2 {
+  string name = 1;
+  string birthdate = 2;    // ISO 8601 date string (YYYY-MM-DD)
+  string birthplace = 3;   // City/region of birth
+  Gender gender = 4;
+  string metatype = 5;     // Human, Elf, Dwarf, Ork, Troll, etc.
+}
+
+// Level 3: All printed SIN information
+message SinLevel3 {
+  string full_name = 1;    // Full legal name (may differ from display name)
+  string address = 2;
+  string city = 3;
+  string country = 4;
+  string nationality = 5;  // ShadowrunNationalityType as string
+  string occupation = 6;   // Listed occupation
+  repeated string datalinks = 7;  // External system references
+}
+
+// Level 4: Physical biometrics
+message SinLevel4 {
+  string fingerprint_hash = 1;    // Cryptographic hash of fingerprint data
+  string retinal_hash = 2;        // Cryptographic hash of retinal scan
+  string voice_hash = 3;          // Cryptographic hash of voice print
+  int32 height = 4;               // Height in cm
+  int32 weight = 5;               // Weight in kg
+  string eye_color = 6;
+  string hair_color = 7;
+  string skin_tone = 8;
+}
+
+// Level 5: Deep background data
+message SinLevel5 {
+  string employer = 1;
+  string employer_address = 2;
+  repeated string travel_stamps = 3;      // Travel history entries
+  repeated string affiliation_codes = 4;  // Corporate/org membership codes
+  repeated string education_records = 5;   // Educational institution references
+  repeated string residence_history = 6;   // Previous addresses with dates
+}
+
+// Level 6: Genetic markers
+message SinLevel6 {
+  BloodType blood_type = 1;
+  string dna_sequence_hash = 2;    // Cryptographic hash of key DNA markers
+  repeated string genetic_markers = 3;  // Specific genetic identifiers
+  string medical_alert_codes = 4;      // Emergency medical information codes
+}
+
+// Main profile data structure
+message ProfileData {
+  // Core SIN metadata
+  string sin_id = 1;                           // SIN (System Identification Number)
+  bool active = 2;                             // Active / burned status (gameplay)
+  SinQuality sin_quality = 3;                  // Highest quality level this SIN supports
+  
+  // Licenses (separate from SIN data)
+  map<string, SinQuality> licenses = 4;        // License name -> quality level
+  
+  // Layered SIN data by verification level
+  optional SinLevel1 level1 = 5;
+  optional SinLevel2 level2 = 6;
+  optional SinLevel3 level3 = 7;
+  optional SinLevel4 level4 = 8;
+  optional SinLevel5 level5 = 9;
+  optional SinLevel6 level6 = 10;
+  
+  // Random seeds for generating consistent fake data
+  int32 base_seed = 11;        // Base seed for generating all fake data
+  int32 biometric_seed = 12;   // Specific seed for biometric generation
+  int32 background_seed = 13;  // Specific seed for background data
+}
