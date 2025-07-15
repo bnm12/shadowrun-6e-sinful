@@ -314,16 +314,15 @@
                 internalProfileData.employment?.employerAddress || "N/A"
               }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">Verified Data Links</span>
+            <div
+              class="detail-row"
+              v-for="[name, link] in Object.entries(dataLinks)"
+              :key="name"
+            >
+              <span class="label">Datalink: {{ name }}</span>
               <span class="label-colon">:</span>
               <div class="value">
-                <div>Civil: {{ dataLinks.civil }}</div>
-                <div>Bank: {{ dataLinks.bank }}</div>
-                <div>Personal: {{ dataLinks.personal }}</div>
-                <div>Corporate: {{ dataLinks.corporate }}</div>
-                <div>Security: {{ dataLinks.security }}</div>
-                <div>Matrix: {{ dataLinks.matrix }}</div>
+                {{ link }}
               </div>
             </div>
           </div>
