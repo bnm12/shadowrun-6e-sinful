@@ -17,17 +17,62 @@
           </select>
         </div>
       </div>
-      <!-- Basic Information Section -->
-      <div class="form-section">
-        <h3 class="section-title">Basic Details</h3>
+      <!-- Level 1: Basic Identity -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_1"
+        class="form-section"
+      >
+        <h3 class="section-title">Level 1: Basic Identity</h3>
+        <div class="form-field">
+          <label for="photo">Photo URL:</label>
+          <input
+            type="text"
+            id="photo"
+            v-model="formData.level1!.photo"
+            required
+          />
+        </div>
+        <div v-if="formData.level1!.photo" class="image-preview">
+          <img :src="formData.level1!.photo" alt="Profile Preview" />
+        </div>
+      </div>
+
+      <!-- Level 2: Core Identity -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_2"
+        class="form-section"
+      >
+        <h3 class="section-title">Level 2: Core Identity</h3>
         <div class="form-field">
           <label for="name">Name:</label>
-          <input type="text" id="name" v-model="formData.basic.name" required />
+          <input
+            type="text"
+            id="name"
+            v-model="formData.level2!.name"
+            required
+          />
         </div>
-
+        <div class="form-field">
+          <label for="birthdate">Birthdate:</label>
+          <input
+            type="date"
+            id="birthdate"
+            v-model="formData.level2!.birthdate"
+            required
+          />
+        </div>
+        <div class="form-field">
+          <label for="birthplace">Birthplace:</label>
+          <input
+            type="text"
+            id="birthplace"
+            v-model="formData.level2!.birthplace"
+            required
+          />
+        </div>
         <div class="form-field">
           <label for="gender">Gender:</label>
-          <select id="gender" v-model="formData.basic.gender" required>
+          <select id="gender" v-model="formData.level2!.gender" required>
             <option
               v-for="[key, value] in Object.entries(GenderDisplayMap)"
               :key="key"
@@ -37,12 +82,51 @@
             </option>
           </select>
         </div>
+        <div class="form-field">
+          <label for="metatype">Metatype:</label>
+          <select id="metatype" v-model="formData.level2!.metatype" required>
+            <option
+              v-for="metatype in metatypes"
+              :key="metatype"
+              :value="metatype"
+            >
+              {{ metatype }}
+            </option>
+          </select>
+        </div>
+      </div>
 
+      <!-- Level 3: Printed Information -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_3"
+        class="form-section"
+      >
+        <h3 class="section-title">Level 3: Printed Information</h3>
+        <div class="form-field">
+          <label for="fullName">Full Name:</label>
+          <input
+            type="text"
+            id="fullName"
+            v-model="formData.level3!.fullName"
+          />
+        </div>
+        <div class="form-field">
+          <label for="address">Address:</label>
+          <input type="text" id="address" v-model="formData.level3!.address" />
+        </div>
+        <div class="form-field">
+          <label for="city">City:</label>
+          <input type="text" id="city" v-model="formData.level3!.city" />
+        </div>
+        <div class="form-field">
+          <label for="country">Country:</label>
+          <input type="text" id="country" v-model="formData.level3!.country" />
+        </div>
         <div class="form-field">
           <label for="nationality">Nationality:</label>
           <select
             id="nationality"
-            v-model="formData.basic.nationality"
+            v-model="formData.level3!.nationality"
             required
           >
             <option
@@ -54,125 +138,97 @@
             </option>
           </select>
         </div>
-
         <div class="form-field">
-          <label for="metatype">Metatype:</label>
-          <select id="metatype" v-model="formData.basic.metatype" required>
-            <option
-              v-for="metatype in metatypes"
-              :key="metatype"
-              :value="metatype"
-            >
-              {{ metatype }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label for="imageUrl">Image URL (for Basic Photo):</label>
-          <input type="url" id="imageUrl" v-model="formData.basic.photo" />
-        </div>
-
-        <div v-if="formData.basic.photo" class="image-preview">
-          <img :src="formData.basic.photo" alt="Profile Preview" />
-        </div>
-      </div>
-
-      <!-- Identity Details Section -->
-      <div
-        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_2"
-        class="form-section"
-      >
-        <h3 class="section-title">Identity Details</h3>
-
-        <div class="form-field">
-          <label for="address">Address:</label>
+          <label for="occupation">Occupation:</label>
           <input
             type="text"
-            id="address"
-            v-model="formData.identity!.address"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="city">City:</label>
-          <input type="text" id="city" v-model="formData.identity!.city" />
-        </div>
-
-        <div class="form-field">
-          <label for="country">Country:</label>
-          <select id="country" v-model="formData.identity!.country">
-            <option
-              v-for="nationality in nationalities"
-              :key="nationality"
-              :value="nationality"
-            >
-              {{ nationality }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label for="birthdate">Birthdate:</label>
-          <input
-            type="date"
-            id="birthdate"
-            v-model="formData.identity!.birthdate"
+            id="occupation"
+            v-model="formData.level3!.occupation"
           />
         </div>
       </div>
 
-      <!-- Physical Details Section -->
+      <!-- Level 4: Physical Biometrics -->
       <div
-        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_3"
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_4"
         class="form-section"
       >
-        <h3 class="section-title">Physical Details</h3>
-
+        <h3 class="section-title">Level 4: Physical Biometrics</h3>
         <div class="form-field">
           <label for="height">Height (cm):</label>
           <input
             type="number"
             id="height"
-            v-model="formData.physical!.height"
+            v-model="formData.level4!.height"
           />
         </div>
-
         <div class="form-field">
           <label for="weight">Weight (kg):</label>
           <input
             type="number"
             id="weight"
-            v-model="formData.physical!.weight"
+            v-model="formData.level4!.weight"
           />
         </div>
-
         <div class="form-field">
-          <label for="skin">Skin color:</label>
-          <input type="text" id="skin" v-model="formData.physical!.skin" />
+          <label for="eyeColor">Eye Color:</label>
+          <input
+            type="text"
+            id="eyeColor"
+            v-model="formData.level4!.eyeColor"
+          />
         </div>
-
         <div class="form-field">
-          <label for="hair">Hair color:</label>
-          <input type="text" id="hair" v-model="formData.physical!.hair" />
+          <label for="hairColor">Hair Color:</label>
+          <input
+            type="text"
+            id="hairColor"
+            v-model="formData.level4!.hairColor"
+          />
         </div>
-
         <div class="form-field">
-          <label for="eyes">Eye color:</label>
-          <input type="text" id="eyes" v-model="formData.physical!.eyes" />
+          <label for="skinTone">Skin Tone:</label>
+          <input
+            type="text"
+            id="skinTone"
+            v-model="formData.level4!.skinTone"
+          />
         </div>
       </div>
 
-      <!-- Medical Details Section -->
+      <!-- Level 5: Deep Background -->
       <div
-        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_4"
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_5"
         class="form-section"
       >
-        <h3 class="section-title">Medical Details</h3>
+        <h3 class="section-title">Level 5: Deep Background</h3>
+        <div class="form-field">
+          <label for="employer">Employer:</label>
+          <input
+            type="text"
+            id="employer"
+            v-model="formData.level5!.employer"
+          />
+        </div>
+        <div class="form-field">
+          <label for="employerAddress">Employer Address:</label>
+          <input
+            type="text"
+            id="employerAddress"
+            v-model="formData.level5!.employerAddress"
+          />
+        </div>
+      </div>
 
+      <!-- Level 6: Genetic Markers -->
+      <div
+        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_6"
+        class="form-section"
+      >
+        <h3 class="section-title">Level 6: Genetic Markers</h3>
         <div class="form-field">
           <label for="bloodType">Blood Type:</label>
-          <select id="bloodType" v-model="formData.medical!.bloodType" required>
+          <select id="bloodType" v-model="formData.level6!.bloodType" required>
             <option
               v-for="[key, value] in Object.entries(BloodTypeDisplayMap)"
               :key="key"
@@ -182,50 +238,6 @@
             </option>
           </select>
         </div>
-      </div>
-
-      <!-- Employment Details Section -->
-      <div
-        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_5"
-        class="form-section"
-      >
-        <h3 class="section-title">Employment Details</h3>
-
-        <div class="form-field">
-          <label for="profession">Profession:</label>
-          <input
-            type="text"
-            id="profession"
-            v-model="formData.employment!.profession"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="employer">Employer:</label>
-          <input
-            type="text"
-            id="employer"
-            v-model="formData.employment!.employer"
-          />
-        </div>
-
-        <div class="form-field">
-          <label for="employerAddress">Employer Address:</label>
-          <input
-            type="text"
-            id="employerAddress"
-            v-model="formData.employment!.employerAddress"
-          />
-        </div>
-      </div>
-
-      <!-- Genetic Details Section -->
-      <div
-        v-if="formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_6"
-        class="form-section"
-      >
-        <h3 class="section-title">Genetic Details</h3>
-        <p>Genetic info included</p>
       </div>
 
       <!-- Licenses Section -->
@@ -396,40 +408,52 @@ const formData = reactive<ProfileData>({
   active: true,
   sinQuality: SinQuality.SIN_QUALITY_LEVEL_3,
   licenses: {},
-  basic: {
-    name: "",
-    gender: Gender.GENDER_MALE,
-    nationality: ShadowrunNationality.UCAS,
-    metatype: ShadowrunMetatype.HUMAN,
+  level1: {
     photo: "",
   },
-  identity: {
+  level2: {
+    name: "",
+    birthdate: "",
+    birthplace: "",
+    gender: Gender.GENDER_MALE,
+    metatype: ShadowrunMetatype.HUMAN,
+  },
+  level3: {
+    fullName: "",
     address: "",
     city: "",
     country: "",
-    birthdate: "",
+    nationality: ShadowrunNationality.UCAS,
+    occupation: "",
+    datalinks: [],
   },
-  physical: {
+  level4: {
+    fingerprintHash: "",
+    retinalHash: "",
+    voiceHash: "",
     height: 0,
     weight: 0,
-    skin: "",
-    hair: "",
-    eyes: "",
-    seed: 0,
+    eyeColor: "",
+    hairColor: "",
+    skinTone: "",
   },
-  medical: {
-    bloodType: BloodType.BLOOD_TYPE_A_POSITIVE,
-    seed: 0,
-  },
-  employment: {
-    profession: "",
+  level5: {
     employer: "",
     employerAddress: "",
-    seed: 0,
+    travelStamps: [],
+    affiliationCodes: [],
+    educationRecords: [],
+    residenceHistory: [],
   },
-  genetic: {
-    seed: 0,
+  level6: {
+    bloodType: BloodType.BLOOD_TYPE_A_POSITIVE,
+    dnaSequenceHash: "",
+    geneticMarkers: [],
+    medicalAlertCodes: "",
   },
+  baseSeed: 0,
+  biometricSeed: 0,
+  backgroundSeed: 0,
 });
 
 const {
@@ -451,39 +475,9 @@ const submitForm = () => {
     return;
   }
 
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_3) {
-    formData.physical = {
-      height: 0,
-      weight: 0,
-      skin: "N/A",
-      hair: "N/A",
-      eyes: "N/A",
-      seed: Date.now(),
-      ...formData.physical,
-    };
-  }
-  if (formData.sinQuality >= SinQuality.SIN_QUALITY_LEVEL_4) {
-    formData.medical = {
-      bloodType: BloodType.BLOOD_TYPE_UNSPECIFIED,
-      seed: Date.now(),
-      ...formData.medical,
-    };
-  }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_5) {
-    formData.employment = {
-      profession: "N/A",
-      employer: "N/A",
-      employerAddress: "N/A",
-      seed: Date.now(),
-      ...formData.employment,
-    };
-  }
-  if (formData.sinQuality === SinQuality.SIN_QUALITY_LEVEL_6) {
-    formData.genetic = {
-      seed: Date.now(),
-      ...formData.genetic,
-    };
-  }
+  formData.baseSeed = Date.now();
+  formData.biometricSeed = Date.now() + 1;
+  formData.backgroundSeed = Date.now() + 2;
   writeTag(formData);
 };
 

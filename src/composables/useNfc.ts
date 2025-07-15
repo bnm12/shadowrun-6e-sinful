@@ -175,7 +175,7 @@ export function useNfc() {
           },
         ],
       });
-      writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataFromForm.basic.name} to tag.`;
+      writeStatusMessage.value = `Successfully wrote compressed SIN data for ${profileDataFromForm.level2?.name} to tag.`;
       writeStatusMessageType.value = "success";
     } catch (error: any) {
       console.error("Error writing compressed SIN data to tag:", error);
