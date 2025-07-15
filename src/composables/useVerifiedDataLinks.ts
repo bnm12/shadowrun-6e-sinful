@@ -255,21 +255,40 @@ const shadowrunDataLinkWords = [
   "Omega",
 ];
 
-// Function to generate a single data link
-function generateDataLink(rand: Rand): string {
+// Thematic grid types for each category
+const gridTypeMap = {
+  Civil: "GRID",      // Government/civil systems use basic grid
+  Bank: "CORE",       // Financial systems are core infrastructure
+  Personal: "NODE",   // Personal data stored in individual nodes
+  Corporate: "ZONE",  // Corporate data in protected zones
+  Security: "CORE",   // Security systems are core infrastructure
+  Matrix: "GRID",     // Matrix access through grid systems
+};
+
+// Function to generate a single data link with geographic grid style
+function generateDataLink(rand: Rand, gridType: string): string {
+  // Generate grid coordinates
+  const latPrefix = rand.next() < 0.5 ? "N" : "S";
+  const lonPrefix = rand.next() < 0.5 ? "E" : "W";
+  const lat = Math.floor(rand.next() * 90) + 1; // 1-90
+  const lon = Math.floor(rand.next() * 180) + 1; // 1-180
+  const depth = String.fromCharCode(65 + Math.floor(rand.next() * 26)); // A-Z
+  const level = Math.floor(rand.next() * 9) + 1; // 1-9
+  
+  const gridCoords = `${latPrefix}${lat}.${lonPrefix}${lon}.${depth}${level}`;
+  
+  // Generate 2-3 thematic words for the path
   const numWords = 2 + Math.floor(rand.next() * 2); // 2 or 3 words
-  let link = "";
+  const words = [];
   for (let i = 0; i < numWords; i++) {
-    link +=
+    words.push(
       shadowrunDataLinkWords[
         Math.floor(rand.next() * shadowrunDataLinkWords.length)
-      ];
-    if (i < numWords - 1) {
-      link += "//";
-    }
+      ]
+    );
   }
-  link += "//" + Math.floor(rand.next() * 1000000);
-  return link;
+  
+  return `${gridType}[${gridCoords}]::${words.join(".")}`;
 }
 
 export function useVerifiedDataLinks(
@@ -279,13 +298,14 @@ export function useVerifiedDataLinks(
   const dataLinks = computed(() => {
     const combinedSeed = `${sinId.value}${seed.value ?? ""}`;
     const rand = new Rand(combinedSeed);
+    
     return {
-      Civil: generateDataLink(rand),
-      Bank: generateDataLink(rand),
-      Personal: generateDataLink(rand),
-      Corporate: generateDataLink(rand),
-      Security: generateDataLink(rand),
-      Matrix: generateDataLink(rand),
+      Civil: generateDataLink(rand, gridTypeMap.Civil),
+      Bank: generateDataLink(rand, gridTypeMap.Bank),
+      Personal: generateDataLink(rand, gridTypeMap.Personal),
+      Corporate: generateDataLink(rand, gridTypeMap.Corporate),
+      Security: generateDataLink(rand, gridTypeMap.Security),
+      Matrix: generateDataLink(rand, gridTypeMap.Matrix),
     };
   });
 
