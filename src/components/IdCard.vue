@@ -93,6 +93,10 @@
                   internalProfileData.basic.photo ??
                   '/blank-profile-picture.svg'
                 "
+                @error="
+                  ($event.target as HTMLImageElement).src =
+                    '/blank-profile-picture.svg'
+                "
                 :alt="internalProfileData.basic.name"
                 class="profile-photo"
               />
