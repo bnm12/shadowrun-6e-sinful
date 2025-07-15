@@ -280,12 +280,12 @@ export function useVerifiedDataLinks(
     const combinedSeed = `${sinId.value}${seed.value ?? ""}`;
     const rand = new Rand(combinedSeed);
     return {
-      civil: generateDataLink(rand),
-      bank: generateDataLink(rand),
-      personal: generateDataLink(rand),
-      corporate: generateDataLink(rand),
-      security: generateDataLink(rand),
-      matrix: generateDataLink(rand),
+      Civil: generateDataLink(rand),
+      Bank: generateDataLink(rand),
+      Personal: generateDataLink(rand),
+      Corporate: generateDataLink(rand),
+      Security: generateDataLink(rand),
+      Matrix: generateDataLink(rand),
     };
   });
 
