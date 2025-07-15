@@ -493,24 +493,104 @@ const medicalRecords = computed(() => {
     internalProfileData.value.sinId + internalProfileData.value.medical?.seed;
   const rand = new Rand(seed);
   const records: Record<string, string> = {};
+  
   const conditions = [
-    "Cyberware rejection",
-    "Data-lock",
-    "Allergy to soy",
-    "Allergy to chrome",
+    // Physical conditions
+    "Chronic fatigue syndrome",
+    "Migraine disorder",
     "Insomnia",
+    "Hypertension",
+    "Asthma",
+    "Arthritis",
+    "Back injury",
+    "Hearing loss",
+    "Vision impairment",
     "Nerve damage",
+    "Carpal tunnel syndrome",
+    "Tendonitis",
+    
+    // Mental health
+    "Anxiety disorder",
+    "Depression",
+    "PTSD",
+    "Bipolar disorder",
+    "Attention deficit disorder",
+    "Stress disorder",
+    "Panic disorder",
+    "Phobic disorder",
+    
+    // Allergies & sensitivities
+    "Allergy to soy",
+    "Allergy to synthetic materials",
+    "Allergy to preservatives",
+    "Chemical sensitivity",
+    "Light sensitivity",
+    "Sound sensitivity",
+    "Electromagnetic sensitivity",
+    
+    // Substance-related
+    "Stimulant dependency",
+    "Alcohol dependency",
+    "Nicotine dependency",
+    "Prescription drug dependency",
+    "Detox complications",
+    
+    // Occupational hazards
+    "Radiation exposure",
+    "Toxic exposure",
+    "Lung scarring",
+    "Chemical burns",
+    "Concussion history",
+    "Repetitive strain injury",
+    
+    // Cyberpunk/Shadowrun specific
+    "Cyberware rejection",
+    "Data-lock syndrome",
     "Vat-job flu",
+    "Simsense addiction",
+    "Matrix fatigue",
+    "Awakening syndrome",
+    "Mana exposure",
+    "Astral burnout",
+    "Essence depletion",
+    "Neural feedback damage",
+    
+    // Genetic/hereditary
+    "Genetic predisposition to cancer",
+    "Hereditary heart condition",
+    "Genetic enzyme deficiency",
+    "Congenital condition",
+    "Autoimmune disorder",
+    
+    // Infectious diseases
+    "Viral infection (chronic)",
+    "Bacterial infection (recurring)",
+    "Fungal infection (persistent)",
+    "Parasitic infection",
+    "Compromised immune system"
   ];
-  const numRecords = Math.floor(rand.next() * 3);
+  
+  // Generate 0-4 records (weighted toward fewer records)
+  const numRecords = Math.floor(rand.next() * 5);
+  
   for (let i = 0; i < numRecords; i++) {
     const condition = conditions[Math.floor(rand.next() * conditions.length)];
-    records[condition] = new Date(
-      new Date(2077, 0, 1).getTime() + rand.next() * 31536000000
-    )
+    
+    // Skip if condition already exists
+    if (records[condition]) continue;
+    
+    // Generate date between 2070-2077 (varied history)
+    const baseYear = 2070;
+    const yearRange = 8;
+    const startDate = new Date(baseYear, 0, 1).getTime();
+    const endDate = new Date(2077, 11, 31).getTime();
+    const randomTime = startDate + rand.next() * (endDate - startDate);
+    
+    records[condition] = new Date(randomTime)
       .toISOString()
       .split("T")[0];
   }
+  
   return records;
 });
 
