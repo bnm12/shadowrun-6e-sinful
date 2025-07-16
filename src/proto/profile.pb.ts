@@ -66,7 +66,7 @@ export interface SinLevel2 {
  * Level 3: All printed SIN information
  */
 export interface SinLevel3 {
-  fullName: string;
+  seed: number;
   address: string;
   city: string;
   country: string;
@@ -79,9 +79,7 @@ export interface SinLevel3 {
  * Level 4: Physical biometrics
  */
 export interface SinLevel4 {
-  fingerprintHash: string;
-  retinalHash: string;
-  voiceHash: string;
+  seed: number;
   height: number;
   weight: number;
   eyeColor: string;
@@ -93,22 +91,17 @@ export interface SinLevel4 {
  * Level 5: Deep background data
  */
 export interface SinLevel5 {
+  seed: number;
   employer: string;
   employerAddress: string;
-  travelStamps: string[];
-  affiliationCodes: string[];
-  educationRecords: string[];
-  residenceHistory: string[];
 }
 
 /**
  * Level 6: Genetic markers
  */
 export interface SinLevel6 {
+  seed: number;
   bloodType: BloodType;
-  dnaSequenceHash: string;
-  geneticMarkers: string[];
-  medicalAlertCodes: string;
 }
 
 /**
@@ -134,12 +127,6 @@ export interface ProfileData {
   level4?: SinLevel4 | null | undefined;
   level5?: SinLevel5 | null | undefined;
   level6?: SinLevel6 | null | undefined;
-  /**
-   * Random seeds for generating consistent fake data
-   */
-  baseSeed: number;
-  biometricSeed: number;
-  backgroundSeed: number;
 }
 
 export declare namespace ProfileData {
@@ -562,7 +549,7 @@ export const SinLevel3 = {
    */
   initialize: function (msg?: Partial<SinLevel3>): SinLevel3 {
     return {
-      fullName: "",
+      seed: 0,
       address: "",
       city: "",
       country: "",
@@ -580,8 +567,8 @@ export const SinLevel3 = {
     msg: PartialDeep<SinLevel3>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
-    if (msg.fullName) {
-      writer.writeString(1, msg.fullName);
+    if (msg.seed) {
+      writer.writeInt32(1, msg.seed);
     }
     if (msg.address) {
       writer.writeString(2, msg.address);
@@ -615,7 +602,7 @@ export const SinLevel3 = {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.fullName = reader.readString();
+          msg.seed = reader.readInt32();
           break;
         }
         case 2: {
@@ -678,9 +665,7 @@ export const SinLevel4 = {
    */
   initialize: function (msg?: Partial<SinLevel4>): SinLevel4 {
     return {
-      fingerprintHash: "",
-      retinalHash: "",
-      voiceHash: "",
+      seed: 0,
       height: 0,
       weight: 0,
       eyeColor: "",
@@ -697,29 +682,23 @@ export const SinLevel4 = {
     msg: PartialDeep<SinLevel4>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
-    if (msg.fingerprintHash) {
-      writer.writeString(1, msg.fingerprintHash);
-    }
-    if (msg.retinalHash) {
-      writer.writeString(2, msg.retinalHash);
-    }
-    if (msg.voiceHash) {
-      writer.writeString(3, msg.voiceHash);
+    if (msg.seed) {
+      writer.writeInt32(1, msg.seed);
     }
     if (msg.height) {
-      writer.writeInt32(4, msg.height);
+      writer.writeInt32(2, msg.height);
     }
     if (msg.weight) {
-      writer.writeInt32(5, msg.weight);
+      writer.writeInt32(3, msg.weight);
     }
     if (msg.eyeColor) {
-      writer.writeString(6, msg.eyeColor);
+      writer.writeString(4, msg.eyeColor);
     }
     if (msg.hairColor) {
-      writer.writeString(7, msg.hairColor);
+      writer.writeString(5, msg.hairColor);
     }
     if (msg.skinTone) {
-      writer.writeString(8, msg.skinTone);
+      writer.writeString(6, msg.skinTone);
     }
     return writer;
   },
@@ -735,34 +714,26 @@ export const SinLevel4 = {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.fingerprintHash = reader.readString();
+          msg.seed = reader.readInt32();
           break;
         }
         case 2: {
-          msg.retinalHash = reader.readString();
-          break;
-        }
-        case 3: {
-          msg.voiceHash = reader.readString();
-          break;
-        }
-        case 4: {
           msg.height = reader.readInt32();
           break;
         }
-        case 5: {
+        case 3: {
           msg.weight = reader.readInt32();
           break;
         }
-        case 6: {
+        case 4: {
           msg.eyeColor = reader.readString();
           break;
         }
-        case 7: {
+        case 5: {
           msg.hairColor = reader.readString();
           break;
         }
-        case 8: {
+        case 6: {
           msg.skinTone = reader.readString();
           break;
         }
@@ -802,12 +773,9 @@ export const SinLevel5 = {
    */
   initialize: function (msg?: Partial<SinLevel5>): SinLevel5 {
     return {
+      seed: 0,
       employer: "",
       employerAddress: "",
-      travelStamps: [],
-      affiliationCodes: [],
-      educationRecords: [],
-      residenceHistory: [],
       ...msg,
     };
   },
@@ -819,23 +787,14 @@ export const SinLevel5 = {
     msg: PartialDeep<SinLevel5>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
+    if (msg.seed) {
+      writer.writeInt32(1, msg.seed);
+    }
     if (msg.employer) {
-      writer.writeString(1, msg.employer);
+      writer.writeString(2, msg.employer);
     }
     if (msg.employerAddress) {
-      writer.writeString(2, msg.employerAddress);
-    }
-    if (msg.travelStamps?.length) {
-      writer.writeRepeatedString(3, msg.travelStamps);
-    }
-    if (msg.affiliationCodes?.length) {
-      writer.writeRepeatedString(4, msg.affiliationCodes);
-    }
-    if (msg.educationRecords?.length) {
-      writer.writeRepeatedString(5, msg.educationRecords);
-    }
-    if (msg.residenceHistory?.length) {
-      writer.writeRepeatedString(6, msg.residenceHistory);
+      writer.writeString(3, msg.employerAddress);
     }
     return writer;
   },
@@ -851,27 +810,15 @@ export const SinLevel5 = {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.employer = reader.readString();
+          msg.seed = reader.readInt32();
           break;
         }
         case 2: {
-          msg.employerAddress = reader.readString();
+          msg.employer = reader.readString();
           break;
         }
         case 3: {
-          msg.travelStamps.push(reader.readString());
-          break;
-        }
-        case 4: {
-          msg.affiliationCodes.push(reader.readString());
-          break;
-        }
-        case 5: {
-          msg.educationRecords.push(reader.readString());
-          break;
-        }
-        case 6: {
-          msg.residenceHistory.push(reader.readString());
+          msg.employerAddress = reader.readString();
           break;
         }
         default: {
@@ -910,10 +857,8 @@ export const SinLevel6 = {
    */
   initialize: function (msg?: Partial<SinLevel6>): SinLevel6 {
     return {
+      seed: 0,
       bloodType: BloodType._fromInt(0),
-      dnaSequenceHash: "",
-      geneticMarkers: [],
-      medicalAlertCodes: "",
       ...msg,
     };
   },
@@ -925,17 +870,11 @@ export const SinLevel6 = {
     msg: PartialDeep<SinLevel6>,
     writer: protoscript.BinaryWriter,
   ): protoscript.BinaryWriter {
+    if (msg.seed) {
+      writer.writeInt32(1, msg.seed);
+    }
     if (msg.bloodType && BloodType._toInt(msg.bloodType)) {
-      writer.writeEnum(1, BloodType._toInt(msg.bloodType));
-    }
-    if (msg.dnaSequenceHash) {
-      writer.writeString(2, msg.dnaSequenceHash);
-    }
-    if (msg.geneticMarkers?.length) {
-      writer.writeRepeatedString(3, msg.geneticMarkers);
-    }
-    if (msg.medicalAlertCodes) {
-      writer.writeString(4, msg.medicalAlertCodes);
+      writer.writeEnum(2, BloodType._toInt(msg.bloodType));
     }
     return writer;
   },
@@ -951,19 +890,11 @@ export const SinLevel6 = {
       const field = reader.getFieldNumber();
       switch (field) {
         case 1: {
-          msg.bloodType = BloodType._fromInt(reader.readEnum());
+          msg.seed = reader.readInt32();
           break;
         }
         case 2: {
-          msg.dnaSequenceHash = reader.readString();
-          break;
-        }
-        case 3: {
-          msg.geneticMarkers.push(reader.readString());
-          break;
-        }
-        case 4: {
-          msg.medicalAlertCodes = reader.readString();
+          msg.bloodType = BloodType._fromInt(reader.readEnum());
           break;
         }
         default: {
@@ -1012,9 +943,6 @@ export const ProfileData = {
       level4: undefined,
       level5: undefined,
       level6: undefined,
-      baseSeed: 0,
-      biometricSeed: 0,
-      backgroundSeed: 0,
       ...msg,
     };
   },
@@ -1062,15 +990,6 @@ export const ProfileData = {
     }
     if (msg.level6 != undefined) {
       writer.writeMessage(10, msg.level6, SinLevel6._writeMessage);
-    }
-    if (msg.baseSeed) {
-      writer.writeInt32(11, msg.baseSeed);
-    }
-    if (msg.biometricSeed) {
-      writer.writeInt32(12, msg.biometricSeed);
-    }
-    if (msg.backgroundSeed) {
-      writer.writeInt32(13, msg.backgroundSeed);
     }
     return writer;
   },
@@ -1131,18 +1050,6 @@ export const ProfileData = {
         case 10: {
           msg.level6 = SinLevel6.initialize();
           reader.readMessage(msg.level6, SinLevel6._readMessage);
-          break;
-        }
-        case 11: {
-          msg.baseSeed = reader.readInt32();
-          break;
-        }
-        case 12: {
-          msg.biometricSeed = reader.readInt32();
-          break;
-        }
-        case 13: {
-          msg.backgroundSeed = reader.readInt32();
           break;
         }
         default: {
@@ -1580,7 +1487,7 @@ export const SinLevel3JSON = {
    */
   initialize: function (msg?: Partial<SinLevel3>): SinLevel3 {
     return {
-      fullName: "",
+      seed: 0,
       address: "",
       city: "",
       country: "",
@@ -1598,8 +1505,8 @@ export const SinLevel3JSON = {
     msg: PartialDeep<SinLevel3>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    if (msg.fullName) {
-      json["fullName"] = msg.fullName;
+    if (msg.seed) {
+      json["seed"] = msg.seed;
     }
     if (msg.address) {
       json["address"] = msg.address;
@@ -1626,9 +1533,9 @@ export const SinLevel3JSON = {
    * @private
    */
   _readMessage: function (msg: SinLevel3, json: any): SinLevel3 {
-    const _fullName_ = json["fullName"] ?? json["full_name"];
-    if (_fullName_) {
-      msg.fullName = _fullName_;
+    const _seed_ = json["seed"];
+    if (_seed_) {
+      msg.seed = protoscript.parseNumber(_seed_);
     }
     const _address_ = json["address"];
     if (_address_) {
@@ -1681,9 +1588,7 @@ export const SinLevel4JSON = {
    */
   initialize: function (msg?: Partial<SinLevel4>): SinLevel4 {
     return {
-      fingerprintHash: "",
-      retinalHash: "",
-      voiceHash: "",
+      seed: 0,
       height: 0,
       weight: 0,
       eyeColor: "",
@@ -1700,14 +1605,8 @@ export const SinLevel4JSON = {
     msg: PartialDeep<SinLevel4>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    if (msg.fingerprintHash) {
-      json["fingerprintHash"] = msg.fingerprintHash;
-    }
-    if (msg.retinalHash) {
-      json["retinalHash"] = msg.retinalHash;
-    }
-    if (msg.voiceHash) {
-      json["voiceHash"] = msg.voiceHash;
+    if (msg.seed) {
+      json["seed"] = msg.seed;
     }
     if (msg.height) {
       json["height"] = msg.height;
@@ -1731,18 +1630,9 @@ export const SinLevel4JSON = {
    * @private
    */
   _readMessage: function (msg: SinLevel4, json: any): SinLevel4 {
-    const _fingerprintHash_ =
-      json["fingerprintHash"] ?? json["fingerprint_hash"];
-    if (_fingerprintHash_) {
-      msg.fingerprintHash = _fingerprintHash_;
-    }
-    const _retinalHash_ = json["retinalHash"] ?? json["retinal_hash"];
-    if (_retinalHash_) {
-      msg.retinalHash = _retinalHash_;
-    }
-    const _voiceHash_ = json["voiceHash"] ?? json["voice_hash"];
-    if (_voiceHash_) {
-      msg.voiceHash = _voiceHash_;
+    const _seed_ = json["seed"];
+    if (_seed_) {
+      msg.seed = protoscript.parseNumber(_seed_);
     }
     const _height_ = json["height"];
     if (_height_) {
@@ -1791,12 +1681,9 @@ export const SinLevel5JSON = {
    */
   initialize: function (msg?: Partial<SinLevel5>): SinLevel5 {
     return {
+      seed: 0,
       employer: "",
       employerAddress: "",
-      travelStamps: [],
-      affiliationCodes: [],
-      educationRecords: [],
-      residenceHistory: [],
       ...msg,
     };
   },
@@ -1808,23 +1695,14 @@ export const SinLevel5JSON = {
     msg: PartialDeep<SinLevel5>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
+    if (msg.seed) {
+      json["seed"] = msg.seed;
+    }
     if (msg.employer) {
       json["employer"] = msg.employer;
     }
     if (msg.employerAddress) {
       json["employerAddress"] = msg.employerAddress;
-    }
-    if (msg.travelStamps?.length) {
-      json["travelStamps"] = msg.travelStamps;
-    }
-    if (msg.affiliationCodes?.length) {
-      json["affiliationCodes"] = msg.affiliationCodes;
-    }
-    if (msg.educationRecords?.length) {
-      json["educationRecords"] = msg.educationRecords;
-    }
-    if (msg.residenceHistory?.length) {
-      json["residenceHistory"] = msg.residenceHistory;
     }
     return json;
   },
@@ -1833,6 +1711,10 @@ export const SinLevel5JSON = {
    * @private
    */
   _readMessage: function (msg: SinLevel5, json: any): SinLevel5 {
+    const _seed_ = json["seed"];
+    if (_seed_) {
+      msg.seed = protoscript.parseNumber(_seed_);
+    }
     const _employer_ = json["employer"];
     if (_employer_) {
       msg.employer = _employer_;
@@ -1841,25 +1723,6 @@ export const SinLevel5JSON = {
       json["employerAddress"] ?? json["employer_address"];
     if (_employerAddress_) {
       msg.employerAddress = _employerAddress_;
-    }
-    const _travelStamps_ = json["travelStamps"] ?? json["travel_stamps"];
-    if (_travelStamps_) {
-      msg.travelStamps = _travelStamps_;
-    }
-    const _affiliationCodes_ =
-      json["affiliationCodes"] ?? json["affiliation_codes"];
-    if (_affiliationCodes_) {
-      msg.affiliationCodes = _affiliationCodes_;
-    }
-    const _educationRecords_ =
-      json["educationRecords"] ?? json["education_records"];
-    if (_educationRecords_) {
-      msg.educationRecords = _educationRecords_;
-    }
-    const _residenceHistory_ =
-      json["residenceHistory"] ?? json["residence_history"];
-    if (_residenceHistory_) {
-      msg.residenceHistory = _residenceHistory_;
     }
     return msg;
   },
@@ -1888,10 +1751,8 @@ export const SinLevel6JSON = {
    */
   initialize: function (msg?: Partial<SinLevel6>): SinLevel6 {
     return {
+      seed: 0,
       bloodType: BloodType._fromInt(0),
-      dnaSequenceHash: "",
-      geneticMarkers: [],
-      medicalAlertCodes: "",
       ...msg,
     };
   },
@@ -1903,17 +1764,11 @@ export const SinLevel6JSON = {
     msg: PartialDeep<SinLevel6>,
   ): Record<string, unknown> {
     const json: Record<string, unknown> = {};
+    if (msg.seed) {
+      json["seed"] = msg.seed;
+    }
     if (msg.bloodType && BloodTypeJSON._toInt(msg.bloodType)) {
       json["bloodType"] = msg.bloodType;
-    }
-    if (msg.dnaSequenceHash) {
-      json["dnaSequenceHash"] = msg.dnaSequenceHash;
-    }
-    if (msg.geneticMarkers?.length) {
-      json["geneticMarkers"] = msg.geneticMarkers;
-    }
-    if (msg.medicalAlertCodes) {
-      json["medicalAlertCodes"] = msg.medicalAlertCodes;
     }
     return json;
   },
@@ -1922,23 +1777,13 @@ export const SinLevel6JSON = {
    * @private
    */
   _readMessage: function (msg: SinLevel6, json: any): SinLevel6 {
+    const _seed_ = json["seed"];
+    if (_seed_) {
+      msg.seed = protoscript.parseNumber(_seed_);
+    }
     const _bloodType_ = json["bloodType"] ?? json["blood_type"];
     if (_bloodType_) {
       msg.bloodType = BloodType._fromInt(_bloodType_);
-    }
-    const _dnaSequenceHash_ =
-      json["dnaSequenceHash"] ?? json["dna_sequence_hash"];
-    if (_dnaSequenceHash_) {
-      msg.dnaSequenceHash = _dnaSequenceHash_;
-    }
-    const _geneticMarkers_ = json["geneticMarkers"] ?? json["genetic_markers"];
-    if (_geneticMarkers_) {
-      msg.geneticMarkers = _geneticMarkers_;
-    }
-    const _medicalAlertCodes_ =
-      json["medicalAlertCodes"] ?? json["medical_alert_codes"];
-    if (_medicalAlertCodes_) {
-      msg.medicalAlertCodes = _medicalAlertCodes_;
     }
     return msg;
   },
@@ -1977,9 +1822,6 @@ export const ProfileDataJSON = {
       level4: undefined,
       level5: undefined,
       level6: undefined,
-      baseSeed: 0,
-      biometricSeed: 0,
-      backgroundSeed: 0,
       ...msg,
     };
   },
@@ -2034,15 +1876,6 @@ export const ProfileDataJSON = {
     if (msg.level6 != undefined) {
       const _level6_ = SinLevel6JSON._writeMessage(msg.level6);
       json["level6"] = _level6_;
-    }
-    if (msg.baseSeed) {
-      json["baseSeed"] = msg.baseSeed;
-    }
-    if (msg.biometricSeed) {
-      json["biometricSeed"] = msg.biometricSeed;
-    }
-    if (msg.backgroundSeed) {
-      json["backgroundSeed"] = msg.backgroundSeed;
     }
     return json;
   },
@@ -2101,18 +1934,6 @@ export const ProfileDataJSON = {
     if (_level6_) {
       msg.level6 = SinLevel6JSON.initialize();
       SinLevel6JSON._readMessage(msg.level6, _level6_);
-    }
-    const _baseSeed_ = json["baseSeed"] ?? json["base_seed"];
-    if (_baseSeed_) {
-      msg.baseSeed = protoscript.parseNumber(_baseSeed_);
-    }
-    const _biometricSeed_ = json["biometricSeed"] ?? json["biometric_seed"];
-    if (_biometricSeed_) {
-      msg.biometricSeed = protoscript.parseNumber(_biometricSeed_);
-    }
-    const _backgroundSeed_ = json["backgroundSeed"] ?? json["background_seed"];
-    if (_backgroundSeed_) {
-      msg.backgroundSeed = protoscript.parseNumber(_backgroundSeed_);
     }
     return msg;
   },
