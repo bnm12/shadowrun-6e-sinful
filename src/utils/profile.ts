@@ -24,7 +24,7 @@ export const getDefaultProfileData = (): ProfileData => ({
     metatype: "N/A",
   },
   level3: {
-    fullName: "Jane Doe",
+    seed: 0,
     address: "N/A",
     city: "N/A",
     country: "N/A",
@@ -33,9 +33,7 @@ export const getDefaultProfileData = (): ProfileData => ({
     datalinks: [],
   },
   level4: {
-    fingerprintHash: "N/A",
-    retinalHash: "N/A",
-    voiceHash: "N/A",
+    seed: 0,
     height: 0,
     weight: 0,
     eyeColor: "N/A",
@@ -43,22 +41,14 @@ export const getDefaultProfileData = (): ProfileData => ({
     skinTone: "N/A",
   },
   level5: {
+    seed: 0,
     employer: "N/A",
     employerAddress: "N/A",
-    travelStamps: [],
-    affiliationCodes: [],
-    educationRecords: [],
-    residenceHistory: [],
   },
   level6: {
+    seed: 0,
     bloodType: BloodType.BLOOD_TYPE_UNSPECIFIED,
-    dnaSequenceHash: "N/A",
-    geneticMarkers: [],
-    medicalAlertCodes: "N/A",
   },
-  baseSeed: 0,
-  biometricSeed: 0,
-  backgroundSeed: 0,
 });
 
 export const GenderDisplayMap: Record<Gender, string> = {
