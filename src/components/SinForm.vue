@@ -103,14 +103,6 @@
       >
         <h3 class="section-title">Level 3: Printed Information</h3>
         <div class="form-field">
-          <label for="fullName">Full Name:</label>
-          <input
-            type="text"
-            id="fullName"
-            v-model="formData.level3!.fullName"
-          />
-        </div>
-        <div class="form-field">
           <label for="address">Address:</label>
           <input type="text" id="address" v-model="formData.level3!.address" />
         </div>
@@ -419,7 +411,7 @@ const formData = reactive<ProfileData>({
     metatype: ShadowrunMetatype.HUMAN,
   },
   level3: {
-    fullName: "",
+    seed: 0,
     address: "",
     city: "",
     country: "",
@@ -428,9 +420,7 @@ const formData = reactive<ProfileData>({
     datalinks: [],
   },
   level4: {
-    fingerprintHash: "",
-    retinalHash: "",
-    voiceHash: "",
+    seed: 0,
     height: 0,
     weight: 0,
     eyeColor: "",
@@ -438,22 +428,14 @@ const formData = reactive<ProfileData>({
     skinTone: "",
   },
   level5: {
+    seed: 0,
     employer: "",
     employerAddress: "",
-    travelStamps: [],
-    affiliationCodes: [],
-    educationRecords: [],
-    residenceHistory: [],
   },
   level6: {
+    seed: 0,
     bloodType: BloodType.BLOOD_TYPE_A_POSITIVE,
-    dnaSequenceHash: "",
-    geneticMarkers: [],
-    medicalAlertCodes: "",
   },
-  baseSeed: 0,
-  biometricSeed: 0,
-  backgroundSeed: 0,
 });
 
 const {
@@ -475,9 +457,6 @@ const submitForm = () => {
     return;
   }
 
-  formData.baseSeed = Date.now();
-  formData.biometricSeed = Date.now() + 1;
-  formData.backgroundSeed = Date.now() + 2;
   writeTag(formData);
 };
 

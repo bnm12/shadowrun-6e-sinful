@@ -185,13 +185,6 @@
         <div class="details">
           <div class="left-content">
             <div class="detail-row">
-              <span class="label">Full Name</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level3?.fullName || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
               <span class="label">Address</span>
               <span class="label-colon">:</span>
               <span class="value">{{
@@ -280,26 +273,12 @@
                 internalProfileData.level4?.skinTone || "N/A"
               }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">Fingerprint Hash</span>
-              <span class="label-colon">:</span>
-              <span class="value-hash">{{
-                internalProfileData.level4?.fingerprintHash || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Retinal Hash</span>
-              <span class="label-colon">:</span>
-              <span class="value-hash">{{
-                internalProfileData.level4?.retinalHash || "N/A"
-              }}</span>
-            </div>
           </div>
           <div class="right-content">
             <span>Iris Scan</span>
             <IrisDisplay
               :seed="
-                internalProfileData.sinId + internalProfileData.biometricSeed
+                internalProfileData.sinId + (internalProfileData.level4?.seed ?? 0)
               "
             />
           </div>
@@ -328,37 +307,6 @@
                 internalProfileData.level5?.employerAddress || "N/A"
               }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">Travel Stamps</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level5?.travelStamps?.join(", ") || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Affiliation Codes</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level5?.affiliationCodes?.join(", ") ||
-                "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Education Records</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level5?.educationRecords?.join(", ") ||
-                "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Residence History</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level5?.residenceHistory?.join(", ") ||
-                "N/A"
-              }}</span>
-            </div>
           </div>
         </div>
       </div>
@@ -381,32 +329,11 @@
                 ]
               }}</span>
             </div>
-            <div class="detail-row">
-              <span class="label">DNA Sequence Hash</span>
-              <span class="label-colon">:</span>
-              <span class="value-hash">{{
-                internalProfileData.level6?.dnaSequenceHash || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Genetic Markers</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level6?.geneticMarkers?.join(", ") || "N/A"
-              }}</span>
-            </div>
-            <div class="detail-row">
-              <span class="label">Medical Alert Codes</span>
-              <span class="label-colon">:</span>
-              <span class="value">{{
-                internalProfileData.level6?.medicalAlertCodes || "N/A"
-              }}</span>
-            </div>
           </div>
           <div class="right-content">
             <DnaFingerprint
               :seed="
-                internalProfileData.sinId + internalProfileData.biometricSeed
+                internalProfileData.sinId + (internalProfileData.level6?.seed ?? 0)
               "
               :lanes="12"
               :animated="true"
@@ -532,22 +459,10 @@ const internalProfileData = computed(() => {
     !scannedProfileData.value?.sinId ||
     scannedProfileData.value.sinId === INITIAL_SIN_ID
   ) {
-    const defaultData = getDefaultProfileData();
-    return {
-      ...defaultData,
-      flagColors: getFlagCSS(
-        defaultData.level3?.nationality || ShadowrunNationality.UNKNOWN
-      ),
-    };
+    return getDefaultProfileData();
   }
 
-  return {
-    ...scannedProfileData.value,
-    flagColors: getFlagCSS(
-      scannedProfileData.value.level3?.nationality ||
-        ShadowrunNationality.UNKNOWN
-    ),
-  };
+  return scannedProfileData.value;
 });
 
 const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);
@@ -561,9 +476,6 @@ const selectTab = (tabIdentifier: SinQuality | "licenses") => {
 
 // Function to get flag colors based on nationality or manual override
 const getFlagColors = (): string => {
-  if ((internalProfileData.value as any).flagColors) {
-    return (internalProfileData.value as any).flagColors;
-  }
   return getFlagCSS(
     internalProfileData.value.level3?.nationality ||
       ShadowrunNationality.UNKNOWN
