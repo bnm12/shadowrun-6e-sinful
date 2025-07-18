@@ -355,14 +355,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import MessageOverlay from "./MessageOverlay.vue";
 import DnaFingerprint from "./DnaFingerprint.vue";
 import IrisDisplay from "./IrisDisplay.vue";
 import { useIdCardSystemInfo } from "../composables/useIdCardSystemInfo";
 import { useIdCardBarcode } from "../composables/useIdCardBarcode";
 import { ShadowrunNationality, getFlagCSS } from "./shadowrun-flags";
-import { BloodType, SinQuality, Gender } from "../proto/profile.pb";
+import {
+  BloodType,
+  SinQuality,
+  Gender,
+  ProfileData,
+} from "../proto/profile.pb";
 import {
   BloodTypeDisplayMap,
   getDefaultProfileData,
@@ -381,88 +386,60 @@ interface IdCardProps {
 }
 
 const props = defineProps<IdCardProps>();
-const emit = defineEmits([
-  "update:scanLevel",
-  "update:validateOnScan",
-  "check-sin",
-]);
+defineEmits(["update:scanLevel", "update:validateOnScan", "check-sin"]);
 
-const {
-  isReading,
-  currentScanResultMessage,
-  readStatusMessageType,
-  scannedProfileData,
-  readTag,
-  abortScan,
-} = useNfc();
+const { readTag, abortScan } = useNfc();
+const scannedProfileData = ref<ProfileData | null>(null);
 
 onMounted(() => {
-  readTag(true); // Start scanning when component is mounted
+  readTag(
+    {
+      onScanStart: () => {
+        overlayMessage.value = "Scanning for SIN...";
+        isOverlayVisible.value = true;
+      },
+      onSuccess: (profileData) => {
+        scannedProfileData.value = profileData;
+        if (props.validateOnScan) {
+          performSinCheck(profileData.sinQuality);
+        } else {
+          overlayMessage.value = "SIN Scanned successfully";
+          overlayResultType.value = "success";
+          isOverlayVisible.value = true;
+          setTimeout(() => {
+            isOverlayVisible.value = false;
+          }, 2000);
+        }
+      },
+      onError: (errorMessage) => {
+        overlayMessage.value = errorMessage;
+        overlayResultType.value = "burned"; // Or a more specific error type
+        isOverlayVisible.value = true;
+      },
+      onFinished: () => {
+        // You might want to hide the overlay after a delay if no success/error shown
+        // Or handle it within the success/error callbacks
+      },
+    },
+    true
+  ); // Continuous scanning
 });
 
 onBeforeUnmount(() => {
-  abortScan(); // Stop scanning when component is unmounted
+  abortScan();
 });
 
-// INITIAL_SIN_ID can be defined here if only used by setup logic, or keep INITIAL_SIN_ID_MODULE if it was truly module-scoped
-const INITIAL_SIN_ID = "00000000-0000-0000-0000-000000000000";
-
-// Overlay state - will be computed based on props
-const isOverlayVisible = ref(true); // Will be managed by new logic
+const isOverlayVisible = ref(true);
 const overlayMessage = ref("Waiting for SIN");
 const overlayTitle = ref("SIN Check");
 const overlayResultType = ref<sincheckresult | undefined>(undefined);
 
 let overlayTimeout: NodeJS.Timeout;
 
-watch(
-  [isReading, currentScanResultMessage, scannedProfileData],
-  ([reading, newMessage, newProfileData]) => {
-    clearTimeout(overlayTimeout);
-    const newSinId = newProfileData?.sinId;
-
-    overlayResultType.value = undefined;
-
-    if (reading) {
-      overlayMessage.value = newMessage || "Scanning...";
-      isOverlayVisible.value = true;
-    } else if (readStatusMessageType.value === "error") {
-      overlayMessage.value = newMessage || "Error during scan.";
-      overlayResultType.value = "burned";
-      isOverlayVisible.value = true;
-    } else if (readStatusMessageType.value === "success" && newSinId) {
-      if (props.validateOnScan) {
-        performSinCheck(internalProfileData.value.sinQuality);
-      } else {
-        clearTimeout(overlayTimeout);
-        overlayMessage.value = newMessage || "SIN Scanned successfully";
-        overlayResultType.value = "success";
-        isOverlayVisible.value = true;
-        overlayTimeout = setTimeout(() => {
-          isOverlayVisible.value = false;
-        }, 2000);
-      }
-    } else if (!isReading) {
-      if (!newSinId || newSinId === INITIAL_SIN_ID) {
-        overlayMessage.value = "Waiting for SIN";
-        isOverlayVisible.value = true;
-      } else {
-        isOverlayVisible.value = false;
-      }
-    }
-  },
-  { immediate: true, deep: true }
-);
-
 const internalProfileData = computed(() => {
-  if (
-    !scannedProfileData.value?.sinId ||
-    scannedProfileData.value.sinId === INITIAL_SIN_ID
-  ) {
-    return getDefaultProfileData();
-  }
-
-  return scannedProfileData.value;
+  return scannedProfileData.value
+    ? scannedProfileData.value
+    : getDefaultProfileData();
 });
 
 const { idc, additionalCode } = useIdCardSystemInfo(internalProfileData);

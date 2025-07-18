@@ -1,6 +1,10 @@
 <template>
   <div class="sin-form-container">
-    <form @submit.prevent="submitForm" class="sin-form">
+    <div class="nfc-actions">
+      <button @click="handleRead" class="cyber-button">READ TAG</button>
+      <button @click="handleWrite" class="cyber-button">WRITE TAG</button>
+    </div>
+    <form @submit.prevent="handleWrite" class="sin-form">
       <div class="form-section">
         <div class="form-field">
           <label for="sinQuality">SIN Quality:</label>
@@ -317,7 +321,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, ref } from "vue";
+import { reactive, ref } from "vue";
 import MessageOverlay from "./MessageOverlay.vue";
 import { ShadowrunNationality, getAllNationalities } from "./shadowrun-flags";
 import { ShadowrunMetatype, getAllMetatypes } from "./shadowrun-metatypes";
@@ -333,17 +337,7 @@ import { SinQualityFlairMap } from "../utils/sin-quality";
 import { BloodTypeDisplayMap, GenderDisplayMap } from "../utils/profile";
 import { useNfc } from "../composables/useNfc";
 
-const {
-  isWriting,
-  isReading,
-  writeStatusMessage,
-  writeStatusMessageType,
-  currentScanResultMessage,
-  readStatusMessageType,
-  scannedProfileData,
-  readTag,
-  writeTag,
-} = useNfc();
+const { readTag, writeTag, isReading, isWriting } = useNfc();
 
 const isOverlayVisible = ref(false);
 const overlayMessage = ref("");
@@ -351,46 +345,52 @@ const overlayStatus = ref<"reading" | "writing" | "success" | "error" | "">("");
 
 let overlayTimeout: ReturnType<typeof setTimeout> | undefined;
 
-watch(
-  [isReading, isWriting, writeStatusMessage, currentScanResultMessage],
-  ([reading, writing, writeMsg, scanMsg]) => {
-    clearTimeout(overlayTimeout);
-    if (reading) {
-      isOverlayVisible.value = true;
-      overlayMessage.value = "Waiting for read...";
-      overlayStatus.value = "reading";
-    } else if (writing) {
-      isOverlayVisible.value = true;
-      overlayMessage.value = "Waiting for write...";
-      overlayStatus.value = "writing";
-    } else if (writeMsg || scanMsg) {
-      isOverlayVisible.value = true;
-      overlayMessage.value = writeMsg || scanMsg || "";
-      overlayStatus.value =
-        writeStatusMessageType.value === "error" ||
-        readStatusMessageType.value === "error"
-          ? "error"
-          : "success";
-      overlayTimeout = setTimeout(() => {
-        isOverlayVisible.value = false;
-      }, 2000);
-    } else {
+const showOverlay = (
+  message: string,
+  status: "reading" | "writing" | "success" | "error",
+  duration?: number
+) => {
+  clearTimeout(overlayTimeout);
+  overlayMessage.value = message;
+  overlayStatus.value = status;
+  isOverlayVisible.value = true;
+  if (duration) {
+    overlayTimeout = setTimeout(() => {
       isOverlayVisible.value = false;
-    }
-  },
-  { immediate: true }
-);
+    }, duration);
+  }
+};
 
-watch(
-  scannedProfileData,
-  (newData) => {
-    if (newData && newData.sinId) {
-      // Logic to merge newData into formData without losing reactivity
-      Object.assign(formData, newData);
-    }
-  },
-  { deep: true }
-);
+const handleRead = () => {
+  readTag({
+    onScanStart: () => showOverlay("Scanning for tag...", "reading"),
+    onSuccess: (profileData) => {
+      Object.assign(formData, profileData);
+      showOverlay("Tag read successfully!", "success", 2000);
+    },
+    onError: (error) => showOverlay(error, "error", 5000),
+    onFinished: () =>
+      (overlayStatus.value === "reading" || !isOverlayVisible.value) &&
+      (isOverlayVisible.value = false),
+  });
+};
+
+const handleWrite = () => {
+  const form = document.querySelector(".sin-form") as HTMLFormElement;
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  writeTag(formData, {
+    onWriteStart: () => showOverlay("Writing to tag...", "writing"),
+    onSuccess: (message) => showOverlay(message, "success", 2000),
+    onError: (error) => showOverlay(error, "error", 5000),
+    onFinished: () =>
+      (overlayStatus.value === "writing" || !isOverlayVisible.value) &&
+      (isOverlayVisible.value = false),
+  });
+};
 
 const nationalities = getAllNationalities();
 const metatypes = getAllMetatypes();
@@ -449,24 +449,13 @@ const {
   isLicenseQualityInvalid,
 } = useLicenseManagement(formData);
 
-const submitForm = () => {
-  // Validate the form
-  const form = document.querySelector(".sin-form") as HTMLFormElement;
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-
-  writeTag(formData);
-};
-
 defineExpose({
-  readTag,
-  writeTag,
+  readTag: handleRead,
+  writeTag: handleWrite,
   formData,
   isWriting,
   isReading,
-  submitForm,
+  submitForm: handleWrite,
 });
 </script>
 

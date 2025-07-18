@@ -160,7 +160,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="navigation-buttons">
         <div
-          @click="sinFormRef?.readTag(false)"
+          @click="sinFormRef?.readTag()"
           class="navigation-button"
           :disabled="sinFormRef?.isReading"
         >
